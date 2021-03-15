@@ -43,4 +43,19 @@ vector3[15:20]
 
 # Exercise 6-7 - Matrices in R --------------------------------------------
 
+# (a)  Create a 2×2 matrix A by row binding vectors using the rbind() command.
+
+vector4 <- c(1,2)
+vector5 <- c(2,1)
+
+A <- rbind(vector4, vector5)
+
+# (b)  Nullify matrix A by adding another matrix that you define.
+
+
+# (c)  Double all the values in the original matrix A by multiplication with another matrix that you define.
+
+B <- matrix(2:2, nrow = 2, ncol = 2)
+
+print(A * B)
 
