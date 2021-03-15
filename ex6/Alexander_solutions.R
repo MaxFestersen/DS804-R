@@ -111,6 +111,27 @@ artificial_data <- data.frame(Sepal.Length = abs(rnorm(mean = mean(iris$Sepal.Le
                               Petal.width = abs(rnorm(mean = mean(iris$Petal.Width), sd = sd(iris$Petal.Width), 150)),
                               Petal.length = abs(rnorm(mean = mean(iris$Petal.Length), sd = sd(iris$Petal.Length), 150)),
                               classs = c(rep("virginica", 40), rep("versicolor", 60), rep("setosa", 50)))
+library(tidyverse)
+
+virginica <- filter(iris, iris$Species == "virginica")
+versicolor <- filter(iris, iris$Species == "versicolor")
+setosa <- filter(iris, iris$Species == "setosa")
+
+artificial_data_2 <- data.frame(Sepal.length = abs(rnorm(40, mean(virginica$Sepal.Length), sd(virginica$Sepal.Length))),
+                                Sepal.width = abs(rnorm(40, mean(virginica$Sepal.Width), sd(virginica$Sepal.Width))),
+                                Petal.width = abs(rnorm(40, mean(virginica$Petal.Width), sd(virginica$Petal.Width))),
+                                Petal.length = abs(rnorm(40, mean(virginica$Petal.Length), sd(virginica$Petal.Length))),
+                                Species = rep("virginica", 40)) %>% 
+  rbind(data.frame(Sepal.length = abs(rnorm(50, mean(versicolor$Sepal.Length), sd(versicolor$Sepal.Length))),
+                   Sepal.width = abs(rnorm(50, mean(versicolor$Sepal.Width), sd(versicolor$Sepal.Width))),
+                   Petal.width = abs(rnorm(50, mean(versicolor$Petal.Width), sd(versicolor$Petal.Width))),
+                   Petal.length = abs(rnorm(50, mean(versicolor$Petal.Length), sd(versicolor$Petal.Length))),
+                   Species = rep("versicolor", 50))) %>% 
+  rbind(data.frame(Sepal.length = abs(rnorm(60, mean(setosa$Sepal.Length), sd(setosa$Sepal.Length))),
+                   Sepal.width = abs(rnorm(60, mean(setosa$Sepal.Width), sd(setosa$Sepal.Width))),
+                   Petal.width = abs(rnorm(60, mean(setosa$Petal.Width), sd(setosa$Petal.Width))),
+                   Petal.length = abs(rnorm(60, mean(setosa$Petal.Length), sd(setosa$Petal.Length))),
+                   Species = rep("setosa")))
 
 # > d ---------------------------------------------------------------------
 library(class)
@@ -120,6 +141,12 @@ test <- rbind(artificial_data[26:50,1:4,1], artificial_data[26:50,1:4,2], artifi
 cl <- factor(c(rep("s",25), rep("c",25), rep("v",25)))
 
 classifier_1 <- knn(train, test, cl, k = 3, prob=TRUE)
+
+train <- rbind(artificial_data_2[1:25,1:4,1], artificial_data_2[1:25,1:4,2], artificial_data_2[1:25,1:4,3])
+test <- rbind(artificial_data_2[26:50,1:4,1], artificial_data_2[26:50,1:4,2], artificial_data_2[26:50,1:4,3])
+cl <- factor(c(rep("s",25), rep("c",25), rep("v",25)))
+
+classifier_1.1 <- knn(train, test, cl, k = 3, prob=TRUE) # no fucking difference...
 
 # > e ---------------------------------------------------------------------
 
