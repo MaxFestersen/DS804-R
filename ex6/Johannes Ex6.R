@@ -100,23 +100,23 @@ mosaicplot(Titanic)
 # Cluster it using k-means with a reasonable choice of k.
 help(iris)
 
-irisDB <- iris
 
-irisDB <- irisDB[-5]
+irisDB <- iris[-5]
 
-clusters <- kmeans(irisDB, 3, iter.max = 10, nstart = 2)
+cluster <- kmeans(irisDB, 3, iter.max = 10, nstart = 2)
 
 
 # >(b) --------------------------------------------------------------------
 # Use the clustering result to label the data.
-
-
+irisDB['Cluster'] <- cluster$cluster
 
 
 # >(c) --------------------------------------------------------------------
 # Create some artificial flower data, that could potentially be Iris flowers.
 # Think about how you will do this,
 # and what you expect the resulting flowers to be.
+
+
 
 # >(d) --------------------------------------------------------------------
 # Try the knn-classifier with different values for k,
