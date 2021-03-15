@@ -27,5 +27,7 @@ help(help)
 help(class)
 ?class()
 class(iris)
+
 ?mode(iris)
 mode(iris) <- "vector"
+
