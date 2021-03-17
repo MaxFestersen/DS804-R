@@ -5,7 +5,8 @@
 # Cluster it using k-means with a reasonable choice of k.
 iris_no_classes <- iris[-5]
 cluster <- kmeans(iris_no_classes, 3) # Cluster using kmeans
-iris # Observe classes are now missing
+head(iris)
+head(iris_no_classes) # Observe classes are now missing
 
 # >(b) --------------------------------------------------------------------
 # Use the clustering result to label the data.
