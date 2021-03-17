@@ -20,10 +20,14 @@ iris_no_classes
 # and what you expect the resulting flowers to be.
 print("rnorm can be used to generate normal distributed numbers. IT can however not avoid using negative values, so abs function is used to make values positive.")
 print("We expect it to be similar to the iris dataset")
-artificial_data <- data.frame(Sepal.Length = abs(rnorm(mean = mean(iris$Sepal.Length), sd = sd(iris$Sepal.Length), 150)),
-                              Sepal.width = abs(rnorm(mean = mean(iris$Sepal.Width), sd = sd(iris$Sepal.Width), 150)),
-                              Petal.width = abs(rnorm(mean = mean(iris$Petal.Width), sd = sd(iris$Petal.Width), 150)),
-                              Petal.length = abs(rnorm(mean = mean(iris$Petal.Length), sd = sd(iris$Petal.Length), 150)),
+
+generator <- function(x, n) {
+  m <- mean(x)
+  s <- sd(x)
+  abs(rnorm(n, m, s))
+}
+
+artificial_data <- data.frame(lapply(iris[-5], generator, 150),
                               classs = c(rep("virginica", 50), rep("versicolor", 50), rep("setosa", 50)))
 
 
@@ -34,17 +38,11 @@ virginica <- filter(iris, iris$Species == "virginica")
 versicolor <- filter(iris, iris$Species == "versicolor")
 setosa <- filter(iris, iris$Species == "setosa")
 
-generator <- function(x) {
-  m <- mean(x)
-  s <- sd(x)
-  abs(rnorm(50, m, s))
-}
-
-artificial_data_2 <- data.frame(lapply(virginica[-5], generator),
+artificial_data_2 <- data.frame(lapply(virginica[-5], generator, 50),
                                 Species = rep("virginica")) %>% 
-  rbind(data.frame(lapply(versicolor[-5], generator),
+  rbind(data.frame(lapply(versicolor[-5], generator, 50),
                    Species = rep("versicolor"))) %>% 
-  rbind(data.frame(lapply(setosa[-5], generator),
+  rbind(data.frame(lapply(setosa[-5], generator, 50),
                    Species = rep("setosa")))
 
 # >(d) --------------------------------------------------------------------
@@ -54,7 +52,7 @@ library(class) # class has built in knn classifier
 ?knn
 
 rnum <- sample(rep(1:150))
-train <- artificial_data[rnum[1:100],-5] 
+train <- artificial_data[rnum[1:100],-5]
 test <- artificial_data[rnum[101:150],-5]
 cl <- artificial_data[rnum[1:100],5]
 
