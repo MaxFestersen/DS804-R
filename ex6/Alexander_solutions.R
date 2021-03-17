@@ -103,7 +103,6 @@ cluster <- kmeans(iris_no_classes, 3)
 
 iris_no_classes['Cluster'] <- cluster$cluster
 
-
 # > c ---------------------------------------------------------------------
 
 # random data based on the mean and sd of iris, without thinking about different classes
@@ -122,20 +121,17 @@ virginica <- filter(iris, iris$Species == "virginica")
 versicolor <- filter(iris, iris$Species == "versicolor")
 setosa <- filter(iris, iris$Species == "setosa")
 
-artificial_data_2 <- data.frame(Sepal.length = abs(rnorm(50, mean(virginica$Sepal.Length), sd(virginica$Sepal.Length))),
-                                Sepal.width = abs(rnorm(50, mean(virginica$Sepal.Width), sd(virginica$Sepal.Width))),
-                                Petal.width = abs(rnorm(50, mean(virginica$Petal.Width), sd(virginica$Petal.Width))),
-                                Petal.length = abs(rnorm(50, mean(virginica$Petal.Length), sd(virginica$Petal.Length))),
+generator <- function(x) {
+  m <- mean(x)
+  s <- sd(x)
+  abs(rnorm(50, m, s))
+}
+
+artificial_data_2 <- data.frame(lapply(virginica[-5], generator),
                                 Species = rep("virginica")) %>% 
-  rbind(data.frame(Sepal.length = abs(rnorm(50, mean(versicolor$Sepal.Length), sd(versicolor$Sepal.Length))),
-                   Sepal.width = abs(rnorm(50, mean(versicolor$Sepal.Width), sd(versicolor$Sepal.Width))),
-                   Petal.width = abs(rnorm(50, mean(versicolor$Petal.Width), sd(versicolor$Petal.Width))),
-                   Petal.length = abs(rnorm(50, mean(versicolor$Petal.Length), sd(versicolor$Petal.Length))),
+  rbind(data.frame(lapply(versicolor[-5], generator),
                    Species = rep("versicolor"))) %>% 
-  rbind(data.frame(Sepal.length = abs(rnorm(50, mean(setosa$Sepal.Length), sd(setosa$Sepal.Length))),
-                   Sepal.width = abs(rnorm(50, mean(setosa$Sepal.Width), sd(setosa$Sepal.Width))),
-                   Petal.width = abs(rnorm(50, mean(setosa$Petal.Width), sd(setosa$Petal.Width))),
-                   Petal.length = abs(rnorm(50, mean(setosa$Petal.Length), sd(setosa$Petal.Length))),
+  rbind(data.frame(lapply(setosa[-5], generator),
                    Species = rep("setosa")))
 
 # > d ---------------------------------------------------------------------
@@ -163,9 +159,6 @@ test <- iris[rnum[101:150],-5]
 cl <- iris[rnum[1:100],5]
 
 classifier_2 <- knn(train, test, cl, k = 3, prob=TRUE) # iris dataset
-
-
-
 
 # > f ---------------------------------------------------------------------
 
