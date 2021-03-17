@@ -106,55 +106,65 @@ iris_no_classes['Cluster'] <- cluster$cluster
 
 # > c ---------------------------------------------------------------------
 
+# random data based on the mean and sd of iris, without thinking about different classes
+
 artificial_data <- data.frame(Sepal.Length = abs(rnorm(mean = mean(iris$Sepal.Length), sd = sd(iris$Sepal.Length), 150)),
                               Sepal.width = abs(rnorm(mean = mean(iris$Sepal.Width), sd = sd(iris$Sepal.Width), 150)),
                               Petal.width = abs(rnorm(mean = mean(iris$Petal.Width), sd = sd(iris$Petal.Width), 150)),
                               Petal.length = abs(rnorm(mean = mean(iris$Petal.Length), sd = sd(iris$Petal.Length), 150)),
-                              classs = c(rep("virginica", 40), rep("versicolor", 60), rep("setosa", 50)))
+                              classs = c(rep("virginica", 50), rep("versicolor", 50), rep("setosa", 50)))
+
+
+# random data based on the mean and sd of iris, thinking about different classes
 library(tidyverse)
 
 virginica <- filter(iris, iris$Species == "virginica")
 versicolor <- filter(iris, iris$Species == "versicolor")
 setosa <- filter(iris, iris$Species == "setosa")
 
-artificial_data_2 <- data.frame(Sepal.length = abs(rnorm(40, mean(virginica$Sepal.Length), sd(virginica$Sepal.Length))),
-                                Sepal.width = abs(rnorm(40, mean(virginica$Sepal.Width), sd(virginica$Sepal.Width))),
-                                Petal.width = abs(rnorm(40, mean(virginica$Petal.Width), sd(virginica$Petal.Width))),
-                                Petal.length = abs(rnorm(40, mean(virginica$Petal.Length), sd(virginica$Petal.Length))),
-                                Species = rep("virginica", 40)) %>% 
+artificial_data_2 <- data.frame(Sepal.length = abs(rnorm(50, mean(virginica$Sepal.Length), sd(virginica$Sepal.Length))),
+                                Sepal.width = abs(rnorm(50, mean(virginica$Sepal.Width), sd(virginica$Sepal.Width))),
+                                Petal.width = abs(rnorm(50, mean(virginica$Petal.Width), sd(virginica$Petal.Width))),
+                                Petal.length = abs(rnorm(50, mean(virginica$Petal.Length), sd(virginica$Petal.Length))),
+                                Species = rep("virginica")) %>% 
   rbind(data.frame(Sepal.length = abs(rnorm(50, mean(versicolor$Sepal.Length), sd(versicolor$Sepal.Length))),
                    Sepal.width = abs(rnorm(50, mean(versicolor$Sepal.Width), sd(versicolor$Sepal.Width))),
                    Petal.width = abs(rnorm(50, mean(versicolor$Petal.Width), sd(versicolor$Petal.Width))),
                    Petal.length = abs(rnorm(50, mean(versicolor$Petal.Length), sd(versicolor$Petal.Length))),
-                   Species = rep("versicolor", 50))) %>% 
-  rbind(data.frame(Sepal.length = abs(rnorm(60, mean(setosa$Sepal.Length), sd(setosa$Sepal.Length))),
-                   Sepal.width = abs(rnorm(60, mean(setosa$Sepal.Width), sd(setosa$Sepal.Width))),
-                   Petal.width = abs(rnorm(60, mean(setosa$Petal.Width), sd(setosa$Petal.Width))),
-                   Petal.length = abs(rnorm(60, mean(setosa$Petal.Length), sd(setosa$Petal.Length))),
+                   Species = rep("versicolor"))) %>% 
+  rbind(data.frame(Sepal.length = abs(rnorm(50, mean(setosa$Sepal.Length), sd(setosa$Sepal.Length))),
+                   Sepal.width = abs(rnorm(50, mean(setosa$Sepal.Width), sd(setosa$Sepal.Width))),
+                   Petal.width = abs(rnorm(50, mean(setosa$Petal.Width), sd(setosa$Petal.Width))),
+                   Petal.length = abs(rnorm(50, mean(setosa$Petal.Length), sd(setosa$Petal.Length))),
                    Species = rep("setosa")))
 
 # > d ---------------------------------------------------------------------
 library(class)
 
-train <- rbind(artificial_data[1:25,1:4,1], artificial_data[1:25,1:4,2], artificial_data[1:25,1:4,3])
-test <- rbind(artificial_data[26:50,1:4,1], artificial_data[26:50,1:4,2], artificial_data[26:50,1:4,3])
-cl <- factor(c(rep("s",25), rep("c",25), rep("v",25)))
+rnum <- sample(rep(1:150))
+train <- artificial_data[rnum[1:100],-5] 
+test <- artificial_data[rnum[101:150],-5]
+cl <- artificial_data[rnum[1:100],5]
 
-classifier_1 <- knn(train, test, cl, k = 3, prob=TRUE)
+classifier_1 <- knn(train, test, cl, k = 3, prob=TRUE) # data based on all of iris
 
-train <- rbind(artificial_data_2[1:25,1:4,1], artificial_data_2[1:25,1:4,2], artificial_data_2[1:25,1:4,3])
-test <- rbind(artificial_data_2[26:50,1:4,1], artificial_data_2[26:50,1:4,2], artificial_data_2[26:50,1:4,3])
-cl <- factor(c(rep("s",25), rep("c",25), rep("v",25)))
+rnum <- sample(rep(1:150))
+train <- artificial_data_2[rnum[1:100],-5] 
+test <- artificial_data_2[rnum[101:150],-5]
+cl <- artificial_data_2[rnum[1:100],5]
 
-classifier_1.1 <- knn(train, test, cl, k = 3, prob=TRUE) # no fucking difference...
+classifier_1.1 <- knn(train, test, cl, k = 3, prob=TRUE) # data with thought to different classes
 
 # > e ---------------------------------------------------------------------
 
-train <- rbind(iris3[1:25,,1], iris3[1:25,,2], iris3[1:25,,3])
-test <- rbind(iris3[26:50,,1], iris3[26:50,,2], iris3[26:50,,3])
-cl <- factor(c(rep("s",25), rep("c",25), rep("v",25)))
+rnum <- sample(rep(1:150))
+train <- iris[rnum[1:100],-5] 
+test <- iris[rnum[101:150],-5]
+cl <- iris[rnum[1:100],5]
 
-classifier_2 <- knn(train, test, cl, k = 3, prob=TRUE)
+classifier_2 <- knn(train, test, cl, k = 3, prob=TRUE) # iris dataset
+
+
 
 
 # > f ---------------------------------------------------------------------
