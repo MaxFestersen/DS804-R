@@ -107,10 +107,13 @@ iris_no_classes['Cluster'] <- cluster$cluster
 
 # random data based on the mean and sd of iris, without thinking about different classes
 
-artificial_data <- data.frame(Sepal.Length = abs(rnorm(mean = mean(iris$Sepal.Length), sd = sd(iris$Sepal.Length), 150)),
-                              Sepal.width = abs(rnorm(mean = mean(iris$Sepal.Width), sd = sd(iris$Sepal.Width), 150)),
-                              Petal.width = abs(rnorm(mean = mean(iris$Petal.Width), sd = sd(iris$Petal.Width), 150)),
-                              Petal.length = abs(rnorm(mean = mean(iris$Petal.Length), sd = sd(iris$Petal.Length), 150)),
+generator <- function(x, n) {
+  m <- mean(x)
+  s <- sd(x)
+  abs(rnorm(n, m, s))
+}
+
+artificial_data <- data.frame(lapply(iris[-5], generator, 150),
                               classs = c(rep("virginica", 50), rep("versicolor", 50), rep("setosa", 50)))
 
 
@@ -120,12 +123,6 @@ library(tidyverse)
 virginica <- filter(iris, iris$Species == "virginica")
 versicolor <- filter(iris, iris$Species == "versicolor")
 setosa <- filter(iris, iris$Species == "setosa")
-
-generator <- function(x) {
-  m <- mean(x)
-  s <- sd(x)
-  abs(rnorm(50, m, s))
-}
 
 artificial_data_2 <- data.frame(lapply(virginica[-5], generator),
                                 Species = rep("virginica")) %>% 
