@@ -10,7 +10,7 @@ matrixA
 # >(b) --------------------------------------------------------------------
 # Nullify matrix A by adding another matrix that you define.
 nul <- (c(0,0))
-matrixA*nul
+matrixA*nul # Fejl - vi tilføjer ikke, vi ganger!
 
 # >(c) --------------------------------------------------------------------
 # Double all the values in the original matrix

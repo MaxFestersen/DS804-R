@@ -23,9 +23,9 @@ print("rnorm can be used to generate normal distributed numbers. IT can however 
 print("We expect it to be similar to the iris dataset")
 
 generator <- function(x, n) {
-  m <- mean(x)
-  s <- sd(x)
-  abs(rnorm(n, m, s))
+  m <- mean(x) #mean
+  s <- sd(x) # Standard deviation
+  abs(rnorm(n, m, s)) #absolute result
 }
 
 artificial_data <- data.frame(lapply(iris[-5], generator, 150),
@@ -58,7 +58,9 @@ test <- artificial_data[rnum[101:150],-5]
 cl <- artificial_data[rnum[1:100],5]
 
 classifier_1 <- knn(train, test, cl, k = 3, prob=TRUE) # data based on all of iris
+classifier_1.5 <- knn(train, test, cl, k = 5, prob=TRUE) # data based on all of iris
 classifier_1
+classifier_1.5
 
 rnum <- sample(rep(1:150))
 train <- artificial_data_2[rnum[1:100],-5] 
@@ -66,6 +68,7 @@ test <- artificial_data_2[rnum[101:150],-5]
 cl <- artificial_data_2[rnum[1:100],5]
 
 classifier_1.1 <- knn(train, test, cl, k = 3, prob=TRUE) # data with thought to different classes
+classifier_1.1
 
 # >(e) --------------------------------------------------------------------
 # Try using the original labeled Iris dataset. Does this yield the same result?
@@ -75,7 +78,7 @@ test <- iris[rnum[101:150],-5]
 cl <- iris[rnum[1:100],5]
 
 classifier_2 <- knn(train, test, cl, k = 3, prob=TRUE) # iris dataset
-classifier_2 # Not the variing propability
+classifier_2
 
 # >(f) --------------------------------------------------------------------
 # Explain your findings.
