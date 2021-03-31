@@ -17,6 +17,18 @@ df <- read.csv("seeds_dataset.csv")
 normalized <- scale(df[-1])
 
 
+# > Visualizing some stuffs -----------------------------------------------
+
+pairs(df[-1], lower.panel = NULL)
+
+varnames <- c("V1", "V2", "V3", "V4", "V5", "V6", "V7", "V8")
+
+i = 0
+lapply(df[-1], function(x) {
+  i <<- i + 1
+  hist(x, main = varnames[i])
+})
+
 # (b) k-means -------------------------------------------------------------
 # > Use a k-means implementation to analyze the seeds dataset. ------------
 
