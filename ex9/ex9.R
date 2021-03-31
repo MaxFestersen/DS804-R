@@ -1,5 +1,5 @@
 # Exercise 9-1 Clustering Lab-Session -------------------------------------
-
+library(tidyverse)
 
 # (a) Data Preprocessing --------------------------------------------------
 
@@ -11,7 +11,18 @@
 #df <- read.csv("seeds_dataset.txt", sep = "\t", header = F)
 #write.csv(df, "seeds_dataset.csv")
 
+# 1. area A,
+# 2. perimeter P,
+# 3. compactness C = 4*pi*A/P^2,
+# 4. length of kernel,
+# 5. width of kernel,
+# 6. asymmetry coefficient
+# 7. length of kernel groove.
+# All of these parameters were real-valued continuous.
+
 df <- read.csv("seeds_dataset.csv")[-1]
+
+names(df) <- c("area", "perim", "compact", "len_k", "width", "asym", "len_kg", "class")
 
 normalized <- scale(df)
 
@@ -22,18 +33,17 @@ pairs(df, lower.panel = NULL)
 boxplotter <- function(x) {
   ggplot(df, aes(x)) +
     geom_boxplot() +
-    facet_grid(vars(V8))
+    facet_grid(vars(class))
 }
 
-lapply(df[-8], boxplotter)
-
-varnames <- c("V1", "V2", "V3", "V4", "V5", "V6", "V7", "V8")
 
 i = 0
-lapply(df, function(x) {
+lapply(df[-8], function(x) {
   i <<- i + 1
-  hist(x, main = varnames[i])
-})
+  boxplotter(x) +
+    ggtitle(names(df)[i])
+  })
+
 
 # (b) k-means -------------------------------------------------------------
 # > Use a k-means implementation to analyze the seeds dataset. ------------
@@ -42,12 +52,16 @@ lapply(df, function(x) {
 
 # > What is a suitable choice for k? --------------------------------------
 
+# a suitable choice for k would be 3, as there are 3 classes
 
 # Try different k-means variants  -----------------------------------------
 # Like MacQueen, Lloyd, Elkan, k-means++
 # > you observe any differences or tendencies in the results? --------------
 
-
+c_lloyd <- kmeans(df[-8], 3, algorithm = "Lloyd")
+c_macqueen <- kmeans(df[-8], 3, algorithm = "MacQueen")
+c_forgy <- kmeans(df[-8], 3, algorithm = "Forgy")
+c_har_won <- kmeans(df[-8], 3)
 
 # (c) EM-clustering: ------------------------------------------------------
 # > Run EM clustering on the seeds dataset. -------------------------------
