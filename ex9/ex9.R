@@ -8,9 +8,8 @@
 
 
 # > Try and reformat the dataset for use with the tool of your cho --------
-df <- read.csv("seeds_dataset.txt", sep = "\t", header = F)
-
-write.csv(df, "seeds_dataset.csv")
+#df <- read.csv("seeds_dataset.txt", sep = "\t", header = F)
+#write.csv(df, "seeds_dataset.csv")
 
 df <- read.csv("seeds_dataset.csv")
 
