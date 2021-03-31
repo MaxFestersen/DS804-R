@@ -113,11 +113,15 @@ kmeans(df[-8], 4, algorithm = "Forgy")$size
 
 
 # (d) DBSCAN --------------------------------------------------------------
+library(dbscan)
 # > Run DBSCAN on the seeds dataset. --------------------------------------
+# Testrun
+dbscan(df[-8], eps = 1, minPts = 10, weights = NULL, borderPoints = TRUE)
 
 
 # > Find suitable parameter values for epsilon and minpts. ----------------
-
+print("eps: suitable results at 0.1-1.2")
+print("minpts: suitable resulls from 1-26")
 
 
 # (e) ---------------------------------------------------------------------
