@@ -69,12 +69,21 @@ test <- data.frame(lloyd = c_lloyd$cluster,
                    har_won = c_har_won$cluster,
                    class = df$class)
 
-table(test$lloyd, test$class, dnn = c("Lloyd", "Class"))
-table(test$macqueen, test$class, dnn = c("MacQueen", "Class"))
-table(test$forgy, test$class, dnn = c("Forgy", "Class"))
-table(test$har_won, test$class, dnn = c("Harting-Wong", "Class"))
+lloyd <- table(test$lloyd, test$class, dnn = c("Lloyd", "Class"))
+macqueen <- table(test$macqueen, test$class, dnn = c("MacQueen", "Class"))
+forgy <- table(test$forgy, test$class, dnn = c("Forgy", "Class"))
+har_won <- table(test$har_won, test$class, dnn = c("Harting-Wong", "Class"))
 
-cor(test)
+lloyd
+macqueen
+forgy
+har_won
+
+prop.table(lloyd)
+prop.table(macqueen)
+prop.table(forgy)
+prop.table(har_won)
+
 
 # (c) EM-clustering: ------------------------------------------------------
 # > Run EM clustering on the seeds dataset. -------------------------------
