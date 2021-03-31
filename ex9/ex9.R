@@ -63,6 +63,13 @@ c_macqueen <- kmeans(df[-8], 3, algorithm = "MacQueen")
 c_forgy <- kmeans(df[-8], 3, algorithm = "Forgy")
 c_har_won <- kmeans(df[-8], 3)
 
+test <- data.frame(lloyd = c_lloyd$cluster,
+                   macqueen = c_macqueen$cluster,
+                   forgy = c_forgy$cluster,
+                   har_won = c_har_won$cluster,
+                   class = df$class)
+cor(test)
+
 # (c) EM-clustering: ------------------------------------------------------
 # > Run EM clustering on the seeds dataset. -------------------------------
 
