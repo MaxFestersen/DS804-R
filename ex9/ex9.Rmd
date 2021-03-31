@@ -1,0 +1,71 @@
+---
+title: "Exercise 9"
+author: "Den seje gruppe"
+date: "3/31/2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(kableExtra)
+```
+
+### (a) Data preprocessing
+
+```{r}
+df <- read.csv("seeds_dataset.csv")[-1]
+
+names(df) <- c("area", "perim", "compact", "len_k", "width", "asym", "len_kg", "class")
+
+normalized <- scale(df)
+```
+
+
+#### Visualizing the data
+
+```{r}
+# pairs(df, lower.panel = NULL)
+
+boxplotter <- function(x) {
+  ggplot(df, aes(x)) +
+    geom_boxplot() +
+    facet_grid(vars(class))
+}
+
+
+i = 0
+lapply(df[-8], function(x) {
+  i <<- i + 1
+  boxplotter(x) +
+    ggtitle(names(df)[i])
+  })
+```
+
+### $k$-means
+
+```{r}
+c_lloyd <- kmeans(df[-8], 3, algorithm = "Lloyd")
+c_macqueen <- kmeans(df[-8], 3, algorithm = "MacQueen")
+c_forgy <- kmeans(df[-8], 3, algorithm = "Forgy")
+c_har_won <- kmeans(df[-8], 3)
+
+test <- data.frame(lloyd = c_lloyd$cluster,
+                   macqueen = c_macqueen$cluster,
+                   forgy = c_forgy$cluster,
+                   har_won = c_har_won$cluster,
+                   class = df$class)
+
+table(test$lloyd, test$class) %>% 
+  kbl(caption = "Confusion Matrix Lloyd", booktabs = T)
+table(test$macqueen, test$class) %>% 
+  kbl(caption = "Confusion Matrix MacQueen", booktabs = T)
+table(test$forgy, test$class) %>% 
+  kbl(caption = "Confusion Matrix Forgy", booktabs = T)
+table(test$har_won, test$class) %>% 
+  kbl(caption = "Confusion Matrix Hartigan-Wong", booktabs = T)
+
+cor(test)
+kbl(cor(test), caption = "Correlation Matrix of k-means algorithms", booktabs = T)
+```
+

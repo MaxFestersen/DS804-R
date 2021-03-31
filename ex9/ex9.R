@@ -68,6 +68,9 @@ test <- data.frame(lloyd = c_lloyd$cluster,
                    forgy = c_forgy$cluster,
                    har_won = c_har_won$cluster,
                    class = df$class)
+
+
+
 cor(test)
 
 # (c) EM-clustering: ------------------------------------------------------
