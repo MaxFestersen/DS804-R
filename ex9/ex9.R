@@ -18,23 +18,19 @@ normalized <- scale(df[-1])
 
 
 # (b) k-means -------------------------------------------------------------
-
 # > Use a k-means implementation to analyze the seeds dataset. ------------
 
 
 # > What is a suitable choice for k? --------------------------------------
 
 
-# Try different k-means variants like MacQueen, Lloyd, Elkan, k-means++ ----
-
-
+# Try different k-means variants  -----------------------------------------
+# Like MacQueen, Lloyd, Elkan, k-means++
 # > you observe any differences or tendencies in the results? --------------
 
 
 
 # (c) EM-clustering: ------------------------------------------------------
-
-
 # > Run EM clustering on the seeds dataset. -------------------------------
 
 
@@ -47,8 +43,6 @@ normalized <- scale(df[-1])
 
 
 # (d) DBSCAN --------------------------------------------------------------
-
-
 # > Run DBSCAN on the seeds dataset. --------------------------------------
 
 
@@ -66,6 +60,7 @@ normalized <- scale(df[-1])
 # (f) Comparison ----------------------------------------------------------
 # Which type of clustering algorithm
 # do you consider the most suitable for this dataset?
+
 
 # (g) ---------------------------------------------------------------------
 # Try a different tool, and start from the preprocessing step again
