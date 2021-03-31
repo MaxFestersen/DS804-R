@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019/Debian) (preloaded format=pdflatex 2020.10.27)  31 MAR 2021 13:02
+This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019/Debian) (preloaded format=pdflatex 2020.10.27)  31 MAR 2021 13:11
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -711,36 +711,36 @@ as been already used, duplicate ignored
                                                   \fi \fi 
 l.252 \end{Shaded}
                    <./ex9_files/figure-latex/unnamed-chunk-2-7.pdf>]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 351.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 365.
 [9pdfTeX warning (ext4): destination with the same identifier (name{table.2}) h
 as been already used, duplicate ignored
 
 \AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
                                                   \fi \fi 
-l.351 \end{document}
+l.365 \end{document}
                     pdfTeX warning (ext4): destination with the same identifier
  (name{table.3}) has been already used, duplicate ignored
 
 \AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
                                                   \fi \fi 
-l.351 \end{document}
+l.365 \end{document}
                     pdfTeX warning (ext4): destination with the same identifier
  (name{table.4}) has been already used, duplicate ignored
 
 \AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
                                                   \fi \fi 
-l.351 \end{document}
+l.365 \end{document}
                     ] [10pdfTeX warning (ext4): destination with the same ident
 ifier (name{table.5}) has been already used, duplicate ignored
 
 \AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
                                                   \fi \fi 
-l.351 \end{document}
+l.365 \end{document}
                     ]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 351.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 365.
 (./ex9.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 351.
-Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 351.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 365.
+Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 365.
 
 LaTeX Warning: There were multiply-defined labels.
 
@@ -748,7 +748,7 @@ LaTeX Warning: There were multiply-defined labels.
 Here is how much of TeX's memory you used:
  14885 strings out of 481239
  217224 string characters out of 5920376
- 517265 words of memory out of 5000000
+ 518265 words of memory out of 5000000
  29819 multiletter control sequences out of 15000+600000
  570540 words of font info for 73 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
@@ -760,7 +760,7 @@ c/lm/lmr10.pfb></usr/share/texmf/fonts/type1/public/lm/lmr12.pfb></usr/share/te
 xmf/fonts/type1/public/lm/lmr17.pfb></usr/share/texmf/fonts/type1/public/lm/lmt
 k10.pfb></usr/share/texmf/fonts/type1/public/lm/lmtt10.pfb></usr/share/texmf/fo
 nts/type1/public/lm/lmtti10.pfb>
-Output written on ex9.pdf (10 pages, 210280 bytes).
+Output written on ex9.pdf (10 pages, 210357 bytes).
 PDF statistics:
  164 PDF objects out of 1000 (max. 8388607)
  121 compressed objects within 2 object streams

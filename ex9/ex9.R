@@ -69,7 +69,10 @@ test <- data.frame(lloyd = c_lloyd$cluster,
                    har_won = c_har_won$cluster,
                    class = df$class)
 
-
+table(test$lloyd, test$class, dnn = c("Lloyd", "Class"))
+table(test$macqueen, test$class, dnn = c("MacQueen", "Class"))
+table(test$forgy, test$class, dnn = c("Forgy", "Class"))
+table(test$har_won, test$class, dnn = c("Harting-Wong", "Class"))
 
 cor(test)
 

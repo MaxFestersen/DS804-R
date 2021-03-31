@@ -56,16 +56,15 @@ test <- data.frame(lloyd = c_lloyd$cluster,
                    har_won = c_har_won$cluster,
                    class = df$class)
 
-table(test$lloyd, test$class) %>% 
+table(test$lloyd, test$class, dnn = c("Lloyd", "Class")) %>% 
   kbl(caption = "Confusion Matrix Lloyd", booktabs = T)
-table(test$macqueen, test$class) %>% 
+table(test$macqueen, test$class, dnn = c("MacQueen", "Class")) %>% 
   kbl(caption = "Confusion Matrix MacQueen", booktabs = T)
-table(test$forgy, test$class) %>% 
+table(test$forgy, test$class, dnn = c("Forgy", "Class")) %>% 
   kbl(caption = "Confusion Matrix Forgy", booktabs = T)
-table(test$har_won, test$class) %>% 
+table(test$har_won, test$class, dnn = c("Harting-Wong", "Class")) %>% 
   kbl(caption = "Confusion Matrix Hartigan-Wong", booktabs = T)
 
-cor(test)
 kbl(cor(test), caption = "Correlation Matrix of k-means algorithms", booktabs = T)
 ```
 
