@@ -87,14 +87,29 @@ prop.table(har_won)
 
 # (c) EM-clustering: ------------------------------------------------------
 # > Run EM clustering on the seeds dataset. -------------------------------
-
+library(EMCluster)
+#df.em.1 <- init.EM(df, nclass = 1)
+df.em.2 <- init.EM(df[-1], nclass = 2)
+df.em.3 <- init.EM(df[-1], nclass = 3)
+df.em.4 <- init.EM(df[-1], nclass = 4)
+#df.em.5 <- init.EM(df[-1], nclass = 5)
+#df.em.1
+df.em.2
+df.em.3
+df.em.4
+#df.em.5
 
 # > What is a suitable choice for k? --------------------------------------
-
+print("K can be 2-4. 3 makes the most sence, as it maches the orriginal data (we know there are 3 categories from the data description)")
 
 # > For different choices of k: -------------------------------------------
 # >> compare the result to a similar choice of k in the k-means algorithm. -----
-
+df.em.2$nc
+kmeans(df[-8], 2, algorithm = "Forgy")$size
+df.em.3$nc
+kmeans(df[-8], 3, algorithm = "Forgy")$size
+df.em.4$nc
+kmeans(df[-8], 4, algorithm = "Forgy")$size
 
 
 # (d) DBSCAN --------------------------------------------------------------
