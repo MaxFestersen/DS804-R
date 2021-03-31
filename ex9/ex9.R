@@ -12,25 +12,33 @@ df <- read.csv("seeds_dataset.txt", sep = "\t", header = F)
 
 write.csv(df, "seeds_dataset.csv")
 
-df <- read.csv("seeds_dataset.csv")
+df <- read.csv("seeds_dataset.csv")[-1]
 
-normalized <- scale(df[-1])
-
+normalized <- scale(df)
 
 # > Visualizing some stuffs -----------------------------------------------
 
-pairs(df[-1], lower.panel = NULL)
+pairs(df, lower.panel = NULL)
+
+boxplotter <- function(x) {
+  ggplot(df, aes(x)) +
+    geom_boxplot() +
+    facet_grid(vars(V8))
+}
+
+lapply(df[-8], boxplotter)
 
 varnames <- c("V1", "V2", "V3", "V4", "V5", "V6", "V7", "V8")
 
 i = 0
-lapply(df[-1], function(x) {
+lapply(df, function(x) {
   i <<- i + 1
   hist(x, main = varnames[i])
 })
 
 # (b) k-means -------------------------------------------------------------
 # > Use a k-means implementation to analyze the seeds dataset. ------------
+
 
 
 # > What is a suitable choice for k? --------------------------------------
