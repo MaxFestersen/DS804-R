@@ -128,13 +128,13 @@ print("minpts: suitable resulls from 1-26")
 # You might also want to try SNN clustering or hierarchical clustering.
 # Given your experience with this dataset by now
 # – does using these algorithms make sense on this dataset?
-
+print("TODO")
 
 
 # (f) Comparison ----------------------------------------------------------
 # Which type of clustering algorithm
 # do you consider the most suitable for this dataset?
-
+print("k-means with floyd algorithm seems to yield the best result.")
 
 # (g) ---------------------------------------------------------------------
 # Try a different tool, and start from the preprocessing step again
