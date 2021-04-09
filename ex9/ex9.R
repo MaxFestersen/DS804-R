@@ -86,6 +86,22 @@ prop.table(macqueen)
 prop.table(forgy)
 prop.table(har_won)
 
+# Functions for precision, recall and f1-score
+precision <- function(x) {
+  tp <- max(x[,1]) + max(x[,2]) + max(x[,3])
+  tp_fp <- sum(x)
+  tp/tp_fp
+}
+
+recall <- function(x, n) {
+  tp <- max(x[,1]) + max(x[,2]) + max(x[,3])
+  tp/n
+}
+
+f1 <- function(x, n) {
+  2*(precision(x)*recall(x, n))/(precision(x)+recall(x, n))
+}
+
 
 # (c) EM-clustering: ------------------------------------------------------
 # > Run EM clustering on the seeds dataset. -------------------------------
