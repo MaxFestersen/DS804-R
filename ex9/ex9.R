@@ -128,8 +128,7 @@ print("minpts: suitable resulls from 1-26")
 # You might also want to try SNN clustering or hierarchical clustering.
 # Given your experience with this dataset by now
 # – does using these algorithms make sense on this dataset?
-print("TODO")
-
+sNNclust(x = df[-8], k = 8, minPts = 5, eps = 3.5, borderPoints = TRUE)$cluster
 
 # (f) Comparison ----------------------------------------------------------
 # Which type of clustering algorithm
