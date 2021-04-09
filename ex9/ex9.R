@@ -88,20 +88,34 @@ prop.table(har_won)
 
 # Functions for precision, recall and f1-score
 precision <- function(x) {
-  tp <- max(x[,1]) + max(x[,2]) + max(x[,3])
-  tp_fp <- sum(x)
-  tp/tp_fp
+  precision <- c()
+  for (i in 1:ncol(x)) {
+    tp <- max(x[,i])
+    tp_fp <- sum(x[i,])
+    precision <- c(precision, tp/tp_fp)
+  }
+  precision
 }
 
-recall <- function(x, n) {
-  tp <- max(x[,1]) + max(x[,2]) + max(x[,3])
-  tp/n
+
+recall <- function(x) {
+  recall <- c()
+  for (i in 1:ncol(x)) {
+    tp <- max(x[,i])
+    tp_fn <- sum(x[,i])
+    recall <- c(recall, tp/tp_fn)
+  }
+  recall
 }
 
-f1 <- function(x, n) {
-  2*(precision(x)*recall(x, n))/(precision(x)+recall(x, n))
+f1 <- function(x) {
+  2*(precision(x)*recall(x))/(precision(x)+recall(x))
 }
 
+classifier_scores <- function(x) {
+  output <- cbind(precision = precision(x), recall = recall(x), f1 = f1(x))
+  output
+}
 
 # (c) EM-clustering: ------------------------------------------------------
 # > Run EM clustering on the seeds dataset. -------------------------------
