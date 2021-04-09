@@ -63,5 +63,3 @@ cluster_report <- function(x, digits = 5) {
   out
 }
 
-cluster_report(forgy)
-
