@@ -49,12 +49,9 @@ lapply(df[-8], function(x) {
 
 # (b) k-means -------------------------------------------------------------
 # > Use a k-means implementation to analyze the seeds dataset. ------------
-
-
-
 # > What is a suitable choice for k? --------------------------------------
+print("A suitable choice for k would be 3, as there are 3 classes")
 
-# a suitable choice for k would be 3, as there are 3 classes
 
 # Try different k-means variants  -----------------------------------------
 # Like MacQueen, Lloyd, Elkan, k-means++
