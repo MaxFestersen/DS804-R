@@ -81,6 +81,8 @@ macqueen
 forgy
 har_won
 
+
+
 prop.table(lloyd)
 prop.table(macqueen)
 prop.table(forgy)
@@ -91,18 +93,20 @@ precision <- function(x) {
   precision <- c()
   for (i in 1:ncol(x)) {
     tp <- max(x[,i])
-    tp_fp <- sum(x[i,])
+    placement <- which.max(x[,i])[[1]]
+    tp_fp <- sum(x[placement,])
     precision <- c(precision, tp/tp_fp)
   }
   precision
 }
 
-
+precision(lloyd)
 recall <- function(x) {
   recall <- c()
   for (i in 1:ncol(x)) {
     tp <- max(x[,i])
-    tp_fn <- sum(x[,i])
+    placement <- which.max(x[,i])[[1]]
+    tp_fn <- sum(x[,placement])
     recall <- c(recall, tp/tp_fn)
   }
   recall
@@ -116,6 +120,8 @@ classifier_scores <- function(x) {
   output <- cbind(precision = precision(x), recall = recall(x), f1 = f1(x))
   output
 }
+
+classifier_scores(macqueen)
 
 # (c) EM-clustering: ------------------------------------------------------
 # > Run EM clustering on the seeds dataset. -------------------------------
