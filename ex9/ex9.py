@@ -7,6 +7,7 @@ Created on Fri Apr  9 10:56:53 2021
 
 import math
 import csv
+import numpy as np
 
 #% Ex 9
 # (a) Data processing
@@ -16,7 +17,9 @@ import csv
 
 # a2) reformat the data
 
-df = open('seeds_dataset.csv').read().split("\n")
+#df = open('seeds_dataset.csv').read().split("\n")
+df = np.genfromtxt("seeds_dataset.csv", delimiter=",")
+df = df[1:,1:-1]
 
 print(df)
 
