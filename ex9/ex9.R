@@ -1,5 +1,7 @@
 # Exercise 9-1 Clustering Lab-Session -------------------------------------
 library(tidyverse)
+library(dbscan)
+library(EMCluster)
 
 # (a) Data Preprocessing --------------------------------------------------
 
@@ -87,7 +89,6 @@ prop.table(har_won)
 
 # (c) EM-clustering: ------------------------------------------------------
 # > Run EM clustering on the seeds dataset. -------------------------------
-library(EMCluster)
 #df.em.1 <- init.EM(df, nclass = 1)
 df.em.2 <- init.EM(df[-1], nclass = 2)
 df.em.3 <- init.EM(df[-1], nclass = 3)
@@ -113,7 +114,6 @@ kmeans(df[-8], 4, algorithm = "Forgy")$size
 
 
 # (d) DBSCAN --------------------------------------------------------------
-library(dbscan)
 # > Run DBSCAN on the seeds dataset. --------------------------------------
 # Testrun
 dbscan(df[-8], eps = 1, minPts = 10, weights = NULL, borderPoints = TRUE)
