@@ -92,10 +92,10 @@ prop.table(har_won)
 precision <- function(x) {
   precision <- c()
   for (i in 1:ncol(x)) {
-    tp <- max(x[,i])
-    placement <- which.max(x[,i])[[1]]
-    tp_fp <- sum(x[placement,])
-    precision <- c(precision, tp/tp_fp)
+    tp <- max(x[,i]) # finding tp for each column
+    placement <- which.max(x[,i])[[1]] # finding rownumber of tp
+    tp_fp <- sum(x[placement,]) # sum of tp row giving tp and fp
+    precision <- c(precision, tp/tp_fp) # precision = tp/row
   }
   precision
 }
@@ -103,9 +103,9 @@ precision <- function(x) {
 recall <- function(x) {
   recall <- c()
   for (i in 1:ncol(x)) {
-    tp <- max(x[,i])
-    tp_fn <- sum(x[,i])
-    recall <- c(recall, tp/tp_fn)
+    tp <- max(x[,i]) # finding tp for each column
+    tp_fn <- sum(x[,i]) # sum of each column
+    recall <- c(recall, tp/tp_fn) # recall = tp/column
   }
   recall
 }
@@ -115,7 +115,7 @@ f1 <- function(x) {
 }
 
 classifier_scores <- function(x) {
-  output <- cbind(precision = precision(x), recall = recall(x), f1 = f1(x))
+  output <- cbind(precision = precision(x), recall = recall(x), f1 = f1(x)) # binding it all together
   output
 }
 
