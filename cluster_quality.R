@@ -37,7 +37,7 @@ macro <- function(x) {
   macro_precision <- mean(precision(x))
   macro_recall <- mean(recall(x))
   macro_f1 <- 2 * (macro_precision * macro_recall) / (macro_precision + macro_recall)
-  out <- data.frame(precision = macro_precision, recall = macro_recall, f1 = macro_f1, support = sum(x), row.names = "Macro avg")
+  out <- cbind(precision = macro_precision, recall = macro_recall, f1 = macro_f1, support = sum(x))
   out
 }
 
@@ -46,7 +46,7 @@ micro <- function(x, digits) {
   for (i in 1:ncol(x)) {
     tp <- c(tp, max(x[,i]))
   }
-  out <- data.frame(precision = "", recall = "", f1 = round(sum(tp)/sum(x), digits), support = sum(x), row.names = "Accuracy")
+  out <- cbind(precision = "", recall = "", f1 = round(sum(tp)/sum(x), digits), support = sum(x))
   out
 }
 
@@ -54,13 +54,14 @@ weighted.avg <- function(x) {
   w_precision <- sum(precision(x)*colSums(x)/sum(x))
   w_recall <- sum(recall(x)*colSums(x)/sum(x))
   w_f1 <- sum(f1(x)*colSums(x)/sum(x))
-  out <- data.frame(precision = w_precision, recall = w_recall, f1 = w_f1, support = sum(x), row.names = "Weighted avg")
+  out <- cbind(precision = w_precision, recall = w_recall, f1 = w_f1, support = sum(x))
 }
 
 cluster_report <- function(x, digits = 5) {
   out <- round(cbind(precision = precision(x), recall = recall(x), f1 = f1(x), support = support(x)), digits) %>%  
-    rbind(c("", "", ""), micro(x, digits), round(macro(x), digits), round(weighted.avg(x), digits)) # binding it all together
+    rbind(data.frame(rbind(c("", "", "", ""), micro(x, digits), round(macro(x), digits), round(weighted.avg(x), digits)), row.names = c(" ", "Accuracy", "Macro avg", "Weighted avg"))) # binding it all together
   out
 }
 
+cluster_report(forgy)
 
