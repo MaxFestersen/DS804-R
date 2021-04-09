@@ -100,13 +100,11 @@ precision <- function(x) {
   precision
 }
 
-precision(lloyd)
 recall <- function(x) {
   recall <- c()
   for (i in 1:ncol(x)) {
     tp <- max(x[,i])
-    placement <- which.max(x[,i])[[1]]
-    tp_fn <- sum(x[,placement])
+    tp_fn <- sum(x[,i])
     recall <- c(recall, tp/tp_fn)
   }
   recall
