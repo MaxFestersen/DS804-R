@@ -97,4 +97,7 @@ auc <- performance(pred, measure = "auc")@y.values[[1]]
 
 plot(perf, main = "ROC-curve", sub = paste("k=4","AUC", auc), colorize = TRUE)
 
+# Exercise 10-4 ----------------------------------------------------------------
 
+X3clusters_and_noise_2d <- read_table2("3clusters-and-noise-2d.csv", 
+                                       col_names = FALSE, comment = "#")
