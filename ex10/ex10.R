@@ -104,7 +104,7 @@ plot(perf, main = "ROC-curve", sub = paste("k=4","AUC", auc), colorize = TRUE)
 X3clusters_and_noise_2d <- read_table2("3clusters-and-noise-2d.csv", 
                                        col_names = FALSE, comment = "#")
 
-X3clusters_and_noise_2d$lof_3k <- Rlof::lof(X3clusters_and_noise_2d[1:2], 3, cores = 4)
+X3clusters_and_noise_2d$lof_3k <- Rlof::lof(X3clusters_and_noise_2d[1:2], 3)
 
 distance <- as.matrix(dist(X3clusters_and_noise_2d[1:2], "euclidean", T, T))
 
@@ -124,6 +124,21 @@ X3clusters_and_noise_2d$two_NN <- Two_NN_dist
 X3clusters_and_noise_2d$four_NN <- Four_NN_dist
 X3clusters_and_noise_2d$sum_2NN <- sum_2NN
 X3clusters_and_noise_2d$sum_4NN <- sum_4NN
+
+ggplot(X3clusters_and_noise_2d, aes(X1, X2, color = lof_3k)) +
+  geom_point()
+  
+ggplot(X3clusters_and_noise_2d, aes(X1, X2, color = two_NN)) +
+  geom_point()
+
+ggplot(X3clusters_and_noise_2d, aes(X1, X2, color = four_NN)) +
+  geom_point()
+
+ggplot(X3clusters_and_noise_2d, aes(X1, X2, color = sum_2NN)) +
+  geom_point()
+
+ggplot(X3clusters_and_noise_2d, aes(X1, X2, color = sum_4NN)) +
+  geom_point()
 
 library(dbscan)
 
