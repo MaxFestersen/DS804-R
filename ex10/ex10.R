@@ -1,4 +1,5 @@
 library(Rlof)
+library(ROCR)
 
 df <- data.frame(lab = c("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T"),
                  x = c(1, 2, 1, 2, 3, 3, 3, 4, 4, 5, 7, 10, 10, 9, 10, 11, 9, 10, 11, 10),
@@ -33,3 +34,25 @@ df$`4NN_dist` <- Four_NN_dist
 df$aggr_2NN <- sum_2NN
 df$aggr_4NN <- sum_4NN
 
+# Exercise 10-3 ----------------------------------------------------------------
+
+dat_s1 <- data.frame(obj = c("a_1", "a_2", "a_3", "a_4", "a_5", "a_6", "a_7", "a_8", "a_9", "a_10"),
+                  label = c(0, 0, 0, 0, 1, 0, 0, 0, 1, 0),
+                  k1 = c(0, 0, 0, 0, 1, 0, 0, 0, 0, 0),
+                  k2 = c(0, 0, 0, 0, 1, 1, 0, 0, 0, 0),
+                  k3 = c(0, 0, 0, 0, 1, 1, 1, 0, 0, 0),
+                  k4 = c(0, 0, 0, 0, 1, 1, 1, 0, 1, 0))
+
+dat_s2 <- data.frame(obj = c("a_1", "a_2", "a_3", "a_4", "a_5", "a_6", "a_7", "a_8", "a_9", "a_10"),
+                     label = c(0, 0, 0, 0, 1, 0, 0, 0, 1, 0),
+                     k1 = c(0, 0, 0, 0, 0, 0, 0, 1, 0, 0),
+                     k2 = c(0, 0, 0, 0, 0, 0, 0, 1, 1, 0),
+                     k3 = c(0, 0, 0, 0, 1, 0, 0, 1, 1, 0),
+                     k4 = c(0, 0, 0, 1, 1, 0, 0, 1, 1, 0))
+
+pred <- prediction(dat_s1$label, dat_s1$k2)
+perf <- performance(pred, "tpr", "fpr")
+
+auc <- performance(pred, measure = "auc")@y.values[[1]]
+
+plot(perf, main = "ROC-curve", sub = paste("AUC", auc), colorize = TRUE)
