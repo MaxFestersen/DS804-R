@@ -3,16 +3,15 @@ library(ROCR)
 library(readr)
 library(tidyverse)
 
-
 df <- data.frame(lab = c("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T"),
                  x = c(1, 2, 1, 2, 3, 3, 3, 4, 4, 5, 7, 10, 10, 9, 10, 11, 9, 10, 11, 10),
                  y = c(1, 1, 2, 2, 5, 9, 10, 10, 11, 10, 10, 9, 6, 5, 5, 5, 4, 4, 4, 3))
 
-df$lof_2k <- lof(df[2:3], 2, cores = 4, method = "manhattan")
+df$lof_2k <- Rlof::lof(df[2:3], 2, cores = 4, method = "manhattan")
 
 df$lof_2k[df$lab %in% c("E", "K", "O")]
 
-df$lof_4k <- lof(df[2:3], 4, cores = 4, method = "manhattan")
+df$lof_4k <- Rlof::lof(df[2:3], 4, cores = 4, method = "manhattan")
 
 df$lof_4k[df$lab %in% c("E", "K", "O")]
 
@@ -105,9 +104,7 @@ plot(perf, main = "ROC-curve", sub = paste("k=4","AUC", auc), colorize = TRUE)
 X3clusters_and_noise_2d <- read_table2("3clusters-and-noise-2d.csv", 
                                        col_names = FALSE, comment = "#")
 
-cool_lof <- lof(X3clusters_and_noise_2d[1:2], 3, cores = 4)
-
-X3clusters_and_noise_2d$lof_3k <- cool_lof
+X3clusters_and_noise_2d$lof_3k <- Rlof::lof(X3clusters_and_noise_2d[1:2], 3, cores = 4)
 
 distance <- as.matrix(dist(X3clusters_and_noise_2d[1:2], "euclidean", T, T))
 
@@ -133,6 +130,5 @@ library(dbscan)
 optic_cluster <- optics(X3clusters_and_noise_2d[1:2], minPts = 5)
 
 plot(optic_cluster)
-
 
 plot(X3clusters_and_noise_2d$X1, X3clusters_and_noise_2d$X2)
