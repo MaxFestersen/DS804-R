@@ -50,6 +50,31 @@ dat_s2 <- data.frame(obj = c("a_1", "a_2", "a_3", "a_4", "a_5", "a_6", "a_7", "a
                      k3 = c(0, 0, 0, 0, 1, 0, 0, 1, 1, 0),
                      k4 = c(0, 0, 0, 1, 1, 0, 0, 1, 1, 0))
 
+# ROC k1 -----------------------------------------------------------------------
+pred <- prediction(dat_s1$label, dat_s1$k1)
+perf <- performance(pred, "tpr", "fpr")
+
+auc <- performance(pred, measure = "auc")@y.values[[1]]
+
+plot(perf, main = "ROC-curve, s1", sub = paste("k=1","AUC", auc), colorize = TRUE)
+
+
+pred <- prediction(dat_s2$label, dat_s2$k1)
+perf <- performance(pred, "tpr", "fpr")
+
+auc <- performance(pred, measure = "auc")@y.values[[1]]
+
+plot(perf, main = "ROC-curve, s2", sub = paste("k=1","AUC", auc), colorize = TRUE)
+
+# ROC k2 -----------------------------------------------------------------------
+pred <- prediction(dat_s1$label, dat_s1$k2)
+perf <- performance(pred, "tpr", "fpr")
+
+auc <- performance(pred, measure = "auc")@y.values[[1]]
+
+plot(perf, main = "ROC-curve", sub = paste("k=1","AUC", auc), colorize = TRUE)
+
+# ROC k3 -----------------------------------------------------------------------
 pred <- prediction(dat_s1$label, dat_s1$k3)
 perf <- performance(pred, "tpr", "fpr")
 
@@ -57,11 +82,19 @@ auc <- performance(pred, measure = "auc")@y.values[[1]]
 
 plot(perf, main = "ROC-curve, s1", sub = paste("k=3","AUC", auc), colorize = TRUE)
 
-
-
 pred <- prediction(dat_s2$label, dat_s2$k3)
 perf <- performance(pred, "tpr", "fpr")
 
 auc <- performance(pred, measure = "auc")@y.values[[1]]
 
 plot(perf, main = "ROC-curve, s2", sub = paste("k=3","AUC", auc), colorize = TRUE)
+
+# ROC k4 -----------------------------------------------------------------------
+pred <- prediction(dat_s1$label, dat_s1$k4)
+perf <- performance(pred, "tpr", "fpr")
+
+auc <- performance(pred, measure = "auc")@y.values[[1]]
+
+plot(perf, main = "ROC-curve", sub = paste("k=4","AUC", auc), colorize = TRUE)
+
+
