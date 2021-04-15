@@ -1,7 +1,7 @@
 ---
 title: 'DS804: Exercise 11: Group Project 1: Clustering'
-author: Alexander Dernild, Christian Rohde Andersen, Johannes Sørensen, Mathias Profft
-  Larsen & Max Festersen Hansen
+author: Alexander Dernild, Christian R. Andersen, Johannes Sørensen, Mathias P.
+  Larsen & Max F. Hansen
 date: "28/4/2021"
 output: pdf_document
 ---
