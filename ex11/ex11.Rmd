@@ -8,12 +8,11 @@ output: pdf_document
 
 image ![](path/to/sdulogo.png)
 
-# DS804 Assignment 1
-## Created by
-#### Alexander Ibsen Dernild, alder17
-#### Christian Rohde Andersen, chran20
-#### Johannes Christian Sørensen, josoe20
-#### Mathias Profft Larsen, matla20
-#### Max Festersen Hansen, maxfh20
-
+# **DS804 Assignment 1**  
+## Created by  
+#### Alexander Ibsen Dernild, alder17  
+#### Christian Rohde Andersen, chran20  
+#### Johannes Christian Sørensen, josoe20  
+#### Mathias Profft Larsen, matla20  
+#### Max Festersen Hansen, maxfh20  
 
