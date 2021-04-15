@@ -41,7 +41,24 @@ plot(compound.df[1:2], main="Compound data")
 
   
 ## Analasys
+<!-- XX TODO: find analysis methods -->
+
+
+## k-means
 <!-- XX TODO: perform analysis -->
+
+## knn
+<!-- XX TODO: perform analysis -->
+
+## OPTICS
+<!-- XX TODO: perform analysis -->
+
+
+## DBSCAN
+<!-- XX TODO: perform analysis -->
+
+## GESTALT?
+<!-- XX find info om: GESTALT -->
 
 
 ## Findings
@@ -53,9 +70,12 @@ plot(compound.df[1:2], main="Compound data")
 
 
 ## Data enitiation
+<!-- XX TODO: Initiate more intersting data -->
 
 
 ## Methods  
+
+
 ### Algorithms and implementation  
 <!-- XX TODO: explain witch algorithms and implementations that were used -->
 
