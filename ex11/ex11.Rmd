@@ -62,12 +62,8 @@ ggplot(norm.compound, aes(x, y, shape = class, color = class)) +
 <!-- XX TODO: explain witch algorithms and implementations that were used -->
 
 
-<<<<<<< HEAD
-## Analysis of the Methods
-=======
 
 ## 3 Analysis of the Methods
->>>>>>> 47243dfb902cabd659bd9c99a991676bd2cbffda
 <!-- XX TODO: find analysis methods -->
 
 
@@ -75,11 +71,8 @@ ggplot(norm.compound, aes(x, y, shape = class, color = class)) +
 <!-- XX TODO: perform analysis -->
 
 
-<<<<<<< HEAD
-### knn
-=======
+
 ### 3.2 knn
->>>>>>> 47243dfb902cabd659bd9c99a991676bd2cbffda
 <!-- XX TODO: perform analysis -->
 
 
