@@ -5,7 +5,7 @@ author: Alexander Dernild, Christian R. Andersen, Johannes Sørensen, Mathias P.
 date: "28/4/2021"
 output: pdf_document
 ---
-```{r echo = FALSE}
+```{r Imports, echo = FALSE}
 # Imports ---------------------------------------
 library(tidyverse) # For convenience, plots, tables and probably some other stuff.
 source("../cluster_quality.R")
