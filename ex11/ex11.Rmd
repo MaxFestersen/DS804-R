@@ -7,7 +7,7 @@ output: pdf_document
 ---
 ```{r echo = FALSE}
 # Imports ---------------------------------------
-library(tidyverse)
+library(tidyverse) # For convenience, plots, tables and probably some other stuff.
 ```
 
 <!-- image ![](path/to/sdulogo.png) -->
