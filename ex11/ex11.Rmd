@@ -49,6 +49,7 @@ The data had 8 classes, thus 8 colors are used.
 norm.compound <- scale(compound.df[1:2]) %>% 
   data.frame()
 norm.compound$class <- compound.df$class
+td <- norm.compound[1:2] # Test data - the data we test on
 
 ggplot(norm.compound, aes(x, y, shape = class, color = class)) +
   geom_point() +
