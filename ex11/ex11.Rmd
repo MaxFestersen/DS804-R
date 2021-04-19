@@ -45,19 +45,25 @@ ggplot(compound.df, aes(x, y, shape = class, color = class)) +
 norm.compound <- scale(compound.df[1:2]) %>% 
   data.frame()
 norm.compound$class <- compound.df$class
+
+ggplot(norm.compound, aes(x, y, shape = class, color = class)) +
+  geom_point() +
+  labs(title = "Compound Data normalized") +
+  theme_light()
 ```
 
 
 ### Algorithms and implementation  
 <!-- XX TODO: explain witch algorithms and implementations that were used -->
 
-  
+
 ## Analysis of the Methods
 <!-- XX TODO: find analysis methods -->
 
 
 ### k-means
 <!-- XX TODO: perform analysis -->
+
 
 ### knn
 <!-- XX TODO: perform analysis -->
