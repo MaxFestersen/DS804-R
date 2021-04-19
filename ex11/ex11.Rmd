@@ -82,32 +82,43 @@ and remove bias from large numbers.
 ### 3.1 k-means
 <!-- XX TODO: perform analysis -->
 ````{r k-means-testing-methods, echo = FALSE}
-c_lloyd <- kmeans(td, 6, algorithm = "Lloyd")
-c_macqueen <- kmeans(td, 6, algorithm = "MacQueen")
-c_forgy <- kmeans(td, 6, algorithm = "Forgy")
+set.seed(42069) # Set seed to remove randomness when replicating results
+c_macqueen <- kmeans(td, 6, iter.max = 20, algorithm = "MacQueen")
+c_forgy <- kmeans(td, 6, iter.max = 20, algorithm = "Forgy")
 c_har_won <- kmeans(td, 6)
 
-test <- data.frame(lloyd = c_lloyd$cluster,
-                   macqueen = c_macqueen$cluster,
+test <- data.frame(macqueen = c_macqueen$cluster,
                    forgy = c_forgy$cluster,
                    har_won = c_har_won$cluster,
                    class = norm.compound$class)
 
-lloyd <- table(test$lloyd, test$class, dnn = c("Lloyd", "Class"))
 macqueen <- table(test$macqueen, test$class, dnn = c("MacQueen", "Class"))
 forgy <- table(test$forgy, test$class, dnn = c("Forgy", "Class"))
 har_won <- table(test$har_won, test$class, dnn = c("Harting-Wong", "Class"))
 
-lloyd
 macqueen
 forgy
 har_won
 
-cluster_report(lloyd)
 cluster_report(macqueen)
 cluster_report(forgy)
 cluster_report(har_won)
 ````
+
+```{r k-means-visualization}
+norm.compound$macqueen <- factor(test$macqueen)
+norm.compound$forgy <- factor(test$forgy)
+norm.compound$har_won <- factor(test$har_won)
+
+plot_stuff <- function(df, predicted) {
+  ggplot(df, aes(x, y, shape = class, color = predicted)) +
+    geom_point()
+}
+
+plot_stuff(norm.compound, norm.compound$macqueen)
+plot_stuff(norm.compound, norm.compound$forgy)
+plot_stuff(norm.compound, norm.compound$har_won)
+```
 
 
 ### 3.2 knn
