@@ -26,7 +26,7 @@ For this exercise, we needed shape data set. We choose to use the compound
 dataset, from C.T. Zahn, **IEEE Transactions on Computers**, 1971.
 The compound data was chosen for... reasons.<!-- XX TODO: expand reason.  -->
 
-```{r echo = FALSE}
+```{r loading-dataset echo = FALSE}
 # Data load
 compound.df <- read.csv("Compound.txt", sep = "\t", header = F)
 # Adding lables
@@ -35,7 +35,7 @@ names(compound.df) <- c("x", "y", "class")
 compound.df$class <- factor(compound.df$class)
 ```
 
-```{r echo = TRUE}
+```{r plotting-initial-data}
 ggplot(compound.df, aes(x, y, shape = class, color = class)) +
   geom_point() +
   labs(title = "Compound Data") +
