@@ -90,7 +90,10 @@ and remove bias from large numbers.
 
 
 ### 3.1 k-means
-<!-- XX TODO: perform analysis -->
+With k-means we expected it would be able to create good clusters
+for the eyes and tounge, since they have a clear mean. We would expect it to
+have some trouble with the mouth, the rain and the virus,
+since the cluster-means overlap with other clusters.
 ```{r k-means-testing-methods, results = "hide", warning=FALSE, echo=FALSE}
 set.seed(42069) # Set seed to remove randomness when replicating results
 c_macqueen <- kmeans(td, 6, iter.max = 20, algorithm = "MacQueen")
@@ -129,7 +132,23 @@ plot_stuff(norm.compound, norm.compound$macqueen)
 plot_stuff(norm.compound, norm.compound$forgy)
 plot_stuff(norm.compound, norm.compound$har_won)
 ```
+Using the k-means algorithms: Macqueen, Loyd/Forg and Hartigan-Wong, we found
+Hartigan-Wong was the most accurate, when looking at the accuracy of guesses,
+and mean macro average. They are visualised above.
+Regardless of method, it seems the algorithms are having a hard time distinguishing:
+1. Libs & Tounge
+2. Left-eye & Right-eye
+3. Rain
+4. Corona-virus
+5. Corona-virus & Rain
 
+It is worht noting that Hartigan-Wong gets Right-eye more wrong with no clustering,
+and has a harder time handling Rain and Corona-Virus,
+using more clusteres there than the others.
+
+It has the best visual result, with the creation og a Mouth, Eyes and multicolored
+Scenery.
+<!--XX TODO: Ret fejl i de beskrivelser Max har skrevet ovenfor -->
 
 ### 3.2 knn
 <!-- XX TODO: perform analysis -->
