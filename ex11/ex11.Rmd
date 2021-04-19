@@ -26,9 +26,10 @@ set.seed(42069) # Set seed to remove randomness when replicating results
 * Max Festersen Hansen, maxfh20  
 
 ## 1. Introduction
+For this project, we have chosen a dataset in the "Shape sets" at [https://cs.joensuu.fi/sipu/datasets/]. In this report we will explain why we chose this dataset, which methods we have chosen to analyze the data and explain the results of our analysis. At last we will be making a comparison of the methods and see how it can be upscaled to larger datasets.
 
 
-### 1.1 The Compound dataset
+### 1.1 Zahn's Compound dataset
 For this exercise, we needed shape data set. We choose to use the compound
 dataset, from C.T. Zahn, **IEEE Transactions on Computers**, 1971.
 The compound data was chosen for... reasons.<!-- XX TODO: expand reason.  -->
