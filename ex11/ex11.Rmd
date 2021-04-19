@@ -8,6 +8,7 @@ output: pdf_document
 ```{r echo = FALSE}
 # Imports ---------------------------------------
 library(tidyverse) # For convenience, plots, tables and probably some other stuff.
+source("../cluster_quality.R")
 ```
 
 # **DS804 Assignment 1**  
@@ -94,6 +95,11 @@ lloyd
 macqueen
 forgy
 har_won
+
+cluster_report(lloyd)
+cluster_report(macqueen)
+cluster_report(forgy)
+cluster_report(har_won)
 ````
 
 
