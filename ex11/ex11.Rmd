@@ -92,7 +92,7 @@ and remove bias from large numbers.
 ### 3.1 k-means
 With k-means we expected it would be able to create good clusters
 for the eyes and tounge, since they have a clear mean. We would expect it to
-have some trouble with the mouth, the rain and the virus,
+have some trouble with the libs, the rain and the virus,
 since the cluster-means overlap with other clusters.
 ```{r k-means-testing-methods, results = "hide", warning=FALSE, echo=FALSE}
 set.seed(42069) # Set seed to remove randomness when replicating results
@@ -133,9 +133,9 @@ plot_stuff(norm.compound, norm.compound$macqueen, "Macqueen")
 plot_stuff(norm.compound, norm.compound$forgy, "Forgy")
 plot_stuff(norm.compound, norm.compound$har_won, "Hartigan Wong")
 ```
-Using the k-means algorithms: Macqueen, Loyd/Forg and Hartigan-Wong, we found
+Using the k-means algorithms: Macqueen, Loyd-Forgy and Hartigan-Wong. We found
 Hartigan-Wong was the most accurate, when looking at the accuracy of guesses,
-and mean macro average. They are visualised above.
+and mean macro average. They are visualized above.
 Regardless of method, it seems the algorithms are having a hard time distinguishing:
 1. Libs & Tounge
 2. Left-eye & Right-eye
@@ -143,12 +143,17 @@ Regardless of method, it seems the algorithms are having a hard time distinguish
 4. Corona-virus
 5. Corona-virus & Rain
 
-It is worht noting that Hartigan-Wong gets Right-eye more wrong with no clustering,
+It is worth noting that Hartigan-Wong gets Right-eye more wrong with no clustering,
 and has a harder time handling Rain and Corona-Virus,
-using more clusteres there than the others.
+using more clusteres there than the others. It does get Libs and Left-eye right.
 
 It has the best visual result, with the creation og a Mouth, Eyes and multicolored
 Scenery.
+
+From what we predicted, we correctly predicted some of the issues troubles.
+Additionally we were supprised to see Tounge being split in some cases.
+The eyes were also never classified correctly, with them being clusterd close
+together and sometimes together with Libs and Tounge.
 <!--XX TODO: Ret fejl i de beskrivelser Max har skrevet ovenfor -->
 
 ### 3.2 knn
