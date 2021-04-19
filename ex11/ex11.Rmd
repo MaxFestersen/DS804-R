@@ -42,6 +42,14 @@ compound.df <- read.csv("Compound.txt", sep = "\t", header = F)
 # Adding lables
 names(compound.df) <- c("x", "y", "class")
 
+compound.df <- compound.df %>% 
+  mutate(class = ifelse(class == 1, "Rain", class)) %>% 
+  mutate(class = ifelse(class == 2, "Corona-virus", class)) %>% 
+  mutate(class = ifelse(class == 3, "Left-eye", class)) %>% 
+  mutate(class = ifelse(class == 4, "Right-eye", class)) %>% 
+  mutate(class = ifelse(class == 5, "Libs", class)) %>% 
+  mutate(class = ifelse(class == 6, "Tounge", class))
+
 compound.df$class <- factor(compound.df$class)
 ```
 
