@@ -17,7 +17,9 @@ source("../cluster_quality.R") # Functions for data analysis
 set.seed(42069) # Set seed to remove randomness when replicating results
 ```
 
-# **DS804 Assignment 1**  
+
+# **DS804 Assignment 1 - Clustering**
+28/04/2021
 ## Created by  
 * Alexander Ibsen Dernild, alder17  
 * Christian Rohde Andersen, chran20  
