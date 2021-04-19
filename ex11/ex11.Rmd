@@ -27,7 +27,7 @@ For this exercise, we needed shape data set. We choose to use the compound
 dataset, from C.T. Zahn, **IEEE Transactions on Computers**, 1971.
 The compound data was chosen for... reasons.<!-- XX TODO: expand reason.  -->
 
-```{r loading-dataset echo = FALSE}
+```{r loading-dataset, echo = FALSE}
 # Data load
 compound.df <- read.csv("Compound.txt", sep = "\t", header = F)
 # Adding lables
@@ -74,7 +74,7 @@ and remove bias from large numbers.
 
 ### 3.1 k-means
 <!-- XX TODO: perform analysis -->
-````{r echo = FALSE "k-means-testing-methods"}
+````{r k-means-testing-methods, echo = FALSE}
 c_lloyd <- kmeans(td, 6, algorithm = "Lloyd")
 c_macqueen <- kmeans(td, 6, algorithm = "MacQueen")
 c_forgy <- kmeans(td, 6, algorithm = "Forgy")
