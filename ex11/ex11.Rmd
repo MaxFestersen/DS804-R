@@ -41,6 +41,8 @@ ggplot(compound.df, aes(x, y, shape = class, color = class)) +
   labs(title = "Compound Data") +
   theme_light()
 ```
+Above the data can be seen, colored by class. The clases is named 1-8.
+The data had 8 classes, thus 8 colors are used.
 
 
 ```{r normalizing-data}
@@ -53,7 +55,8 @@ ggplot(norm.compound, aes(x, y, shape = class, color = class)) +
   labs(title = "Compound Data normalized") +
   theme_light()
 ```
-
+We normalize the data, to be closer to zero (centered zero). This is done to normalize the weight,
+and remove bias from large numbers.
 
 ## 2 Methods  
 
