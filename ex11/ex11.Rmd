@@ -123,14 +123,15 @@ norm.compound$macqueen <- factor(test$macqueen)
 norm.compound$forgy <- factor(test$forgy)
 norm.compound$har_won <- factor(test$har_won)
 
-plot_stuff <- function(df, predicted) {
+plot_stuff <- function(df, predicted, cap) {
   ggplot(df, aes(x, y, shape = class, color = predicted)) +
-    geom_point()
+    geom_point() +
+    labs(title = cap)
 }
 
-plot_stuff(norm.compound, norm.compound$macqueen)
-plot_stuff(norm.compound, norm.compound$forgy)
-plot_stuff(norm.compound, norm.compound$har_won)
+plot_stuff(norm.compound, norm.compound$macqueen, "Macqueen")
+plot_stuff(norm.compound, norm.compound$forgy, "Forgy")
+plot_stuff(norm.compound, norm.compound$har_won, "Hartigan Wong")
 ```
 Using the k-means algorithms: Macqueen, Loyd/Forg and Hartigan-Wong, we found
 Hartigan-Wong was the most accurate, when looking at the accuracy of guesses,
