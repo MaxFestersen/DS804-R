@@ -18,7 +18,10 @@ library(tidyverse) # For convenience, plots, tables and probably some other stuf
 * Mathias Profft Larsen, matla20  
 * Max Festersen Hansen, maxfh20  
 
-## The Compound dataset
+## 1. Introduction
+
+
+### 1.1 The Compound dataset
 For this exercise, we needed shape data set. We choose to use the compound
 dataset, from C.T. Zahn, **IEEE Transactions on Computers**, 1971.
 The compound data was chosen for... reasons.<!-- XX TODO: expand reason.  -->
@@ -39,7 +42,6 @@ ggplot(compound.df, aes(x, y, shape = class, color = class)) +
   theme_light()
 ```
 
-## Methods  
 
 ```{r normalizing-data}
 norm.compound <- scale(compound.df[1:2]) %>% 
@@ -53,57 +55,74 @@ ggplot(norm.compound, aes(x, y, shape = class, color = class)) +
 ```
 
 
-### Algorithms and implementation  
+## 2 Methods  
+
+
+### 2.1 Algorithms and implementation  
 <!-- XX TODO: explain witch algorithms and implementations that were used -->
 
 
+<<<<<<< HEAD
 ## Analysis of the Methods
+=======
+
+## 3 Analysis of the Methods
+>>>>>>> 47243dfb902cabd659bd9c99a991676bd2cbffda
 <!-- XX TODO: find analysis methods -->
 
 
-### k-means
+### 3.1 k-means
 <!-- XX TODO: perform analysis -->
 
 
+<<<<<<< HEAD
 ### knn
-<!-- XX TODO: perform analysis -->
-
-### OPTICS
-<!-- XX TODO: perform analysis -->
-
-
-### DBSCAN
+=======
+### 3.2 knn
+>>>>>>> 47243dfb902cabd659bd9c99a991676bd2cbffda
 <!-- XX TODO: perform analysis -->
 
 
-## Results
+### 3.3 OPTICS
+<!-- XX TODO: perform analysis -->
+
+
+### 3.4 DBSCAN
+<!-- XX TODO: perform analysis -->
+
+
+
+## 4 Results
 <!-- XX TODO: Explain what we found / sum up results -->
 
+### 4.1 Comparison
 
-# More intresing data
+
+
+## 5 More intresing data
 <!-- XX TODO: find more intresting data for us and analyze it. -->
 
 
-## Data initiation
+### 5.1 Data initiation
 <!-- XX TODO: Initiate more intersting data -->
 
 
-## Methods  
+### 5.2 Methods  
 
 
-### Algorithms and implementation  
+### 5.3 Algorithms and implementation  
 <!-- XX TODO: explain witch algorithms and implementations that were used -->
 
   
-## Analysis
+### 5.4 Analysis
 <!-- XX TODO: perform analysis -->
 
 
-## Findings
+### 5.5 Results
 <!-- XX TODO: Explain what we found / sum up results -->
 
 
-### Clustering results
+### 6 Clustering results
 <!-- XX Answer: What can you learn about that [new] data by using clustering? -->
 
 
