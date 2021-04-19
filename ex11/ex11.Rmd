@@ -68,9 +68,6 @@ plot(compound.df[1:2], main="Compound data")
 ## DBSCAN
 <!-- XX TODO: perform analysis -->
 
-## GESTALT?
-<!-- XX find info om: GESTALT -->
-
 
 ## Findings
 <!-- XX TODO: Explain what we found / sum up results -->
