@@ -8,7 +8,13 @@ output: pdf_document
 ```{r Imports, echo = FALSE}
 # Imports ---------------------------------------
 library(tidyverse) # For convenience, plots, tables and probably some other stuff.
-source("../cluster_quality.R")
+
+# Source ----------------------------------------
+source("../cluster_quality.R") # Functions for data analysis
+```
+
+```{r Seeding, echo = FALSE}
+set.seed(42069) # Set seed to remove randomness when replicating results
 ```
 
 # **DS804 Assignment 1**  
