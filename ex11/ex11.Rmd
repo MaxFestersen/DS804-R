@@ -44,6 +44,12 @@ ggplot(compound.df, aes(x, y, shape = class, color = class)) +
 
 ## Methods  
 
+```{r normalizing-data}
+norm.compound <- scale(compound.df[1:2]) %>% 
+  data.frame()
+norm.compound$class <- compound.df$class
+```
+
 
 ### Algorithms and implementation  
 <!-- XX TODO: explain witch algorithms and implementations that were used -->
