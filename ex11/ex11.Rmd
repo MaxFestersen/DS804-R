@@ -5,7 +5,7 @@ author: Alexander Dernild, Christian R. Andersen, Johannes Sørensen, Mathias P.
 date: "28/4/2021"
 output: pdf_document
 ---
-```{r Imports, echo = FALSE}
+```{r Imports, echo = FALSE, message = FALSE}
 # Imports ---------------------------------------
 library(tidyverse) # For convenience, plots, tables and probably some other stuff.
 
@@ -13,11 +13,13 @@ library(tidyverse) # For convenience, plots, tables and probably some other stuf
 source("../cluster_quality.R") # Functions for data analysis
 ```
 
-```{r Seeding, echo = FALSE}
+```{r Seeding, echo = FALSE, message = FALSE}
 set.seed(42069) # Set seed to remove randomness when replicating results
 ```
 
-# **DS804 Assignment 1**  
+
+# **DS804 Assignment 1 - Clustering**
+28/04/2021
 ## Created by  
 * Alexander Ibsen Dernild, alder17  
 * Christian Rohde Andersen, chran20  
@@ -34,7 +36,7 @@ For this exercise, we needed shape data set. We choose to use the compound
 dataset, from C.T. Zahn, **IEEE Transactions on Computers**, 1971.
 The compound data was chosen for... reasons.<!-- XX TODO: expand reason.  -->
 
-```{r loading-dataset, echo = FALSE}
+```{r loading-dataset, echo = FALSE, message = FALSE}
 # Data load
 compound.df <- read.csv("Compound.txt", sep = "\t", header = F)
 # Adding lables
@@ -81,7 +83,7 @@ and remove bias from large numbers.
 
 ### 3.1 k-means
 <!-- XX TODO: perform analysis -->
-````{r k-means-testing-methods, echo = FALSE}
+```{r k-means-testing-methods, results = "hide", warning=FALSE, echo=FALSE}
 set.seed(42069) # Set seed to remove randomness when replicating results
 c_macqueen <- kmeans(td, 6, iter.max = 20, algorithm = "MacQueen")
 c_forgy <- kmeans(td, 6, iter.max = 20, algorithm = "Forgy")
@@ -103,7 +105,7 @@ har_won
 cluster_report(macqueen)
 cluster_report(forgy)
 cluster_report(har_won)
-````
+```
 
 ```{r k-means-visualization}
 norm.compound$macqueen <- factor(test$macqueen)
