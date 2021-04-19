@@ -10,8 +10,6 @@ output: pdf_document
 library(tidyverse) # For convenience, plots, tables and probably some other stuff.
 ```
 
-<!-- image ![](path/to/sdulogo.png) -->
-
 # **DS804 Assignment 1**  
 ## Created by  
 * Alexander Ibsen Dernild, alder17  
@@ -20,8 +18,7 @@ library(tidyverse) # For convenience, plots, tables and probably some other stuf
 * Mathias Profft Larsen, matla20  
 * Max Festersen Hansen, maxfh20  
 
-# Compound data  
-## Data enitiation
+## The Compound dataset
 For this exercise, we needed shape data set. We choose to use the compound
 dataset, from C.T. Zahn, **IEEE Transactions on Computers**, 1971.
 The compound data was chosen for... reasons.<!-- XX TODO: expand reason.  -->
@@ -55,25 +52,25 @@ norm.compound$class <- compound.df$class
 <!-- XX TODO: explain witch algorithms and implementations that were used -->
 
   
-## Analasys
+## Analysis of the Methods
 <!-- XX TODO: find analysis methods -->
 
 
-## k-means
+### k-means
 <!-- XX TODO: perform analysis -->
 
-## knn
+### knn
 <!-- XX TODO: perform analysis -->
 
-## OPTICS
-<!-- XX TODO: perform analysis -->
-
-
-## DBSCAN
+### OPTICS
 <!-- XX TODO: perform analysis -->
 
 
-## Findings
+### DBSCAN
+<!-- XX TODO: perform analysis -->
+
+
+## Results
 <!-- XX TODO: Explain what we found / sum up results -->
 
 
@@ -81,7 +78,7 @@ norm.compound$class <- compound.df$class
 <!-- XX TODO: find more intresting data for us and analyze it. -->
 
 
-## Data enitiation
+## Data initiation
 <!-- XX TODO: Initiate more intersting data -->
 
 
@@ -92,7 +89,7 @@ norm.compound$class <- compound.df$class
 <!-- XX TODO: explain witch algorithms and implementations that were used -->
 
   
-## Analasys
+## Analysis
 <!-- XX TODO: perform analysis -->
 
 
