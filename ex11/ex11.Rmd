@@ -174,36 +174,51 @@ together and sometimes together with Lips and Tongue.
 ### 3.3 OPTICS
 <!-- Alexander: XX TODO: perform analysis -->
 
-
 ```{r}
 set.seed(2)
 dat <- compound.df[1:2] # data
 
 opt_clust <- optics(dat, minPts = 7)
-plot(opt_clust)
+plot(opt_clust, sub = "minPts = 7")
 
-plot(dat, col = "grey", main = "Clustering order")
+plot(dat, col = "grey", main = "Clustering order", sub = "minPts = 7")
 polygon(dat[opt_clust$order,])
+```
 
+
+```{r}
 res_db <- extractDBSCAN(opt_clust, 1.6)
 plot(res_db, sub = paste0("DBSCAN extraction eps = ", res_db$eps_cl))
 hullplot(dat, res_db, sub = paste0("DBSCAN extraction eps = ", res_db$eps_cl))
 
-res_xi <- extractXi(opt_clust, xi = 0.058)
-plot(res_xi, sub = paste0("Xi extraction steepness threshold = ", res_xi$xi))
-hullplot(dat, res_xi, sub = paste0("Xi extraction steepness threshold = ", res_xi$xi))
-
-dat$xi_clust <- as.factor(res_xi$cluster)
 dat$db_clust <- as.factor(res_db$cluster)
 dat$class <- compound.df$class
-
 db_clust <- table(dat$db_clust, dat$class)
+```
+
+DBSCAN extraction only finds 4 clusters, most likely because the classes has a variable density. 
+
+```{r}
+db_clust # 0 is noise points
+#cluster_report(db_clust) # doesn't work as dbscan method only finds 4 clusters
+```
+
+
+Another method for extracting clusters from OPTICS is the Xi method, which utilizes a Steepness threshold to identify clusters hierarchically. 
+
+```{r}
+res_xi <- extractXi(opt_clust, xi = 0.058)
+plot(res_xi, sub = paste0("Xi extraction steepness threshold = ", res_xi$xi))
+hullplot(dat[1:2], res_xi, sub = paste0("Xi extraction steepness threshold = ", res_xi$xi))
+```
+
+As seen in the above plot the Xi extraction is much better at finding the clusters.
+
+```{r}
+dat$xi_clust <- as.factor(res_xi$cluster)
 xi_clust <- table(dat$xi_clust, dat$class)
 
-db_clust # 0 is noise points
 xi_clust # 0 is noise points
-
-#cluster_report(db_clust) # doesn't work as dbscan method only finds 4 clusters
 cluster_report(xi_clust)
 ```
 
