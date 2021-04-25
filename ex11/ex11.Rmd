@@ -55,7 +55,7 @@ compound.df <- compound.df %>%
 compound.df$class <- factor(compound.df$class)
 ```
 
-```{r plotting-initial-data}
+```{r plotting-initial-data, warning=FALSE, echo=FALSE}
 ggplot(compound.df, aes(x, y, shape = class, color = class)) +
   geom_point() +
   labs(title = "Compound Data") +
@@ -65,7 +65,7 @@ Above the data can be seen, colored by class. The clases is named 1-8.
 The data had 8 classes, thus 8 colors are used.
 
 
-```{r normalizing-data}
+```{r normalizing-data, warning=FALSE, echo=FALSE}
 norm.compound <- scale(compound.df[1:2]) %>% 
   data.frame()
 norm.compound$class <- compound.df$class
@@ -96,7 +96,7 @@ for the eyes and tongue, since they have a clear mean. We would expect it to
 have some trouble with the lips, the rain and the virus,
 since the cluster-means overlap with other clusters.
 
-```{r k-means-testing-methods, results = "hide", warning=FALSE, echo=FALSE}
+```{r k-means-testing-methods, warning=FALSE, echo=FALSE}
 set.seed(42069) # Set seed to remove randomness when replicating results
 c_macqueen <- kmeans(td, 6, iter.max = 20, algorithm = "MacQueen")
 c_forgy <- kmeans(td, 6, iter.max = 20, algorithm = "Forgy")
@@ -120,7 +120,7 @@ cluster_report(forgy)
 cluster_report(har_won)
 ```
 
-```{r k-means-visualization}
+```{r k-means-visualization, warning=FALSE, echo=FALSE}
 norm.compound$macqueen <- factor(test$macqueen)
 norm.compound$forgy <- factor(test$forgy)
 norm.compound$har_won <- factor(test$har_won)
@@ -206,10 +206,7 @@ together and sometimes together with Lips and Tongue.
 <!-- XX Answer: What can you learn about that [new] data by using clustering? -->
 
 
-```{r echo = TRUE}
+```{r name1, warning=FALSE, echo=FALSE}
 
 ```
 
-```{r echo = FALSE}
-
-```
