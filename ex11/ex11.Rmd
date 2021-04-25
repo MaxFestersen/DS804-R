@@ -9,6 +9,7 @@ output: pdf_document
 # Imports ---------------------------------------
 library(tidyverse) # For convenience, plots, tables and probably some other stuff.
 library(cluster)
+library(factoextra)
 # Source ----------------------------------------
 source("../cluster_quality.R") # Functions for data analysis
 ```
@@ -75,6 +76,9 @@ ggplot(norm.compound, aes(x, y, shape = class, color = class)) +
   geom_point() +
   labs(title = "Compound Data normalized") +
   theme_light()
+
+
+fviz_nbclust(norm.compound[1:2], kmeans, method='silhouette') # elbow plot
 ```
 We normalize the data to be closer to zero (centered zero). This is done to normalize the weight and remove bias from large numbers.
 
