@@ -175,11 +175,14 @@ together and sometimes together with Lips and Tongue.
 
 
 ### 3.4 DBSCAN
-<!-- Christian: XX TODO: perform analysis -->
+<!-- Christian & Johannes: XX TODO: perform analysis -->
+
+<!-- Joe -->
+
 
 
 ### 3.5 Silutte coefficient
-<!-- Johannes: XX TODO: perform analysis -->
+<!-- : XX TODO: perform analysis -->
 
 
 ## 4 Results
