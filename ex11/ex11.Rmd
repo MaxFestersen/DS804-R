@@ -227,7 +227,7 @@ table(Dbscan_cl$cluster, compound.df$class)
 # Plotting Cluster
 plot(Dbscan_cl, td, main = "DBScan")
 ```
-DBscan has two parameters: minPts (Dimensionality + 1), and epsilon from KKn
+DBscan has two parameters: minPts (Dimensionality + 1, or higher), and epsilon from KKn
 
 
 ### 3.5 Silutte coefficient
