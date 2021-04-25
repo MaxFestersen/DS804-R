@@ -168,11 +168,11 @@ together and sometimes together with Lips and Tongue.
 <!--XX TODO: Ret fejl i de beskrivelser Max har skrevet ovenfor -->
 
 ### 3.2 knn
-<!-- XX TODO: perform analysis -->
+<!-- Mathias: XX TODO: perform analysis -->
 
 
 ### 3.3 OPTICS
-<!-- XX TODO: perform analysis -->
+<!-- Alexander: XX TODO: perform analysis -->
 
 
 ```{r}
@@ -208,8 +208,29 @@ cluster_report(xi_clust)
 ```
 
 ### 3.4 DBSCAN
-<!-- XX TODO: perform analysis -->
+<!-- Christian & Johannes: XX TODO: perform analysis -->
 
+<!-- Joe -->
+```{r}
+# Fitting DBScan clustering Model 
+# to training dataset
+Dbscan_cl <- dbscan(td, eps = 0.206, MinPts = 7)
+Dbscan_cl
+
+# Checking cluster
+Dbscan_cl$cluster
+
+# Table
+table(Dbscan_cl$cluster, compound.df$class)
+
+# Plotting Cluster
+plot(Dbscan_cl, td, main = "DBScan")
+```
+
+
+
+### 3.5 Silutte coefficient
+<!-- : XX TODO: perform analysis -->
 
 
 ## 4 Results
@@ -220,7 +241,7 @@ cluster_report(xi_clust)
 
 
 ## 5 More intresing data
-<!-- XX TODO: find more intresting data for us and analyze it. -->
+<!-- Max: XX TODO: find more intresting data for us and analyze it. -->
 
 
 ### 5.1 Data initiation
