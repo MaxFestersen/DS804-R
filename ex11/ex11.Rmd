@@ -10,6 +10,7 @@ output: pdf_document
 library(tidyverse) # For convenience, plots, tables and probably some other stuff.
 library(cluster)
 library(factoextra)
+library(SentimentAnalysis) # for sentiment analysis
 library(dbscan)
 # Source ----------------------------------------
 source("../cluster_quality.R") # Functions for data analysis
@@ -224,12 +225,18 @@ cluster_report(xi_clust)
 
 ### 3.4 DBSCAN
 <!-- Christian & Johannes: XX TODO: perform analysis -->
-
-<!-- Joe -->
 ```{r}
+## Find suitable DBSCAN parameters:
+## 1. We use minPts = dim + 1 = 5 for iris. A larger value can also be used.
+## 2. We inspect the  k-NN distance plot for k = minPts - 1 = 4
+kNNdistplot(td, k = 2 - 1)
+
+## Noise seems to start around a 4-NN distance of .3
+abline(h=.2, col = "red", lty=2)
+
 # Fitting DBScan clustering Model 
 # to training dataset
-Dbscan_cl <- dbscan(td, eps = 0.206, MinPts = 7)
+Dbscan_cl <- dbscan(td, eps = 0.2, MinPts = 2 + 1)
 Dbscan_cl
 
 # Checking cluster
@@ -241,7 +248,7 @@ table(Dbscan_cl$cluster, compound.df$class)
 # Plotting Cluster
 plot(Dbscan_cl, td, main = "DBScan")
 ```
-
+DBscan has two parameters: minPts (Dimensionality + 1, or higher), and epsilon from KKn.
 
 
 ### 3.5 Silutte coefficient
@@ -257,7 +264,84 @@ plot(Dbscan_cl, td, main = "DBScan")
 
 ## 5 More intresing data
 <!-- Max: XX TODO: find more intresting data for us and analyze it. -->
+For the "More intresting data" we found IMDB review for the Shrek movies.
+It includes stars (1-10), review, review title, movie name and date. 
+We don't need the date, so it will be trimmed.
+We also omit missing values, as it can't really be used.
+```{r name1, warning=FALSE, echo=FALSE}
+shrek.1 <- read.csv("dataset/Shrek.csv", sep = ",")[-1]
+shrek.2 <- read.csv("dataset/Shrek 2.csv", sep = ",")[-1]
+shrek.3 <- read.csv("dataset/Shrek the Third.csv", sep = ",")[-1]
+shrek.4 <- read.csv("dataset/Shrek Forever After.csv", sep = ",")[-1]
+shreks <- shrek.1 %>%
+  full_join(shrek.2) %>% 
+  full_join(shrek.3) %>% 
+  full_join(shrek.4) %>%
+  select(-date) %>% # remove date from dataset
+  rename("review" = text) %>% # Rename text to review
+  mutate(review.and.title = paste(r_title, review)) %>% 
+  mutate(sentiment_title = analyzeSentiment(r_title, removeStopwords = FALSE)[["SentimentGI"]],
+         sentiment_reveiw = analyzeSentiment(review, reviewremoveStopwords = TRUE)[["SentimentGI"]],
+         sentiment = analyzeSentiment(review.and.title, reviewremoveStopwords = TRUE)[["SentimentGI"]]) %>%
+  na.omit() %>%   # Remove any rows with na. Because fuck 'em.
+  rowwise() %>%
+  mutate(avg_sentiment = mean(c(sentiment_title, sentiment_reveiw)))
+# shreks.sentiment.r_title <- analyzeSentiment(shreks$r_title, # Analyse sentiment on title
+#                                              removeStopwords = FALSE) # Do not remove stopwords, as titles can be short, which leads to na values.
+# shreks.sentiment.review <- analyzeSentiment(shreks$review,
+#                                             removeStopwords = TRUE) # Revmove stopswords.
 
+Shreksiments <- shreks %>% # sentiment of title vs review
+  select(title, sentiment_title, sentiment_reveiw) %>% 
+  rename("x" = sentiment_title,
+         "y" = sentiment_reveiw,
+         "class" = title)
+ggplot(Shreksiments, aes(x, y, shape = class, color = class)) +
+  geom_point() +
+  labs(title = "Shrek sentiment on title and review") +
+  theme_light()
+
+Shrek_stars_title_sen <- shreks %>% # stars vs sentiment title
+  select(title, stars, sentiment_title) %>% 
+  rename("x" = stars,
+         "y" = sentiment_title,
+         "class" = title)
+ggplot(Shrek_stars_title_sen, aes(x, y, shape = class, color = class)) +
+  geom_point() +
+  labs(title = "Shrek stars and title sentiment") +
+  theme_light()
+
+Shrek_stars_review_sen <- shreks %>% # stars vs sentiment review
+  select(title, stars, sentiment_reveiw) %>% 
+  rename("x" = stars,
+         "y" = sentiment_reveiw,
+         "class" = title)
+ggplot(Shrek_stars_review_sen, aes(x, y, shape = class, color = class)) +
+  geom_point() +
+  labs(title = "Shrek stars and review sentiment") +
+  theme_light()
+
+Shrek_stars_avg_sen <- shreks %>% # stars vs sentiment review
+  select(title, stars, avg_sentiment) %>% 
+  rename("x" = stars,
+         "y" = avg_sentiment,
+         "class" = title)
+ggplot(Shrek_stars_avg_sen, aes(x, y, shape = class, color = class)) +
+  geom_point() +
+  labs(title = "Shrek stars and title and review average sentiment") +
+  theme_light()
+
+Shrek_stars_complete_sen <- shreks %>% # stars vs sentiment review
+  select(title, stars, sentiment_reveiw) %>% 
+  rename("x" = stars,
+         "y" = sentiment_reveiw,
+         "class" = title)
+ggplot(Shrek_stars_complete_sen, aes(x, y, shape = class, color = class)) +
+  geom_point() +
+  labs(title = "Shrek stars and complete sentiment") +
+  theme_light()
+```
+Looking at the plots, any could be used, but none are easily clustered.
 
 ### 5.1 Data initiation
 <!-- XX TODO: Initiate more intersting data -->
