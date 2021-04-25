@@ -10,11 +10,8 @@ output: pdf_document
 library(tidyverse) # For convenience, plots, tables and probably some other stuff.
 library(cluster)
 library(factoextra)
-<<<<<<< HEAD
 library(SentimentAnalysis) # for sentiment analysis
-=======
 library(dbscan)
->>>>>>> e5882edb8fc06cdee04e70e52e3c417640947e68
 # Source ----------------------------------------
 source("../cluster_quality.R") # Functions for data analysis
 ```
@@ -247,6 +244,10 @@ DBscan has two parameters: minPts (Dimensionality + 1, or higher), and epsilon f
 
 ## 5 More intresing data
 <!-- Max: XX TODO: find more intresting data for us and analyze it. -->
+For the "More intresting data" we found IMDB review for the Shrek movies.
+It includes stars (1-10), review, review title, movie name and date. 
+We don't need the date, so it will be trimmed.
+We also omit missing values, as it can't really be used.
 ```{r name1, warning=FALSE, echo=FALSE}
 shrek.1 <- read.csv("dataset/Shrek.csv", sep = ",")[-1]
 shrek.2 <- read.csv("dataset/Shrek 2.csv", sep = ",")[-1]
@@ -319,9 +320,8 @@ ggplot(Shrek_stars_complete_sen, aes(x, y, shape = class, color = class)) +
   geom_point() +
   labs(title = "Shrek stars and complete sentiment") +
   theme_light()
-
-
 ```
+Looking at the plots, any could be used, but none are easily clustered.
 
 ### 5.1 Data initiation
 <!-- XX TODO: Initiate more intersting data -->
