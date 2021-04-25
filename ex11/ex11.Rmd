@@ -8,7 +8,7 @@ output: pdf_document
 ```{r Imports, echo = FALSE, message = FALSE}
 # Imports ---------------------------------------
 library(tidyverse) # For convenience, plots, tables and probably some other stuff.
-
+library(cluster)
 # Source ----------------------------------------
 source("../cluster_quality.R") # Functions for data analysis
 ```
@@ -118,6 +118,9 @@ har_won
 cluster_report(macqueen)
 cluster_report(forgy)
 cluster_report(har_won)
+
+si <- silhouette(c_har_won$cluster, dist(norm.compound))
+silhouette_score <- mean(si[,3])
 ```
 
 ```{r k-means-visualization, warning=FALSE, echo=FALSE}
