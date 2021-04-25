@@ -167,19 +167,19 @@ together and sometimes together with Lips and Tongue.
 <!--XX TODO: Ret fejl i de beskrivelser Max har skrevet ovenfor -->
 
 ### 3.2 knn
-<!-- XX TODO: perform analysis -->
+<!-- Mathias: XX TODO: perform analysis -->
 
 
 ### 3.3 OPTICS
-<!-- XX TODO: perform analysis -->
+<!-- Alexander: XX TODO: perform analysis -->
 
 
 ### 3.4 DBSCAN
-<!-- XX TODO: perform analysis -->
+<!-- Christian: XX TODO: perform analysis -->
 
 
 ### 3.5 Silutte coefficient
-<!-- XX TODO: perform analysis -->
+<!-- Johannes: XX TODO: perform analysis -->
 
 
 ## 4 Results
@@ -190,7 +190,7 @@ together and sometimes together with Lips and Tongue.
 
 
 ## 5 More intresing data
-<!-- XX TODO: find more intresting data for us and analyze it. -->
+<!-- Max: XX TODO: find more intresting data for us and analyze it. -->
 
 
 ### 5.1 Data initiation
