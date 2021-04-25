@@ -10,6 +10,7 @@ output: pdf_document
 library(tidyverse) # For convenience, plots, tables and probably some other stuff.
 library(cluster)
 library(factoextra)
+library(dbscan)
 # Source ----------------------------------------
 source("../cluster_quality.R") # Functions for data analysis
 ```
@@ -173,6 +174,38 @@ together and sometimes together with Lips and Tongue.
 ### 3.3 OPTICS
 <!-- XX TODO: perform analysis -->
 
+
+```{r}
+set.seed(2)
+dat <- compound.df[1:2] # data
+
+opt_clust <- optics(dat, minPts = 7)
+plot(opt_clust)
+
+plot(dat, col = "grey", main = "Clustering order")
+polygon(dat[opt_clust$order,])
+
+res_db <- extractDBSCAN(opt_clust, 1.6)
+plot(res_db, sub = paste0("DBSCAN extraction eps = ", res_db$eps_cl))
+hullplot(dat, res_db, sub = paste0("DBSCAN extraction eps = ", res_db$eps_cl))
+
+res_xi <- extractXi(opt_clust, xi = 0.058)
+plot(res_xi, sub = paste0("Xi extraction steepness threshold = ", res_xi$xi))
+hullplot(dat, res_xi, sub = paste0("Xi extraction steepness threshold = ", res_xi$xi))
+
+dat$xi_clust <- as.factor(res_xi$cluster)
+dat$db_clust <- as.factor(res_db$cluster)
+dat$class <- compound.df$class
+
+db_clust <- table(dat$db_clust, dat$class)
+xi_clust <- table(dat$xi_clust, dat$class)
+
+db_clust # 0 is noise points
+xi_clust # 0 is noise points
+
+#cluster_report(db_clust) # doesn't work as dbscan method only finds 4 clusters
+cluster_report(xi_clust)
+```
 
 ### 3.4 DBSCAN
 <!-- XX TODO: perform analysis -->
