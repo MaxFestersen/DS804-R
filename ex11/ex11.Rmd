@@ -209,8 +209,6 @@ cluster_report(xi_clust)
 
 ### 3.4 DBSCAN
 <!-- Christian & Johannes: XX TODO: perform analysis -->
-
-<!-- Joe -->
 ```{r}
 # Fitting DBScan clustering Model 
 # to training dataset
