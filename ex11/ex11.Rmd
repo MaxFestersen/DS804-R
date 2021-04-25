@@ -210,9 +210,12 @@ cluster_report(xi_clust)
 ### 3.4 DBSCAN
 <!-- Christian & Johannes: XX TODO: perform analysis -->
 ```{r}
+#Find EPS
+
+
 # Fitting DBScan clustering Model 
 # to training dataset
-Dbscan_cl <- dbscan(td, eps = 0.206, MinPts = 7)
+Dbscan_cl <- dbscan(td, eps = 0.206, MinPts = 4)
 Dbscan_cl
 
 # Checking cluster
@@ -224,7 +227,7 @@ table(Dbscan_cl$cluster, compound.df$class)
 # Plotting Cluster
 plot(Dbscan_cl, td, main = "DBScan")
 ```
-
+DBscan has two parameters: minPts (Dimensionality + 1), and epsilon from KKn
 
 
 ### 3.5 Silutte coefficient
