@@ -210,12 +210,17 @@ cluster_report(xi_clust)
 ### 3.4 DBSCAN
 <!-- Christian & Johannes: XX TODO: perform analysis -->
 ```{r}
-#Find EPS
+## Find suitable DBSCAN parameters:
+## 1. We use minPts = dim + 1 = 5 for iris. A larger value can also be used.
+## 2. We inspect the  k-NN distance plot for k = minPts - 1 = 4
+kNNdistplot(td, k = 3 - 1)
 
+## Noise seems to start around a 4-NN distance of .3
+abline(h=.3, col = "red", lty=2)
 
 # Fitting DBScan clustering Model 
 # to training dataset
-Dbscan_cl <- dbscan(td, eps = 0.206, MinPts = 4)
+Dbscan_cl <- dbscan(td, eps = 0.3, MinPts = 3)
 Dbscan_cl
 
 # Checking cluster
@@ -227,7 +232,9 @@ table(Dbscan_cl$cluster, compound.df$class)
 # Plotting Cluster
 plot(Dbscan_cl, td, main = "DBScan")
 ```
-DBscan has two parameters: minPts (Dimensionality + 1, or higher), and epsilon from KKn
+DBscan has two parameters: minPts (Dimensionality + 1, or higher), and epsilon from KKn.
+
+Mouth and tongue disappears somewhere around 0.2+
 
 
 ### 3.5 Silutte coefficient
