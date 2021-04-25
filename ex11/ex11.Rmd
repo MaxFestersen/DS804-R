@@ -178,6 +178,21 @@ together and sometimes together with Lips and Tongue.
 <!-- Christian & Johannes: XX TODO: perform analysis -->
 
 <!-- Joe -->
+```{r}
+# Fitting DBScan clustering Model 
+# to training dataset
+Dbscan_cl <- dbscan(td, eps = 0.206, MinPts = 7)
+Dbscan_cl
+
+# Checking cluster
+Dbscan_cl$cluster
+
+# Table
+table(Dbscan_cl$cluster, compound.df$class)
+
+# Plotting Cluster
+plot(Dbscan_cl, td, main = "DBScan")
+```
 
 
 
