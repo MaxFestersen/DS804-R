@@ -221,8 +221,6 @@ accuracy(tab)
 #predictions
 predictions
 
-
-
 knn_traing_error <- calc_error_rate(predicted.value=predictions, true.value=compund_test)
 knn_traing_error
 
