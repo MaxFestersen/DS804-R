@@ -16,6 +16,7 @@ library(class)
 library(caret)
 library(plyr)
 library(fpc)
+library(e1071)
 # Source ----------------------------------------
 source("../cluster_quality.R") # Functions for data analysis
 ```
