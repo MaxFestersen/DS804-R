@@ -344,6 +344,7 @@ cluster_report(xi_clust)
 ```
 
 ### 3.4 DBSCAN
+#### Test 1
 <!-- Christian & Johannes: XX TODO: perform analysis -->
 ```{r 3.3.1 DBSCAN, warning=FALSE, echo=FALSE}
 ## Find suitable DBSCAN parameters:
@@ -377,6 +378,24 @@ DBScan suggests 6 clusters.
 
 "Lips", "Tongue", "Corona" are pretty good.
 
+#### Test 2
+```{r 3.3.1 DBSCAN, warning=FALSE, echo=FALSE}
+
+kNNdistplot(td, k = 6-1)
+
+abline(h=.17, col = "red", lty=2)
+
+Dbscan_cl <- dbscan(td, eps = 0.17, MinPts = 6 + 1)
+Dbscan_cl
+
+Dbscan_cl$cluster
+
+table(Dbscan_cl$cluster, compound.df$class)
+
+plot(Dbscan_cl, td, main = "DBScan")
+
+
+```
 
 ### 3.5 Silutte coefficient
 <!-- : XX TODO: perform analysis -->
