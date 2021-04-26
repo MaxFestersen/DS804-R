@@ -377,10 +377,10 @@ DBScan suggests 6 clusters.
 "Lips", "Tongue", "Corona" are pretty good.
 
 
-
-
 ### 3.5 Silutte coefficient
 <!-- : XX TODO: perform analysis -->
+
+
 
 
 ## 4 Results
