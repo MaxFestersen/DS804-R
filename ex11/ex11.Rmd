@@ -170,6 +170,122 @@ together and sometimes together with Lips and Tongue.
 
 ### 3.2 knn
 <!-- Mathias: XX TODO: perform analysis -->
+<!-- Mathias: XX TODO: perform analysis -->
+to use KNN we need to have noise free dataset and all attributes of the dataset need to belong to a class.
+we start by choosing the value of K we square root the total number of data points available in the dataset, generally it is a good idea for k to be a odd number.
+
+```{r kNN preproccesing, warning=FALSE, echo=FALSE}
+set.seed(42069)
+#getting data ready
+ran <- sample(1:nrow(compound.df), 0.80* nrow(compound.df))
+nor <-function(x) { (x -min(x))/(max(x)-min(x))   }
+knn_compound_norm <- as.data.frame(lapply(compound.df[,c(1,2)], nor))
+
+#using all data, test and training are the same
+compund_train <- knn_compound_norm #all of data
+compund_test <- knn_compound_norm #all of data
+compund_target_category <- compound.df[,3]#all data
+compund_test_category <- compound.df[,3]#all data
+
+#using acutally training data and test data
+compound_train <- knn_compound_norm[ran,]
+compound_test <- knn_compound_norm[-ran,] #rest of data
+compound_target_category <- compound.df[ran,3]
+compound_test_category <- compound.df[-ran,3]
+
+
+#when K=1: potential underfit
+#when K approaches total number of rows:potential overfit
+# K should be an odd number
+#so we should cross validate
+
+sqrt(399)
+#KNN algorithm where key is equal to square root of total number of rows
+predictions <- knn(compound_train,compund_test,cl=compound_target_category,use.all = TRUE ,k=19)
+```
+
+
+```{r kNN confussion matrix/predictions, warning=FALSE, echo=FALSE}
+#confussion matrix
+tab <- table(predictions,iris_test_category)
+tab
+
+#accuracy of test set/model
+accuracy <- function(x){sum(diag(x)/(sum(rowSums(x)))) * 100}
+accuracy(tab)
+
+#predictions
+predictions
+
+
+
+knn_traing_error <- calc_error_rate(predicted.value=predictions, true.value=compund_test)
+knn_traing_error
+
+#CrossTable
+library(gmodels)
+CrossTable(y=compund_test_category,x=pr,prop.chiq=FALSE)
+```
+
+```{r kNN optimal k based on test/training set, warning=FALSE, echo=FALSE}
+#displaying the accuracy of the KNN algorithm given the K=i
+i=1
+k.optm=1
+for (i in 1:40){
+knn.mod <- knn(compund_train,compund_test,cl=compund_target_category,k=i)
+k.optm[i] <- 100* sum(compund_test_category==knn.mod)/NROW(iris_test_category)
+k=i
+cat(k, '=',k.optm[i],'\n')
+}
+plot(k.optm, type="b", xlab="K-Value", ylab="Accuracy level")
+```
+
+
+
+```{r kNN plot based test/training set, warning=FALSE, echo=FALSE}
+#plot
+plot.df = data.frame(compund_test, predicted = predictions)
+plot.df1 = data.frame(x = plot.df$y, 
+                      y = plot.df$x, 
+                      predicted = plot.df$predicted)
+
+find_hull = function(df) df[chull(df$x, df$y), ]
+boundary = ddply(plot.df1, .variables = "predicted", .fun = find_hull)
+
+border_plot<-ggplot(plot.df, aes(y, x, color = predicted, fill = predicted)) +
+  geom_point(size = 2)
+#turn the graph so it is facing the right way
+border_plot<-border_plot+ coord_flip()
+#plot without border
+border_plot
+#plot with border
+border_plot+geom_polygon(data = boundary, aes(x,y), alpha = 0.5)
+```
+
+Wee can use cross validation to get a more optimal k, by using the whole data set and split it up to several pieces, this way our training set will be larger, and we avoid the disadvantage of testing our whole data set in one go.
+```{r kNN 10 fold cross validation, warning=FALSE, echo=FALSE}
+
+trControl <- trainControl(method  = "cv",
+                          number  = 10)
+
+cross_fit <- train(class ~ .,
+             method     = "knn",
+             tuneGrid   = expand.grid(k = 1:10),
+             trControl  = trControl,
+             metric     = "Accuracy",
+             data       = compound.df)
+cross_fit
+#Cross validation best K
+plot(cross_fit)
+
+#Cross validation prediction
+knnPredict <- predict(cross_fit,newdata = compound_test )
+knnPredict
+#Get the confusion matrix to see accuracy value and other parameter values
+#plot of ROC(repeated Cross-validation)
+plot(cross_fit, print.thres = 0.5, type="S")
+```
+
 
 
 ### 3.3 OPTICS
