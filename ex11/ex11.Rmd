@@ -20,7 +20,7 @@ library(fpc)
 source("../cluster_quality.R") # Functions for data analysis
 ```
 
-```{r Seeding, echo = FALSE, message = FALSE}
+```{r 0.0.1 Seeding, echo = FALSE, message = FALSE}
 set.seed(42069) # Set seed to remove randomness when replicating results
 ```
 
@@ -45,7 +45,7 @@ For this exercise, we needed shape data set. We choose to use the compound
 dataset, from C.T. Zahn, **IEEE Transactions on Computers**, 1971.
 The compound data was chosen for... reasons.<!-- XX TODO: expand reason.  -->
 
-```{r loading-dataset, echo = FALSE, message = FALSE}
+```{r 1.1.1 Loading-dataset, echo = FALSE, message = FALSE}
 # Data load
 compound.df <- read.csv("Compound.txt", sep = "\t", header = F)
 # Adding lables
@@ -62,7 +62,7 @@ compound.df <- compound.df %>%
 compound.df$class <- factor(compound.df$class)
 ```
 
-```{r plotting-initial-data, warning=FALSE, echo=FALSE}
+```{r 1.1.2 Plotting-initial-data, warning=FALSE, echo=FALSE}
 ggplot(compound.df, aes(x, y, shape = class, color = class)) +
   geom_point() +
   labs(title = "Compound Data") +
@@ -72,7 +72,7 @@ Above the data can be seen, colored by class. The clases is named 1-8.
 The data had 8 classes, thus 8 colors are used.
 
 
-```{r normalizing-data, warning=FALSE, echo=FALSE}
+```{r 1.1.3 Normalizing-data, warning=FALSE, echo=FALSE}
 norm.compound <- scale(compound.df[1:2]) %>% 
   data.frame()
 norm.compound$class <- compound.df$class
@@ -106,7 +106,7 @@ for the eyes and tongue, since they have a clear mean. We would expect it to
 have some trouble with the lips, the rain and the virus,
 since the cluster-means overlap with other clusters.
 
-```{r k-means-testing-methods, warning=FALSE, echo=FALSE}
+```{r 3.1.1 K-means testing methods, warning=FALSE, echo=FALSE}
 set.seed(42069) # Set seed to remove randomness when replicating results
 c_macqueen <- kmeans(td, 6, iter.max = 20, algorithm = "MacQueen")
 c_forgy <- kmeans(td, 6, iter.max = 20, algorithm = "Forgy")
@@ -133,7 +133,7 @@ si <- silhouette(c_har_won$cluster, dist(norm.compound))
 silhouette_score <- mean(si[,3])
 ```
 
-```{r k-means-visualization, warning=FALSE, echo=FALSE}
+```{r 3.1.2 k-means-visualization, warning=FALSE, echo=FALSE}
 norm.compound$macqueen <- factor(test$macqueen)
 norm.compound$forgy <- factor(test$forgy)
 norm.compound$har_won <- factor(test$har_won)
@@ -178,7 +178,7 @@ together and sometimes together with Lips and Tongue.
 to use KNN we need to have noise free dataset and all attributes of the dataset need to belong to a class.
 we start by choosing the value of K we square root the total number of data points available in the dataset, generally it is a good idea for k to be a odd number.
 
-```{r kNN preproccesing, warning=FALSE, echo=FALSE}
+```{r 3.2.1 KNN preproccesing, warning=FALSE, echo=FALSE}
 set.seed(42069)
 #getting data ready
 ran <- sample(1:nrow(compound.df), 0.80* nrow(compound.df))
@@ -208,7 +208,7 @@ predictions <- knn(compound_train,compound_test,cl=compound_target_category,use.
 ```
 
 
-```{r kNN confussion matrix/predictions, warning=FALSE, echo=FALSE}
+```{r 3.2.2 KNN confussion matrix/predictions, warning=FALSE, echo=FALSE}
 #confussion matrix
 tab <- table(predictions,compound_test_category)
 #tab
@@ -229,7 +229,7 @@ CrossTable(y=compound_test_category,x=predictions,prop.chiq=FALSE)
 
 ```
 
-```{r kNN optimal k based on test/training set, warning=FALSE, echo=FALSE}
+```{r 3.2.3 KNN optimal k based on test/training set, warning=FALSE, echo=FALSE}
 #displaying the accuracy of the KNN algorithm given the K=i
 i=1
 k.optm=1
@@ -245,7 +245,7 @@ plot(k.optm, type="b", xlab="K-Value", ylab="Accuracy level")
 
 
 
-```{r kNN plot based test/training set, warning=FALSE, echo=FALSE}
+```{r 3.2.4 KNN plot based test/training set, warning=FALSE, echo=FALSE}
 #plot
 plot.df = data.frame(compound_test, predicted = predictions)
 plot.df1 = data.frame(x = plot.df$y, 
@@ -267,7 +267,7 @@ border_plot+geom_polygon(data = boundary, aes(x,y), alpha = 0.5)
 ```
 
 Wee can use cross validation to get a more optimal k, by using the whole data set and split it up to several pieces, this way our training set will be larger, and we avoid the disadvantage of testing our whole data set in one go.
-```{r kNN 10 fold cross validation, warning=FALSE, echo=FALSE}
+```{r 3.2.5 KNN 10 fold cross validation, warning=FALSE, echo=FALSE}
 
 trControl <- trainControl(method  = "cv",
                           number  = 399)
@@ -295,7 +295,7 @@ plot(cross_fit, print.thres = 0.5, type="S")
 ### 3.3 OPTICS
 <!-- Alexander: XX TODO: perform analysis -->
 
-```{r}
+```{r 3.3.1 Optics, warning=FALSE, echo=FALSE}
 set.seed(2)
 dat <- compound.df[1:2] # data
 
@@ -307,7 +307,7 @@ polygon(dat[opt_clust$order,])
 ```
 
 
-```{r}
+```{r 3.3.2 Optics, warning=FALSE, echo=FALSE}
 res_db <- extractDBSCAN(opt_clust, 1.6)
 plot(res_db, sub = paste0("DBSCAN extraction eps = ", res_db$eps_cl))
 hullplot(dat, res_db, sub = paste0("DBSCAN extraction eps = ", res_db$eps_cl))
@@ -319,7 +319,7 @@ db_clust <- table(dat$db_clust, dat$class)
 
 DBSCAN extraction only finds 4 clusters, most likely because the classes has a variable density. 
 
-```{r}
+```{r 3.3.3 Optics, warning=FALSE, echo=FALSE}
 db_clust # 0 is noise points
 #cluster_report(db_clust) # doesn't work as dbscan method only finds 4 clusters
 ```
@@ -327,7 +327,7 @@ db_clust # 0 is noise points
 
 Another method for extracting clusters from OPTICS is the Xi method, which utilizes a Steepness threshold to identify clusters hierarchically. 
 
-```{r}
+```{r 3.3.4 Optics, warning=FALSE, echo=FALSE}
 res_xi <- extractXi(opt_clust, xi = 0.058)
 plot(res_xi, sub = paste0("Xi extraction steepness threshold = ", res_xi$xi))
 hullplot(dat[1:2], res_xi, sub = paste0("Xi extraction steepness threshold = ", res_xi$xi))
@@ -335,7 +335,7 @@ hullplot(dat[1:2], res_xi, sub = paste0("Xi extraction steepness threshold = ", 
 
 As seen in the above plot the Xi extraction is much better at finding the clusters.
 
-```{r}
+```{r 3.3.5 Optics, warning=FALSE, echo=FALSE}
 dat$xi_clust <- as.factor(res_xi$cluster)
 xi_clust <- table(dat$xi_clust, dat$class)
 
@@ -345,7 +345,7 @@ cluster_report(xi_clust)
 
 ### 3.4 DBSCAN
 <!-- Christian & Johannes: XX TODO: perform analysis -->
-```{r}
+```{r 3.3.1 DBSCAN, warning=FALSE, echo=FALSE}
 ## Find suitable DBSCAN parameters:
 ## 1. We use minPts = dim + 1 = 5 for iris. A larger value can also be used.
 ## 2. We inspect the  k-NN distance plot for k = minPts - 1 = 4
@@ -388,7 +388,7 @@ For the "More intresting data" we found IMDB review for the Shrek movies.
 It includes stars (1-10), review, review title, movie name and date. 
 We don't need the date, so it will be trimmed.
 We also omit missing values, as it can't really be used.
-```{r name1, warning=FALSE, echo=FALSE}
+```{r 5.0.1 Review data initialiation, warning=FALSE, echo=FALSE}
 # Source: https://github.com/raymondmyu/imdbreviews/tree/master/imdb_reviews
 all.reviews <- read.csv("dataset/allreviews.csv", sep = ",") %>%
   # select(-date) %>% # remove date from dataset
@@ -428,6 +428,9 @@ all.reviews.means <- all.reviews %>%
             # sentiment_reveiw = mean(sentiment_reveiw)
             ) %>% 
   arrange(stars)
+```
+
+```{r 5.0.2 Review data Vizualization, warning=FALSE, echo=FALSE}
 stars_sen <- all.reviews %>% # stars vs sentiment review
   select(title, stars, sentiment) %>%
   rename("x" = stars,
@@ -457,7 +460,10 @@ ggplot(date_stars, aes(x, y, shape = class, color = class)) +
   geom_point() +
   labs(title = "Date and Stars") +
   theme_light()
+```
+Looking at the plots, any could be used, but none are easily clustered.
 
+```{r 5.0.3 Unused shrek vizualizations, warning=FALSE, echo=FALSE}
 # shrek.1 <- read.csv("dataset/Shrek.csv", sep = ",")[-1]
 # shrek.2 <- read.csv("dataset/Shrek 2.csv", sep = ",")[-1]
 # shrek.3 <- read.csv("dataset/Shrek the Third.csv", sep = ",")[-1]
@@ -531,7 +537,6 @@ ggplot(date_stars, aes(x, y, shape = class, color = class)) +
 #   theme_light()
 
 ```
-Looking at the plots, any could be used, but none are easily clustered.
 
 ### 5.1 Data initiation
 <!-- XX TODO: Initiate more intersting data -->
