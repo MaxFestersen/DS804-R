@@ -191,17 +191,16 @@ compound_target_category <- compound.df[,3]#all data
 compound_test_category <- compound.df[,3]#all data
 
 #using acutally training data and test data
-compound_train <- knn_compound_norm[ran,]
-compound_test <- knn_compound_norm[-ran,] #rest of data
-compound_target_category <- compound.df[ran,3]
-compound_test_category <- compound.df[-ran,3]
+compound_train <- knn_compound_norm[ran,] #train data values
+compound_test <- knn_compound_norm[-ran,] #test data values
+compound_target_category <- compound.df[ran,3] #train data category
+compound_test_category <- compound.df[-ran,3] #test data category
 
 
 #when K=1: potential underfit
 #when K approaches total number of rows:potential overfit
 # K should be an odd number
 #so we should cross validate
-library(class)
 sqrt(399)
 #KNN algorithm where key is equal to square root of total number of rows
 predictions <- knn(compound_train,compound_test,cl=compound_target_category,use.all = TRUE ,k=4)
@@ -215,6 +214,8 @@ tab
 
 #accuracy of test set/model
 accuracy <- function(x){sum(diag(x)/(sum(rowSums(x)))) * 100}
+
+print("Accuracy")
 accuracy(tab)
 
 #predictions
