@@ -234,8 +234,8 @@ CrossTable(y=compound_test_category,x=predictions,prop.chiq=FALSE)
 i=1
 k.optm=1
 for (i in 1:40){
-knn.mod <- knn(train=compound_train, test=compund_test,cl=compound_target_category,k=i)
-k.optm[i] <- 100* sum(compund_test_category==knn.mod)/NROW(compound_test_category)
+knn.mod <- knn(train=compound_train, test=compound_test,cl=compound_target_category,k=i)
+k.optm[i] <- 100* sum(compound_test_category==knn.mod)/NROW(compound_test_category)
 k=i
 cat(k, '=',k.optm[i],'\n')
 }
@@ -392,7 +392,7 @@ We also omit missing values, as it can't really be used.
 # Source: https://github.com/raymondmyu/imdbreviews/tree/master/imdb_reviews
 all.reviews <- read.csv("dataset/allreviews.csv", sep = ",") %>%
   # select(-date) %>% # remove date from dataset
-  rename("review" = text) %>% # Rename text to review
+  dplyr::rename(review = text) %>% # Rename text to review
   mutate(review.and.title = paste(r_title, review)) %>%
   filter(title == c( # Filter for what movies to feature
                     "Shrek",
@@ -433,7 +433,7 @@ all.reviews.means <- all.reviews %>%
 ```{r 5.0.2 Review data Vizualization, warning=FALSE, echo=FALSE}
 stars_sen <- all.reviews %>% # stars vs sentiment review
   select(title, stars, sentiment) %>%
-  rename("x" = stars,
+  dplyr::rename("x" = stars,
          "y" = sentiment,
          "class" = title)
 ggplot(stars_sen, aes(x, y, shape = class, color = class)) +
@@ -443,7 +443,7 @@ ggplot(stars_sen, aes(x, y, shape = class, color = class)) +
 
 date_sen <- all.reviews %>% # stars vs sentiment review
   select(title, date, sentiment) %>%
-  rename("x" = date,
+  dplyr::rename("x" = date,
          "y" = sentiment,
          "class" = title)
 ggplot(date_sen, aes(x, y, shape = class, color = class)) +
@@ -453,7 +453,7 @@ ggplot(date_sen, aes(x, y, shape = class, color = class)) +
 
 date_stars <- all.reviews %>% # stars vs sentiment review
   select(title, date, stars) %>%
-  rename("x" = date,
+  dplyr::rename("x" = date,
          "y" = stars,
          "class" = title)
 ggplot(date_stars, aes(x, y, shape = class, color = class)) +
