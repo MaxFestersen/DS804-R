@@ -15,6 +15,7 @@ library(dbscan)
 library(class)
 library(caret)
 library(plyr)
+library(fpc)
 # Source ----------------------------------------
 source("../cluster_quality.R") # Functions for data analysis
 ```
@@ -399,26 +400,30 @@ all.reviews <- read.csv("dataset/allreviews.csv", sep = ",") %>%
                     "Shrek 2",
                     "Shrek the Third",
                     "Shrek Forever After",
-                    "Beauty and the Beast",
+                    # "Toy Story 3",
+                    # "Beauty and the Beast",
                     "The Killing of a Sacred Deer"
                   )
     ) %>%
-  # filter(
-  #   
-  # )
   mutate(
-    date = as.Date(date),
+    #date_date = as.Date(date), #Set date as date format, to do date filtering and stuff
     #sentiment_title = analyzeSentiment(r_title, removeStopwords = FALSE)[["SentimentGI"]],
      #    sentiment_reveiw = analyzeSentiment(review, reviewremoveStopwords = TRUE)[["SentimentGI"]],
-         sentiment = analyzeSentiment(review.and.title, reviewremoveStopwords = TRUE)[["SentimentGI"]]) %>%
+         sentiment = analyzeSentiment(review.and.title, reviewremoveStopwords = TRUE)[["SentimentGI"]]
+    ) %>%
   select(title, date, stars, sentiment
          # , sentiment_title, sentiment_reveiw
          ) %>% 
-  na.omit()
+  na.omit() %>%
+  group_by(title) %>% 
+  arrange(date) %>% 
+  top_n(50) #%>% 
+  # mutate(date = as.numeric(date))
+
 all.reviews.means <- all.reviews %>% 
   group_by(title) %>% 
   summarise(stars = mean(stars),
-            sentiment = mean(sentiment),
+            # sentiment = mean(sentiment),
             date = mean(date)
             # sentiment_title = mean(sentiment_title),
             # sentiment_reveiw = mean(sentiment_reveiw)
