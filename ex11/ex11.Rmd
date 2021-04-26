@@ -348,14 +348,14 @@ cluster_report(xi_clust)
 ## Find suitable DBSCAN parameters:
 ## 1. We use minPts = dim + 1 = 5 for iris. A larger value can also be used.
 ## 2. We inspect the  k-NN distance plot for k = minPts - 1 = 4
-kNNdistplot(td, k = 3 - 1)
+kNNdistplot(td, k = 6-1)
 
 ## Noise seems to start around a 4-NN distance of .3
-abline(h=.2, col = "red", lty=2)
+abline(h=.17, col = "red", lty=2)
 
 # Fitting DBScan clustering Model 
 # to training dataset
-Dbscan_cl <- dbscan(td, eps = 0.2, MinPts = 3 + 1)
+Dbscan_cl <- dbscan(td, eps = 0.17, MinPts = 6 + 1)
 Dbscan_cl
 
 # Checking cluster
@@ -374,7 +374,7 @@ We choose an epsilon from the Knn Distance plot (0.2) and use a minPts from the 
 
 DBScan suggests 6 clusters.
 
-"Mouth", "Tongue", "Corona" are pretty good.
+"Lips", "Tongue", "Corona" are pretty good.
 
 
 ### 3.5 Silutte coefficient
