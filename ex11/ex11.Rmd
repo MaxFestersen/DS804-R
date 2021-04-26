@@ -15,6 +15,7 @@ library(dbscan)
 library(class)
 library(caret)
 library(plyr)
+library(fpc)
 # Source ----------------------------------------
 source("../cluster_quality.R") # Functions for data analysis
 ```
