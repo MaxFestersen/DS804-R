@@ -185,10 +185,10 @@ nor <-function(x) { (x -min(x))/(max(x)-min(x))   }
 knn_compound_norm <- as.data.frame(lapply(compound.df[,c(1,2)], nor))
 
 #using all data, test and training are the same
-compund_train <- knn_compound_norm #all of data
-compund_test <- knn_compound_norm #all of data
-compund_target_category <- compound.df[,3]#all data
-compund_test_category <- compound.df[,3]#all data
+compound_train <- knn_compound_norm #all of data
+compound_test <- knn_compound_norm #all of data
+compound_target_category <- compound.df[,3]#all data
+compound_test_category <- compound.df[,3]#all data
 
 #using acutally training data and test data
 compound_train <- knn_compound_norm[ran,]
@@ -204,7 +204,7 @@ compound_test_category <- compound.df[-ran,3]
 library(class)
 sqrt(399)
 #KNN algorithm where key is equal to square root of total number of rows
-predictions <- knn(compound_train,compound_test,cl=compound_target_category,use.all = TRUE ,k=19)
+predictions <- knn(compound_train,compound_test,cl=compound_target_category,use.all = TRUE ,k=4)
 ```
 
 
@@ -270,7 +270,7 @@ Wee can use cross validation to get a more optimal k, by using the whole data se
 ```{r kNN 10 fold cross validation, warning=FALSE, echo=FALSE}
 
 trControl <- trainControl(method  = "cv",
-                          number  = 10)
+                          number  = 399)
 
 cross_fit <- train(class ~ .,
              method     = "knn",
