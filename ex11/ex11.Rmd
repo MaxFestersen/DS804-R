@@ -211,18 +211,16 @@ predictions <- knn(compound_train,compound_test,cl=compound_target_category,use.
 ```{r kNN confussion matrix/predictions, warning=FALSE, echo=FALSE}
 #confussion matrix
 tab <- table(predictions,compound_test_category)
-tab
-library(gmodels)
+#tab
 
 #accuracy of test set/model
-accuracy <- function(x){sum(diag(x)/(sum(rowSums(x)))) * 100}
-
-print("Accuracy")
-accuracy(tab)
+#accuracy <- function(x){sum(diag(x)/(sum(rowSums(x)))) * 100}
 
 #predictions
 predictions
 
+#confusion Matrix with accuracy
+confusionMatrix(predictions ,compound_test_category)
 
 #CrossTable
 library(gmodels)
@@ -236,11 +234,12 @@ CrossTable(y=compound_test_category,x=predictions,prop.chiq=FALSE)
 i=1
 k.optm=1
 for (i in 1:40){
-knn.mod <- knn(compound_train,compund_test,cl=compound_target_category,k=i)
+knn.mod <- knn(train=compound_train, test=compund_test,cl=compound_target_category,k=i)
 k.optm[i] <- 100* sum(compund_test_category==knn.mod)/NROW(compound_test_category)
 k=i
 cat(k, '=',k.optm[i],'\n')
 }
+
 plot(k.optm, type="b", xlab="K-Value", ylab="Accuracy level")
 ```
 
