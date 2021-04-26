@@ -12,6 +12,9 @@ library(cluster)
 library(factoextra)
 library(SentimentAnalysis) # for sentiment analysis
 library(dbscan)
+library(class)
+library(caret)
+library(plyr)
 # Source ----------------------------------------
 source("../cluster_quality.R") # Functions for data analysis
 ```
@@ -198,16 +201,16 @@ compound_test_category <- compound.df[-ran,3]
 #when K approaches total number of rows:potential overfit
 # K should be an odd number
 #so we should cross validate
-
+library(class)
 sqrt(399)
 #KNN algorithm where key is equal to square root of total number of rows
-predictions <- knn(compound_train,compund_test,cl=compound_target_category,use.all = TRUE ,k=19)
+predictions <- knn(compound_train,compound_test,cl=compound_target_category,use.all = TRUE ,k=19)
 ```
 
 
 ```{r kNN confussion matrix/predictions, warning=FALSE, echo=FALSE}
 #confussion matrix
-tab <- table(predictions,iris_test_category)
+tab <- table(predictions,compound_test_category)
 tab
 
 #accuracy of test set/model
@@ -232,8 +235,8 @@ CrossTable(y=compund_test_category,x=pr,prop.chiq=FALSE)
 i=1
 k.optm=1
 for (i in 1:40){
-knn.mod <- knn(compund_train,compund_test,cl=compund_target_category,k=i)
-k.optm[i] <- 100* sum(compund_test_category==knn.mod)/NROW(iris_test_category)
+knn.mod <- knn(compound_train,compund_test,cl=compound_target_category,k=i)
+k.optm[i] <- 100* sum(compund_test_category==knn.mod)/NROW(compound_test_category)
 k=i
 cat(k, '=',k.optm[i],'\n')
 }
@@ -244,12 +247,13 @@ plot(k.optm, type="b", xlab="K-Value", ylab="Accuracy level")
 
 ```{r kNN plot based test/training set, warning=FALSE, echo=FALSE}
 #plot
-plot.df = data.frame(compund_test, predicted = predictions)
+plot.df = data.frame(compound_test, predicted = predictions)
 plot.df1 = data.frame(x = plot.df$y, 
                       y = plot.df$x, 
                       predicted = plot.df$predicted)
 
 find_hull = function(df) df[chull(df$x, df$y), ]
+
 boundary = ddply(plot.df1, .variables = "predicted", .fun = find_hull)
 
 border_plot<-ggplot(plot.df, aes(y, x, color = predicted, fill = predicted)) +
