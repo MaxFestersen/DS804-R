@@ -24,7 +24,6 @@ source("../cluster_quality.R") # Functions for data analysis
 set.seed(42069) # Set seed to remove randomness when replicating results
 ```
 
-
 # **DS804 Assignment 1 - Clustering**
 28/04/2021  
 
@@ -270,7 +269,7 @@ Wee can use cross validation to get a more optimal k, by using the whole data se
 ```{r 3.2.5 KNN 10 fold cross validation, warning=FALSE, echo=FALSE}
 
 trControl <- trainControl(method  = "cv",
-                          number  = 399)
+                          number  = 10)
 
 cross_fit <- train(class ~ .,
              method     = "knn",
