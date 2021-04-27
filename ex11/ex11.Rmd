@@ -179,7 +179,6 @@ together and sometimes together with Lips and Tongue.
 <!--XX TODO: Ret fejl i de beskrivelser Max har skrevet ovenfor -->
 
 ### 3.2 knn
-<!-- Mathias: XX TODO: perform analysis -->
 to use KNN we need to have noise free dataset and all attributes of the dataset need to belong to a class.
 we start by choosing the value of K we square root the total number of data points available in the dataset, generally it is a good idea for k to be a odd number.
 
@@ -713,6 +712,147 @@ We were right. Forgy does a damn good job.
 Hartigan Wong and Macqueen mixes shrek 1 and 2 up, and thinks shrek 4 is 2 movies.
 
 ### 5.4 knn
+To use KNN we need to have noise free dataset and all attributes of the dataset need to belong to a class.
+we start by choosing the value of K we square root the total number of data points available in the dataset, generally it is a good idea for k to be a odd number.
+
+```{r 5.4.1 KNN preproccesing, warning=FALSE, echo=FALSE}
+set.seed(13355335)
+#getting data ready
+ran_shrek <- sample(1:nrow(data.points), 0.80* nrow(data.points))
+knn_compound_norm_shrek <- as.data.frame(lapply(data.points, nor))
+norm.test.shrek <- cbind(knn_compound_norm_shrek, classNames)
+names(norm.test.shrek) <- c("date", "sentiment", "class")
+
+#using all data, test and training are the same
+compound_train_shrek <- knn_compound_norm_shrek #all of data
+compound_test_shrek <- knn_compound_norm_shrek #all of data
+compound_target_category_shrek <- classNames#all data
+compound_test_category_shrek <- classNames#all data
+
+#using actually training data and test data
+compound_train_shrek <- knn_compound_norm_shrek[ran_shrek,] #train data values
+compound_test_shrek <- knn_compound_norm_shrek[-ran_shrek,] #test data values
+compound_target_category_shrek <- data[ran_shrek,3] #train data category
+compound_test_category_shrek <- data[-ran_shrek,3] #test data category
+
+
+#when K=1: potential underfit
+#when K approaches total number of rows:potential overfit
+# K should be an odd number
+#so we should cross validate
+sqrt(399)
+#KNN algorithm where key is equal to square root of total number of rows
+predictions_shrek <- knn(compound_train_shrek,compound_test_shrek,cl=compound_target_category_shrek,use.all = TRUE ,k=1)
+
+```
+
+confussion matrix of KNN with K=19 and a 80% training set, 20% test set
+
+```{r 5.4.2 KNN confussion matrix/predictions, warning=FALSE, echo=FALSE}
+#confussion matrix
+set.seed(100440)
+tab_shrek <- table(predictions_shrek, compound_test_category_shrek)
+#tab_shrek
+
+#predictions
+predictions_shrek
+
+#confusion Matrix with accuracy
+confusionMatrix(predictions_shrek ,compound_test_category_shrek)
+
+#CrossTable
+library(gmodels)
+#not sure we need this
+#CrossTable(y=compound_test_category_shrek,x=predictions_shrek,prop.chiq=FALSE)
+
+#error rate
+mean(compound_test_category_shrek != predictions_shrek)
+
+```
+plot that displaying the accuracy of the KNN algorithm given the K=i
+```{r 3.2.3 KNN optimal k based on test/training set, warning=FALSE, echo=FALSE}
+#displaying the accuracy of the KNN algorithm given the K=i
+
+i=1
+k.optm=1
+for (i in 1:40){
+knn.mod <- knn(train=compound_train_shrek, test=compound_test_shrek,cl=compound_target_category_shrek,k=i)
+k.optm[i] <- 100* sum(compound_test_category_shrek==knn.mod)/NROW(compound_test_category_shrek)
+k=i
+cat(k, '=',k.optm[i],'\n')
+}
+
+plot(k.optm, type="b", xlab="K-Value", ylab="Accuracy level")
+
+```
+
+
+Plotting predicted test as a plot(Remember, this only shows the test data which is 20% of the total dataset)
+```{r 5.4.4 KNN plot based test/training set, warning=FALSE, echo=FALSE}
+#plot
+set.seed(100440)
+plot.df_shrek = data.frame(compound_test_shrek, predicted = predictions_shrek)
+plot.df_shrek1 = data.frame(x = plot.df_shrek$y, 
+                      y = plot.df_shrek$x, 
+                      predicted = plot.df_shrek$predicted)
+
+boundary_shrek = ddply(plot.df_shrek1, .variables = "predicted", .fun = find_hull)
+
+border_plot<-ggplot(plot.df_shrek, aes(y, x, color = predicted, fill = predicted)) +
+  geom_point(size = 2)
+#turn the graph so it is facing the right way
+border_plot<-border_plot+ coord_flip()
+#plot without border
+border_plot+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+panel.background = element_blank(), axis.line = element_line(colour = "black"))
+#plot with border
+border_plot+geom_polygon(data = boundary_shrek, aes(x,y), alpha = 0.5)+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+panel.background = element_blank(), axis.line = element_line(colour = "black"))
+
+```
+
+Wee can use cross validation to get a more optimal k, by using the whole data set and split it up to several pieces, this way our training set will be larger, and we avoid the disadvantage of testing our whole data set in one go(to avoid more bias).
+So we split the data up in 10, so 10*10% of the dataset will be tested and the average accuracy and the optimal K would be calculated.
+So we will get the Get the confusion matrix to see accuracy value and other parameter values
+```{r 3.2.5 KNN 10 fold cross validation, warning=FALSE, echo=FALSE}
+
+set.seed(100440)
+
+trControl <- trainControl(method  = "cv",
+                          number  = 10)
+
+cross_fit <- train(class ~ .,
+             method     = "knn",
+             tuneGrid   = expand.grid(k = 1:30),
+             trControl  = trControl,
+             metric     = "Accuracy",
+             data       = norm.test.shrek)
+
+confusionMatrix(cross_fit)
+#Cross validation best K as a plot
+plot(cross_fit)
+#Cross validation best K
+cross_fit
+#plot of ROC(repeated Cross-validation)
+plot(cross_fit, print.thres = 0.5, type="S")
+
+```
+Cross validation prediction tested on the dataset(remember, Kappe is the expected accuracy)
+
+```{r 3.2.5 KNN 10 fold cross validation_2, warning=FALSE, echo=FALSE}
+set.seed(100440)
+
+
+knnPredict <- predict(cross_fit,newdata = norm.test.shrek )
+confusionMatrix(knnPredict,compound.df$class)
+
+
+#Cross validation prediction
+#knnPredict
+#Get the confusion matrix to see accuracy value and other parameter values
+
+```
+
 
 
 ### 5.5 OPTICS
@@ -819,6 +959,7 @@ table(Dbscan_cl_shrek$cluster, classNames)
 plot(Dbscan_cl_shrek, data.points, main = "DBScan")
 
 ```
+
 #### Test 2
 ```{r 5.6.2 DBSCAN test 2, warning=FALSE, echo=FALSE}
 ## Find suitable DBSCAN parameters:
