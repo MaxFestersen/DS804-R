@@ -245,7 +245,7 @@ plot(k.optm, type="b", xlab="K-Value", ylab="Accuracy level")
 ```
 
 
-Plotting predicted test as a plot
+Plotting predicted test as a plot(Remember, this only shows the test data which is 20% of the total dataset)
 ```{r 3.2.4 KNN plot based test/training set, warning=FALSE, echo=FALSE}
 #plot
 plot.df = data.frame(compound_test, predicted = predictions)
