@@ -348,11 +348,11 @@ cluster_report(xi_clust)
 <!-- Christian & Johannes: XX TODO: perform analysis -->
 ```{r 3.3.1 DBSCAN, warning=FALSE, echo=FALSE}
 ## Find suitable DBSCAN parameters:
-## 1. We use minPts = dim + 1 = 5 for iris. A larger value can also be used.
-## 2. We inspect the  k-NN distance plot for k = minPts - 1 = 4
+## 1. We use minPts = dim + 1. A larger value can also be used.
+## 2. We inspect the  k-NN distance plot for k = minPts - 1
 kNNdistplot(td, k = 6-1)
 
-## Noise seems to start around a 4-NN distance of .3
+## Noise seems to start around a 5-NN distance of .17
 abline(h=.17, col = "red", lty=2)
 
 # Fitting DBScan clustering Model 
