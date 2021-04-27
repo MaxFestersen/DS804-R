@@ -205,7 +205,6 @@ sqrt(399)
 predictions <- knn(compound_train,compound_test,cl=compound_target_category,use.all = TRUE ,k=19)
 ```
 
-
 confussion matrix of KNN with K=19 and a 80% training set, 20% test set
 ```{r 3.2.2 KNN confussion matrix/predictions, warning=FALSE, echo=FALSE}
 #confussion matrix
@@ -228,7 +227,7 @@ library(gmodels)
 
 
 ```
-
+plot that displaying the accuracy of the KNN algorithm given the K=i
 ```{r 3.2.3 KNN optimal k based on test/training set, warning=FALSE, echo=FALSE}
 #displaying the accuracy of the KNN algorithm given the K=i
 i=1
