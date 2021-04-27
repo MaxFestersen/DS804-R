@@ -399,6 +399,29 @@ plot(Dbscan_cl, td, main = "DBScan")
 
 ### 3.5 Silutte coefficient
 <!-- : XX TODO: perform analysis -->
+```{r}
+# apply kmeans
+Sil_km_res1 <- kmeans(td, 5, iter.max = 20, algorithm="MacQueen")
+Sil_km_res2 <- kmeans(td, 6, iter.max = 20, algorithm="MacQueen")
+Sil_km_res3 <- kmeans(td, 6, iter.max = 20, algorithm="MacQueen")
+Sil_km_res4 <- kmeans(td, 7, iter.max = 20, algorithm="MacQueen")
+Sil_km_res5 <- kmeans(td, 8, iter.max = 20, algorithm="MacQueen")
+
+
+# calculate silhouette
+sil_res1 <- silhouette(Sil_km_res1$cluster, dist(norm.compound))
+sil_res2 <- silhouette(Sil_km_res2$cluster, dist(norm.compound))
+sil_res3 <- silhouette(Sil_km_res3$cluster, dist(norm.compound))
+sil_res4 <- silhouette(Sil_km_res4$cluster, dist(norm.compound))
+sil_res5 <- silhouette(Sil_km_res5$cluster, dist(norm.compound))
+
+# plot silhouette
+fviz_silhouette(sil_res1)
+fviz_silhouette(sil_res2)
+fviz_silhouette(sil_res3)
+fviz_silhouette(sil_res4)
+fviz_silhouette(sil_res5)
+```
 
 
 
