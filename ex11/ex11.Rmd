@@ -731,7 +731,7 @@ data$forgy <- factor(test_shrek$forgy)
 data$har_won <- factor(test_shrek$har_won)
 
 plot_stuff <- function(df, predicted, cap) {
-  ggplot(df, aes(date, sentiment, shape = title, color = predicted)) +
+  ggplot(df, aes(date, sentiment, shape = class, color = predicted)) +
     geom_point() +
     labs(title = cap) +
     theme_light()
