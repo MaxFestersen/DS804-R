@@ -17,7 +17,6 @@ library(caret)
 library(plyr)
 library(fpc)
 library(e1071)
-library(kableExtra)
 # Source ----------------------------------------
 source("../cluster_quality.R") # Functions for data analysis
 ```
@@ -124,9 +123,9 @@ macqueen
 forgy
 har_won
 
-cluster_report(macqueen)
-cluster_report(forgy)
-cluster_report(har_won)
+cluster_report(macqueen, cap = "MacQueen")
+cluster_report(forgy, cap = "Forgy")
+cluster_report(har_won, cap = "Hartigan Wong")
 
 si <- silhouette(c_har_won$cluster, dist(norm.compound))
 silhouette_score <- mean(si[,3])
@@ -293,7 +292,7 @@ plot(cross_fit, print.thres = 0.5, type="S")
 ```
 Cross validation prediction tested on the dataset(remember, Kappe is the expected accuracy)
 
-```{r 3.2.5 KNN 10 fold cross validation, warning=FALSE, echo=FALSE}
+```{r 3.2.5 KNN 10 fold cross validation_2, warning=FALSE, echo=FALSE}
 
 
 
@@ -379,10 +378,7 @@ xi_clust <- table(dat$xi_clust, dat$class)
 
 xi_clust # 0 is noise points
 
-cluster_report(xi_clust) %>% 
-  kbl(caption = "Clustering quality measures", booktabs = T) %>% 
-  kable_styling(latex_options = "striped") %>% 
-  row_spec(7, hline_after = T)
+cluster_report(xi_clust, cap = "OPTICS Xi-method")
 ```
 
 Looking at the above confusion matrix and computed quality measures, it is clear that OPTICS paired with the Xi-method doesn't get all the points right, however, it is still very precise with almost all precision and recall scores above 0.8. The only class with a recall score below 0.8 is the rain, which with all of the clustering algorithms have been quite challenging to identify. 
@@ -670,9 +666,9 @@ macqueen_shrek
 forgy_shrek
 har_won_shrek
 
-cluster_report(macqueen_shrek)
-cluster_report(forgy_shrek)
-cluster_report(har_won_shrek)
+cluster_report(macqueen_shrek, cap = "MacQueen")
+cluster_report(forgy_shrek, cap = "Forgy")
+cluster_report(har_won_shrek, cap = "Hartigan Wong")
 
 si_shrek <- silhouette(c_har_won_shrek$cluster, dist(data.points))
 silhouette_score <- mean(si_shrek[,3])
@@ -684,7 +680,7 @@ data$forgy <- factor(test_shrek$forgy)
 data$har_won <- factor(test_shrek$har_won)
 
 plot_stuff <- function(df, predicted, cap) {
-  ggplot(df, aes(date, sentiment, shape = class, color = predicted)) +
+  ggplot(df, aes(date, sentiment, shape = title, color = predicted)) +
     geom_point() +
     labs(title = cap) +
     theme_light()
