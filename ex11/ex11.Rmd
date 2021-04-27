@@ -715,6 +715,7 @@ compound_test_category_shrek <- factor(data[-ran_shrek,1]$class) #test data cate
 sqrt(399)
 #KNN algorithm where key is equal to square root of total number of rows
 predictions_shrek <- knn(compound_train_shrek,compound_test_shrek,cl=compound_target_category_shrek,use.all = TRUE, k=1)
+
 ```
 
 confussion matrix of KNN with K=19 and a 80% training set, 20% test set
@@ -741,7 +742,8 @@ mean(compound_test_category_shrek != predictions_shrek)
 
 ```
 plot that displaying the accuracy of the KNN algorithm given the K=i
-```{r 3.2.3 KNN optimal k based on test/training set, warning=FALSE, echo=FALSE}
+
+```{r 5.4.3 KNN optimal k based on test/training set, warning=FALSE, echo=FALSE}
 #displaying the accuracy of the KNN algorithm given the K=i
 
 i=1
@@ -759,17 +761,18 @@ plot(k.optm, type="b", xlab="K-Value", ylab="Accuracy level")
 
 
 Plotting predicted test as a plot(Remember, this only shows the test data which is 20% of the total dataset)
+
 ```{r 5.4.4 KNN plot based test/training set, warning=FALSE, echo=FALSE}
 #plot
 set.seed(100440)
 plot.df_shrek = data.frame(compound_test_shrek, predicted = predictions_shrek)
-plot.df_shrek1 = data.frame(x = plot.df_shrek$y, 
-                      y = plot.df_shrek$x, 
+plot.df_shrek1 = data.frame(x = plot.df_shrek$sentiment, 
+                      y = plot.df_shrek$date, 
                       predicted = plot.df_shrek$predicted)
 
 boundary_shrek = ddply(plot.df_shrek1, .variables = "predicted", .fun = find_hull)
 
-border_plot<-ggplot(plot.df_shrek, aes(y, x, color = predicted, fill = predicted)) +
+border_plot<-ggplot(plot.df_shrek, aes(sentiment, date, color = predicted, fill = predicted)) +
   geom_point(size = 2)
 #turn the graph so it is facing the right way
 border_plot<-border_plot+ coord_flip()
@@ -785,46 +788,45 @@ panel.background = element_blank(), axis.line = element_line(colour = "black"))
 Wee can use cross validation to get a more optimal k, by using the whole data set and split it up to several pieces, this way our training set will be larger, and we avoid the disadvantage of testing our whole data set in one go(to avoid more bias).
 So we split the data up in 10, so 10*10% of the dataset will be tested and the average accuracy and the optimal K would be calculated.
 So we will get the Get the confusion matrix to see accuracy value and other parameter values
+
 ```{r 3.2.5 KNN 10 fold cross validation, warning=FALSE, echo=FALSE}
 
-set.seed(100440)
+set.seed(104) # Vi må vi're
 
-trControl <- trainControl(method  = "cv",
+trControl_shrek <- trainControl(method  = "cv",
                           number  = 10)
 
-cross_fit <- train(class ~ .,
+cross_fit_shrek <- train(class ~ .,
              method     = "knn",
              tuneGrid   = expand.grid(k = 1:30),
-             trControl  = trControl,
+             trControl  = cross_fit_shrek,
              metric     = "Accuracy",
              data       = norm.test.shrek)
 
-confusionMatrix(cross_fit)
+confusionMatrix(cross_fit_shrek)
 #Cross validation best K as a plot
-plot(cross_fit)
+plot(cross_fit_shrek)
 #Cross validation best K
-cross_fit
+cross_fit_shrek
 #plot of ROC(repeated Cross-validation)
-plot(cross_fit, print.thres = 0.5, type="S")
+plot(cross_fit_shrek, print.thres = 0.5, type="S")
 
 ```
 Cross validation prediction tested on the dataset(remember, Kappe is the expected accuracy)
 
-```{r 3.2.5 KNN 10 fold cross validation_2, warning=FALSE, echo=FALSE}
+```{r 5.4.5 KNN 10 fold cross validation_2, warning=FALSE, echo=FALSE}
 set.seed(100440)
 
 
-knnPredict <- predict(cross_fit,newdata = norm.test.shrek )
-confusionMatrix(knnPredict,compound.df$class)
+knnPredict_shrek <- predict(cross_fit_shrek, newdata = norm.test.shrek )
+confusionMatrix(knnPredict_shrek, data$class)
 
 
 #Cross validation prediction
-#knnPredict
+#knnPredict_shrek
 #Get the confusion matrix to see accuracy value and other parameter values
 
 ```
-
-
 
 ### 5.5 OPTICS
 ```{r 5.5.1 Optics-setup, warning=FALSE, echo=FALSE}
@@ -833,6 +835,7 @@ set.seed(7010) # YOLO
 
 opt_clust_shrek <- optics(data.points, minPts = 20)
 plot(opt_clust_shrek, sub = "minPts = 20")
+
 ```
 
 When looking at the "valleys" in the above reachability plot, it seems as if there are 5 classes with somewhat alike density.
@@ -842,12 +845,14 @@ Comparing the reachability plot to the clustering order plot below, we can see t
 ```{r 5.5.1 Optics-order, warning=FALSE, echo=FALSE}
 plot(data.points, col = "grey", main = "Clustering order", sub = "minPts = 20")
 polygon(data.points[opt_clust_shrek$order,])
+
 ```
 
 
 ```{r 5.5.2 Optics-dbscan, warning=FALSE, echo=FALSE}
 res_db_shrek <- extractDBSCAN(opt_clust_shrek, 250)
 plot(res_db_shrek, sub = paste0("DBSCAN extraction eps = ", res_db_shrek$eps_cl))
+
 ```
 
 Looking at the above reachability plot, it is clear that the DBSCAN method only finds 5 clusters, however it finds the most dense clusters. In the plot below the clusters are visualized as a scatterplot.
@@ -858,13 +863,15 @@ hullplot(data.points, res_db_shrek, sub = paste0("DBSCAN extraction eps = ", res
 
 data.points_db_clust <- as.factor(res_db_shrek$cluster)
 db_clust_shrek <- table(data.points_db_clust, classNames)
+
 ```
 It does do a good job, but shrek 1 seems to be more limited than the others.
  
 
 ```{r 5.5.3 Optics-dbscan_3, warning=FALSE, echo=FALSE}
 db_clust_shrek # 0 is noise points
-cluster_report(db_clust_shrek, cap = "DBSCAN extraction") 
+cluster_report(db_clust_shrek, cap = "DBSCAN extraction")
+
 ```
 
 Xi method:
@@ -872,6 +879,7 @@ Xi method:
 ```{r 5.5.4 Optics-xi, warning=FALSE, echo=FALSE}
 res_xi_shrek <- extractXi(opt_clust_shrek, xi = 0.225)
 plot(res_xi_shrek, sub = paste0("Xi extraction steepness threshold = ", res_xi_shrek$xi))
+
 ```
 
 When looking at the above reachability plot, it looks like most movies were identified, however, shrek 2 seems to be overlapping with shrek- 2 and 3.
@@ -880,6 +888,7 @@ In the plot below the identified clusters are visualized on a scatter plot.
 
 ```{r 5.5.4 Optics-xi_2, warning=FALSE, echo=FALSE}
 hullplot(data.points, res_xi_shrek, sub = paste0("Xi extraction steepness threshold = ", res_xi_shrek$xi))
+
 ```
 
 Looking at the above plot, The movies do create some meaningful clusters, but it does have some trouble with Shrek 2, as well as some points that overlap in other clusters. 
@@ -891,6 +900,7 @@ xi_clust_shrek <- table(data_xi_clust, classNames)
 xi_clust_shrek # 0 is noise points
 
 cluster_report(xi_clust_shrek, cap = "OPTICS Xi-method")
+
 ```
 
 Looking at the above confusion matrix and computed quality measures, it is clear that OPTICS paired with the Xi-method doesn't get all the points right, however, it is still very precise. 
