@@ -838,7 +838,8 @@ Dbscan_cl_shrek
 Dbscan_cl_shrek$cluster
 
 # Table
-table(Dbscan_cl_shrek$cluster, classNames)
+confused_matrix <- table(Dbscan_cl_shrek$cluster, classNames)
+cluster_report(confused_matrix, cap = "DBScan")
 
 # Plotting Cluster
 plot(Dbscan_cl_shrek, data.points, main = "DBScan")
