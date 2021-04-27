@@ -785,7 +785,7 @@ hullplot(data.points, res_db_shrek, sub = paste0("DBSCAN extraction eps = ", res
 data.points_db_clust <- as.factor(res_db_shrek$cluster)
 db_clust_shrek <- table(data.points_db_clust, classNames)
 ```
-
+It does do a good job, but shrek 1 seems to be more limited than the others.
  
 
 ```{r 5.5.3 Optics-dbscan_3, warning=FALSE, echo=FALSE}
@@ -793,14 +793,14 @@ db_clust_shrek # 0 is noise points
 cluster_report(db_clust_shrek, cap = "DBSCAN extraction") 
 ```
 
-Xi method: (but it doesn't do that well) 
+Xi method:
 
 ```{r 5.5.4 Optics-xi, warning=FALSE, echo=FALSE}
 res_xi_shrek <- extractXi(opt_clust_shrek, xi = 0.225)
 plot(res_xi_shrek, sub = paste0("Xi extraction steepness threshold = ", res_xi_shrek$xi))
 ```
 
-When looking at the above reachability plot, it looks like most movies were identified, however, There are to many splits and many points which are not identified, i.e., classified as noise.
+When looking at the above reachability plot, it looks like most movies were identified, however, shrek 2 seems to be overlapping with shrek- 2 and 3.
 
 In the plot below the identified clusters are visualized on a scatter plot.
 
@@ -808,7 +808,7 @@ In the plot below the identified clusters are visualized on a scatter plot.
 hullplot(data.points, res_xi_shrek, sub = paste0("Xi extraction steepness threshold = ", res_xi_shrek$xi))
 ```
 
-Looking at the above plot, The movies do create some meaningful clusters, but it does have some trouble with movies that are not Shrek. For Shrek is love. Shrek is life. 
+Looking at the above plot, The movies do create some meaningful clusters, but it does have some trouble with Shrek 2, as well as some points that overlap in other clusters. 
 
 ```{r 5.5.5 Optics-xi_3, warning=FALSE, echo=FALSE}
 data_xi_clust <- as.factor(res_xi_shrek$cluster)
