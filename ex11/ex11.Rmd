@@ -425,11 +425,11 @@ DBScan suggests 6 clusters.
 #### Test 2
 ```{r 3.3.1 DBSCAN_2, warning=FALSE, echo=FALSE}
 
-kNNdistplot(td, k = 6-1)
+kNNdistplot(td, k = 3-1)
 
 abline(h=.17, col = "red", lty=2)
 
-Dbscan_cl <- dbscan(td, eps = 0.17, MinPts = 6 + 1)
+Dbscan_cl <- dbscan(td, eps = 0.4, MinPts = 3 + 1)
 Dbscan_cl
 
 Dbscan_cl$cluster
