@@ -428,8 +428,11 @@ Dbscan_cl$cluster
 # Table
 table(Dbscan_cl$cluster, compound.df$class)
 
+accuracy <- sum(92+19+158+24+16)/length(compound.df$class)
+accuracy
 # Plotting Cluster
 plot(Dbscan_cl, td, main = "DBScan")
+
 
 ```
 DBscan has two parameters: minPts (Dimensionality + 1, or higher), and epsilon from KKn.
@@ -839,6 +842,8 @@ Dbscan_cl_shrek$cluster
 
 # Table
 confused_matrix <- table(Dbscan_cl_shrek$cluster, classNames)
+confused_matrix
+
 cluster_report(confused_matrix, cap = "DBScan")
 
 # Plotting Cluster
