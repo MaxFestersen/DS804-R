@@ -191,7 +191,7 @@ compound_test <- knn_compound_norm #all of data
 compound_target_category <- compound.df[,3]#all data
 compound_test_category <- compound.df[,3]#all data
 
-#using acutally training data and test data
+#using actually training data and test data
 compound_train <- knn_compound_norm[ran,] #train data values
 compound_test <- knn_compound_norm[-ran,] #test data values
 compound_target_category <- compound.df[ran,3] #train data category
@@ -204,12 +204,13 @@ compound_test_category <- compound.df[-ran,3] #test data category
 #so we should cross validate
 sqrt(399)
 #KNN algorithm where key is equal to square root of total number of rows
-predictions <- knn(compound_train,compound_test,cl=compound_target_category,use.all = TRUE ,k=19)
+predictions <- knn(compound_train,compound_test,cl=compound_target_category,use.all = TRUE ,k=1)
 ```
 
 confussion matrix of KNN with K=19 and a 80% training set, 20% test set
 ```{r 3.2.2 KNN confussion matrix/predictions, warning=FALSE, echo=FALSE}
 #confussion matrix
+set.seed(100440)
 tab <- table(predictions,compound_test_category)
 #tab
 
@@ -227,11 +228,15 @@ library(gmodels)
 #not sure we need this
 #CrossTable(y=compound_test_category,x=predictions,prop.chiq=FALSE)
 
+#error rate
+mean(compound_test_category != predictions)
+
 
 ```
 plot that displaying the accuracy of the KNN algorithm given the K=i
 ```{r 3.2.3 KNN optimal k based on test/training set, warning=FALSE, echo=FALSE}
 #displaying the accuracy of the KNN algorithm given the K=i
+
 i=1
 k.optm=1
 for (i in 1:40){
@@ -248,6 +253,7 @@ plot(k.optm, type="b", xlab="K-Value", ylab="Accuracy level")
 Plotting predicted test as a plot(Remember, this only shows the test data which is 20% of the total dataset)
 ```{r 3.2.4 KNN plot based test/training set, warning=FALSE, echo=FALSE}
 #plot
+set.seed(100440)
 plot.df = data.frame(compound_test, predicted = predictions)
 plot.df1 = data.frame(x = plot.df$y, 
                       y = plot.df$x, 
@@ -274,14 +280,14 @@ So we split the data up in 10, so 10*10% of the dataset will be tested and the a
 So we will get the Get the confusion matrix to see accuracy value and other parameter values
 ```{r 3.2.5 KNN 10 fold cross validation, warning=FALSE, echo=FALSE}
 
-set.seed(31040)
+set.seed(100440)
 
 trControl <- trainControl(method  = "cv",
                           number  = 10)
 
 cross_fit <- train(class ~ .,
              method     = "knn",
-             tuneGrid   = expand.grid(k = 3:10),
+             tuneGrid   = expand.grid(k = 1:30),
              trControl  = trControl,
              metric     = "Accuracy",
              data       = norm.test)
@@ -297,7 +303,7 @@ plot(cross_fit, print.thres = 0.5, type="S")
 Cross validation prediction tested on the dataset(remember, Kappe is the expected accuracy)
 
 ```{r 3.2.5 KNN 10 fold cross validation_2, warning=FALSE, echo=FALSE}
-
+set.seed(100440)
 
 
 knnPredict <- predict(cross_fit,newdata = norm.test )
@@ -423,11 +429,11 @@ DBScan suggests 6 clusters.
 #### Test 2
 ```{r 3.3.1 DBSCAN_2, warning=FALSE, echo=FALSE}
 
-kNNdistplot(td, k = 6-1)
+kNNdistplot(td, k = 3-1)
 
 abline(h=.17, col = "red", lty=2)
 
-Dbscan_cl <- dbscan(td, eps = 0.17, MinPts = 6 + 1)
+Dbscan_cl <- dbscan(td, eps = 0.4, MinPts = 3 + 1)
 Dbscan_cl
 
 Dbscan_cl$cluster
@@ -733,7 +739,7 @@ data$forgy <- factor(test_shrek$forgy)
 data$har_won <- factor(test_shrek$har_won)
 
 plot_stuff <- function(df, predicted, cap) {
-  ggplot(df, aes(date, sentiment, shape = title, color = predicted)) +
+  ggplot(df, aes(date, sentiment, shape = class, color = predicted)) +
     geom_point() +
     labs(title = cap) +
     theme_light()
