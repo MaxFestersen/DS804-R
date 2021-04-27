@@ -1,4 +1,5 @@
 library(tidyverse)
+library(kableExtra)
 
 precision <- function(x) {
   precision <- c()
@@ -57,9 +58,12 @@ weighted.avg <- function(x) {
   out <- cbind(precision = w_precision, recall = w_recall, f1 = w_f1, support = sum(x))
 }
 
-cluster_report <- function(x, digits = 5) {
+cluster_report <- function(x, digits = 5, cap = "some cluster") {
   out <- round(cbind(precision = precision(x), recall = recall(x), f1 = f1(x), support = support(x)), digits) %>%  
     rbind(data.frame(rbind(c("", "", "", ""), micro(x, digits), round(macro(x), digits), round(weighted.avg(x), digits)), row.names = c(" ", "Accuracy", "Macro avg", "Weighted avg"))) # binding it all together
-  out
+  out %>% 
+    kbl(caption = paste("Clustering quality measures", cap), booktabs = T) %>% 
+    kable_styling(latex_options = "striped") %>% 
+    row_spec(ncol(x), hline_after = T)
 }
 
