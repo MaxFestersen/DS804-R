@@ -230,8 +230,6 @@ library(gmodels)
 
 #error rate
 mean(compound_test_category != predictions)
-
-
 ```
 plot that displaying the accuracy of the KNN algorithm given the K=i
 ```{r 3.2.3 KNN optimal k based on test/training set, warning=FALSE, echo=FALSE}
@@ -308,7 +306,6 @@ set.seed(100440)
 
 knnPredict <- predict(cross_fit,newdata = norm.test )
 confusionMatrix(knnPredict,compound.df$class)
-
 
 
 #Cross validation prediction
@@ -772,64 +769,64 @@ Hartigan Wong and Macqueen mixes shrek 1 and 2 up, and thinks shrek 4 is 2 movie
 
 
 ### 5.5 OPTICS
-```{r 3.3.1 Optics-setup, warning=FALSE, echo=FALSE}
+```{r 5.5.1 Optics-setup, warning=FALSE, echo=FALSE}
 set.seed(7010) # YOLO
 # data already set as data
 
-opt_clust_shrek <- optics(data.points, minPts = 7)
-plot(opt_clust_shrek, sub = "minPts = 7")
+opt_clust_shrek <- optics(data.points, minPts = 20)
+plot(opt_clust_shrek, sub = "minPts = 20")
 ```
 
 When looking at the "valleys" in the above reachability plot, it seems as if there are 5 classes with somewhat alike density.
 
 Comparing the reachability plot to the clustering order plot below, we can see that the clustering happens around the densest parts of the clusters.
 
-```{r 3.3.1 Optics-order, warning=FALSE, echo=FALSE}
-plot(data.points, col = "grey", main = "Clustering order", sub = "minPts = 7")
+```{r 5.5.1 Optics-order, warning=FALSE, echo=FALSE}
+plot(data.points, col = "grey", main = "Clustering order", sub = "minPts = 20")
 polygon(data.points[opt_clust_shrek$order,])
 ```
 
 
-```{r 3.3.2 Optics-dbscan, warning=FALSE, echo=FALSE}
-res_db_shrek <- extractDBSCAN(opt_clust_shrek, 1.55)
+```{r 5.5.2 Optics-dbscan, warning=FALSE, echo=FALSE}
+res_db_shrek <- extractDBSCAN(opt_clust_shrek, 250)
 plot(res_db_shrek, sub = paste0("DBSCAN extraction eps = ", res_db_shrek$eps_cl))
 ```
 
 Looking at the above reachability plot, it is clear that the DBSCAN method only finds 5 clusters, however it finds the most dense clusters. In the plot below the clusters are visualized as a scatterplot.
 <!-- XX TODO: rewrite statement and dix the remodeling that happens for no reason now? -->
 
-```{r 3.3.2 Optics-dbscan_2, warning=FALSE, echo=FALSE}
+```{r 5.5.2 Optics-dbscan_2, warning=FALSE, echo=FALSE}
 hullplot(data.points, res_db_shrek, sub = paste0("DBSCAN extraction eps = ", res_db_shrek$eps_cl))
 
 data.points_db_clust <- as.factor(res_db_shrek$cluster)
 db_clust_shrek <- table(data.points_db_clust, classNames)
 ```
-
+It does do a good job, but shrek 1 seems to be more limited than the others.
  
 
-```{r 3.3.3 Optics-dbscan_3, warning=FALSE, echo=FALSE}
+```{r 5.5.3 Optics-dbscan_3, warning=FALSE, echo=FALSE}
 db_clust_shrek # 0 is noise points
-#cluster_report(db_clust) # doesn't work as dbscan method only finds 4 clusters
+cluster_report(db_clust_shrek, cap = "DBSCAN extraction") 
 ```
 
-Xi method: (but it does'nt do that well) 
+Xi method:
 
-```{r 3.3.4 Optics-xi, warning=FALSE, echo=FALSE}
-res_xi_shrek <- extractXi(opt_clust_shrek, xi = 0.058)
+```{r 5.5.4 Optics-xi, warning=FALSE, echo=FALSE}
+res_xi_shrek <- extractXi(opt_clust_shrek, xi = 0.225)
 plot(res_xi_shrek, sub = paste0("Xi extraction steepness threshold = ", res_xi_shrek$xi))
 ```
 
-When looking at the above reachability plot, it looks like most movies were identified, however, There are to many splits and many points which are not identified, i.e., classified as noise.
+When looking at the above reachability plot, it looks like most movies were identified, however, shrek 2 seems to be overlapping with shrek- 2 and 3.
 
 In the plot below the identified clusters are visualized on a scatter plot.
 
-```{r 3.3.4 Optics-xi_2, warning=FALSE, echo=FALSE}
+```{r 5.5.4 Optics-xi_2, warning=FALSE, echo=FALSE}
 hullplot(data.points, res_xi_shrek, sub = paste0("Xi extraction steepness threshold = ", res_xi_shrek$xi))
 ```
 
-Looking at the above plot, The movies do create some meaningful clusters, but it does have some trouble with movies that are not Shrek. For Shrek is love. Shrek is life. 
+Looking at the above plot, The movies do create some meaningful clusters, but it does have some trouble with Shrek 2, as well as some points that overlap in other clusters. 
 
-```{r 3.3.5 Optics-xi_3, warning=FALSE, echo=FALSE}
+```{r 5.5.5 Optics-xi_3, warning=FALSE, echo=FALSE}
 data_xi_clust <- as.factor(res_xi_shrek$cluster)
 xi_clust_shrek <- table(data_xi_clust, classNames)
 
