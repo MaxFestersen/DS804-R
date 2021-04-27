@@ -295,21 +295,35 @@ plot(cross_fit, print.thres = 0.5, type="S")
 ### 3.3 OPTICS
 <!-- Alexander: XX TODO: perform analysis -->
 
-```{r 3.3.1 Optics, warning=FALSE, echo=FALSE}
+```{r 3.3.1 Optics-setup, warning=FALSE, echo=FALSE}
 set.seed(2)
 dat <- compound.df[1:2] # data
 
 opt_clust <- optics(dat, minPts = 7)
 plot(opt_clust, sub = "minPts = 7")
+```
 
+When looking at the "valleys" in the above reachability plot, it seems as if there are 5 classes with somewhat different density, however, there actually are 6 as we know from the data description.
+
+Comparing the reachability plot to the clustering order plot below, we can see that the clustering starts somewhere between the rain and the right eye, going to the left eye and moving further on to the mouth and tounge. Then it goes back into the rain, finds the corona-virus and finishes with the rain, which is most likely the bump at the end having the lowest density.
+
+```{r 3.3.1 Optics-order, warning=FALSE, echo=FALSE}
 plot(dat, col = "grey", main = "Clustering order", sub = "minPts = 7")
 polygon(dat[opt_clust$order,])
 ```
 
+**Extracting clusters**
 
-```{r 3.3.2 Optics, warning=FALSE, echo=FALSE}
-res_db <- extractDBSCAN(opt_clust, 1.6)
+To extract clusters from the OPTICS algorithm there are two methods, using DBSCAN with a fixed epsilon $\varepsilon$ or the Xi method which is based on a steepness threshold $\xi$ to identify clusters hierarchically. The Xi method is particularly good for identifying clusters with a varying density, whereas DBSCAN identifies clusters as the valleys below the given $\varepsilon$ value with separating hills. As the classes in this dataset have varying density the DBSCAN method, is most likely not a good choice for this dataset.
+
+```{r 3.3.2 Optics-dbscan, warning=FALSE, echo=FALSE}
+res_db <- extractDBSCAN(opt_clust, 1.55)
 plot(res_db, sub = paste0("DBSCAN extraction eps = ", res_db$eps_cl))
+```
+
+Looking at the above reachability plot, it is clear that the DBSCAN method only finds 5 clusters, however it finds the most dense clusters. In the plot below the clusters are visualized as a scatterplot.
+
+```{r 3.3.2 Optics-dbscan_2, warning=FALSE, echo=FALSE}
 hullplot(dat, res_db, sub = paste0("DBSCAN extraction eps = ", res_db$eps_cl))
 
 dat$db_clust <- as.factor(res_db$cluster)
@@ -317,31 +331,37 @@ dat$class <- compound.df$class
 db_clust <- table(dat$db_clust, dat$class)
 ```
 
-DBSCAN extraction only finds 4 clusters, most likely because the classes has a variable density. 
+The mouth and the tounge are perfectly identified, whereas the right and left eye are missing some points and the rain is missing completely. Furthermore, the corona-virus includes some points from the rain, but is otherwise very nicely identified. The same pattern can be seen in the confusion matrix below. 
 
-```{r 3.3.3 Optics, warning=FALSE, echo=FALSE}
+```{r 3.3.3 Optics-dbscan_3, warning=FALSE, echo=FALSE}
 db_clust # 0 is noise points
 #cluster_report(db_clust) # doesn't work as dbscan method only finds 4 clusters
 ```
 
+As mentioned before, another method for extracting clusters from OPTICS is the Xi method, which utilizes a Steepness threshold $\xi$ to identify clusters hierarchically. This method might just be better at identifying all the clusters especially the rain, as the rain is quite different density-wise from the other clusters. 
 
-Another method for extracting clusters from OPTICS is the Xi method, which utilizes a Steepness threshold to identify clusters hierarchically. 
-
-```{r 3.3.4 Optics, warning=FALSE, echo=FALSE}
+```{r 3.3.4 Optics-xi, warning=FALSE, echo=FALSE}
 res_xi <- extractXi(opt_clust, xi = 0.058)
 plot(res_xi, sub = paste0("Xi extraction steepness threshold = ", res_xi$xi))
+```
+
+When looking at the above reachability plot, it looks like 6 clusters have been identified, however, there are still some points which are not identified, i.e., classified as noise. In the plot below the identified clusters are visualized on a scatter plot.
+
+```{r 3.3.4 Optics-xi_2, warning=FALSE, echo=FALSE}
 hullplot(dat[1:2], res_xi, sub = paste0("Xi extraction steepness threshold = ", res_xi$xi))
 ```
 
-As seen in the above plot the Xi extraction is much better at finding the clusters.
+Looking at the above plot it is clear, that the mouth is still perfectly identified, whereas the tounge now is missing a point. More points have been identified of the left eye and maybe also the right eye. Furthermore, the corona-virus has some more points of the rain in it, but the rain is now also a cluster itself.
 
-```{r 3.3.5 Optics, warning=FALSE, echo=FALSE}
+```{r 3.3.5 Optics-xi_3, warning=FALSE, echo=FALSE}
 dat$xi_clust <- as.factor(res_xi$cluster)
 xi_clust <- table(dat$xi_clust, dat$class)
 
 xi_clust # 0 is noise points
 cluster_report(xi_clust)
 ```
+
+Looking at the above confusion matrix and computed quality measures, it is clear that OPTICS paired with the Xi-method doesn't get all the points right, however, it is still very precise with almost all precision and recall scores above 0.8. The only class with a recall score below 0.8 is the rain, which with all of the clustering algorithms have been quite challenging to identify. 
 
 ### 3.4 DBSCAN
 #### Test 1
@@ -379,7 +399,7 @@ DBScan suggests 6 clusters.
 "Lips", "Tongue", "Corona" are pretty good.
 
 #### Test 2
-```{r 3.3.1 DBSCAN, warning=FALSE, echo=FALSE}
+```{r 3.3.1 DBSCAN_2, warning=FALSE, echo=FALSE}
 
 kNNdistplot(td, k = 6-1)
 
