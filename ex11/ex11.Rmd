@@ -315,8 +315,6 @@ knnPredict
 
 
 ### 3.3 OPTICS
-<!-- Alexander: XX TODO: perform analysis -->
-
 ```{r 3.3.1 Optics-setup, warning=FALSE, echo=FALSE}
 set.seed(2)
 dat <- compound.df[1:2] # data
