@@ -17,6 +17,7 @@ library(caret)
 library(plyr)
 library(fpc)
 library(e1071)
+library(kableExtra)
 # Source ----------------------------------------
 source("../cluster_quality.R") # Functions for data analysis
 ```
@@ -358,7 +359,11 @@ dat$xi_clust <- as.factor(res_xi$cluster)
 xi_clust <- table(dat$xi_clust, dat$class)
 
 xi_clust # 0 is noise points
-cluster_report(xi_clust)
+
+cluster_report(xi_clust) %>% 
+  kbl(caption = "Clustering quality measures", booktabs = T) %>% 
+  kable_styling(latex_options = "striped") %>% 
+  row_spec(7, hline_after = T)
 ```
 
 Looking at the above confusion matrix and computed quality measures, it is clear that OPTICS paired with the Xi-method doesn't get all the points right, however, it is still very precise with almost all precision and recall scores above 0.8. The only class with a recall score below 0.8 is the rain, which with all of the clustering algorithms have been quite challenging to identify. 
