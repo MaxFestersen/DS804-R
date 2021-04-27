@@ -44,7 +44,7 @@ For this project, we have chosen a dataset in the "Shape sets" at [https://cs.jo
 ### 1.1 Zahn's Compound dataset
 For this exercise, we needed shape data set. We choose to use the compound
 dataset, from C.T. Zahn, **IEEE Transactions on Computers**, 1971.
-The compound data was chosen for... reasons.<!-- XX TODO: expand reason.  -->
+The compound data was chosen for... reasons.
 
 ```{r 1.1.1 Loading-dataset, echo = FALSE, message = FALSE}
 # Data load
@@ -496,8 +496,13 @@ fviz_nbclust(td, kmeans, method = "silhouette") +
 
 ## 4 Results
 ### 4.1 Comparison
-<!-- XX TODO: Explain what we found / sum up results -->
-
+Accuracy:
+* K-means (MacQueen): ~61%
+* K-means (Forgy): ~~65%
+* K-means (Hartigan-Wong): 80%
+* KNN: ~90-99% (depending on risk of willingness to overfit)
+* DBscan: ~77%
+* OPTICS: ~93%
 
 
 ## 5 More intresing data
