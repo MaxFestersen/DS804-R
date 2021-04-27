@@ -454,7 +454,7 @@ c_har_won4plot1 <- fviz_cluster(c_har_won4, data = td,
              ggtheme = theme_bw()
              )
 c_har_won4plot2 <- fviz_silhouette(sil_res4)
-grid.arrange(c_har_won4plot1, c_har_won4plot2, ncol = 2)
+grid.arrange(c_har_won4plot1, c_har_won4plot2, nrow =2, ncol = 1)
 
 # 5 clusters
 c_har_won5 <- kmeans(td, 5)
@@ -465,7 +465,7 @@ c_har_won5plot1 <- fviz_cluster(c_har_won5, data = td,
              ggtheme = theme_bw()
              )
 c_har_won5plot2 <- fviz_silhouette(sil_res5)
-grid.arrange(c_har_won5plot1, c_har_won5plot2, ncol = 2)
+grid.arrange(c_har_won5plot1, c_har_won5plot2, nrow =2, ncol = 1)
 
 # 6 clusters
 sil_res6 <- silhouette(c_har_won$cluster, dist(norm.compound))
@@ -475,7 +475,7 @@ c_har_wonplot1 <- fviz_cluster(c_har_won, data = td,
              ggtheme = theme_bw()
              )
 c_har_wonplot2 <- fviz_silhouette(sil_res6)
-grid.arrange(c_har_wonplot1, c_har_wonplot2, ncol = 2)
+grid.arrange(c_har_wonplot1, c_har_wonplot2, nrow =2, ncol = 1)
 
 # 7 clusters
 c_har_won7 <- kmeans(td, 7)
@@ -486,8 +486,12 @@ c_har_won7plot1 <- fviz_cluster(c_har_won7, data = td,
              ggtheme = theme_bw()
              )
 c_har_won7plot2 <- fviz_silhouette(sil_res7)
-grid.arrange(c_har_won7plot1, c_har_won7plot2, ncol = 2)
+grid.arrange(c_har_won7plot1, c_har_won7plot2, nrow =2, ncol = 1)
 ```
+
+The silhouette value is a measure of how similar an object is to its own cluster (cohesion) compared to other clusters (separation).
+
+The silhouette ranges from −1 to +1, where a high value indicates that the object is well matched to its own cluster and poorly matched to neighboring clusters.
 
 
 
