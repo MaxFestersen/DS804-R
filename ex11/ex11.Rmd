@@ -819,7 +819,7 @@ table(Dbscan_cl_shrek$cluster, classNames)
 plot(Dbscan_cl_shrek, data.points, main = "DBScan")
 
 ```
-#### Test 1
+#### Test 2
 ```{r 5.6.2 DBSCAN test 2, warning=FALSE, echo=FALSE}
 ## Find suitable DBSCAN parameters:
 ## 1. We use minPts = dim + 1 = 5 for iris. A larger value can also be used.
