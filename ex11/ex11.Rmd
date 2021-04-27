@@ -819,7 +819,7 @@ set.seed(100440)
 
 
 knnPredict_shrek <- predict(cross_fit_shrek, newdata = norm.test.shrek )
-confusionMatrix(knnPredict_shrek, data$class)
+confusionMatrix(knnPredict_shrek, factor(data$class))
 
 
 #Cross validation prediction
