@@ -790,7 +790,7 @@ db_clust_shrek <- table(data.points_db_clust, classNames)
 
 ```{r 5.5.3 Optics-dbscan_3, warning=FALSE, echo=FALSE}
 db_clust_shrek # 0 is noise points
-cluster_report(db_clust_shrek) 
+cluster_report(db_clust_shrek, cap = "DBSCAN extraction") 
 ```
 
 Xi method: (but it doesn't do that well) 
