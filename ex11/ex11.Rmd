@@ -98,8 +98,6 @@ We normalize the data to be closer to zero (centered zero). This is done to norm
 
 
 ## 3 Analysis of the Methods
-<!-- XX TODO: find analysis methods -->
-
 
 ### 3.1 k-means
 With k-means we expected it would be able to create good clusters
@@ -175,7 +173,6 @@ together and sometimes together with Lips and Tongue.
 
 ### 3.2 knn
 <!-- Mathias: XX TODO: perform analysis -->
-<!-- Mathias: XX TODO: perform analysis -->
 to use KNN we need to have noise free dataset and all attributes of the dataset need to belong to a class.
 we start by choosing the value of K we square root the total number of data points available in the dataset, generally it is a good idea for k to be a odd number.
 
@@ -185,6 +182,8 @@ set.seed(42069)
 ran <- sample(1:nrow(compound.df), 0.80* nrow(compound.df))
 nor <-function(x) { (x -min(x))/(max(x)-min(x))   }
 knn_compound_norm <- as.data.frame(lapply(compound.df[,c(1,2)], nor))
+norm.test <- cbind(knn_compound_norm, compound.df$class)
+names(norm.test) <- c("x", "y", "class")
 
 #using all data, test and training are the same
 compound_train <- knn_compound_norm #all of data
@@ -205,10 +204,10 @@ compound_test_category <- compound.df[-ran,3] #test data category
 #so we should cross validate
 sqrt(399)
 #KNN algorithm where key is equal to square root of total number of rows
-predictions <- knn(compound_train,compound_test,cl=compound_target_category,use.all = TRUE ,k=4)
+predictions <- knn(compound_train,compound_test,cl=compound_target_category,use.all = TRUE ,k=19)
 ```
 
-
+confussion matrix of KNN with K=19 and a 80% training set, 20% test set
 ```{r 3.2.2 KNN confussion matrix/predictions, warning=FALSE, echo=FALSE}
 #confussion matrix
 tab <- table(predictions,compound_test_category)
@@ -225,11 +224,12 @@ confusionMatrix(predictions ,compound_test_category)
 
 #CrossTable
 library(gmodels)
-CrossTable(y=compound_test_category,x=predictions,prop.chiq=FALSE)
+#not sure we need this
+#CrossTable(y=compound_test_category,x=predictions,prop.chiq=FALSE)
 
 
 ```
-
+plot that displaying the accuracy of the KNN algorithm given the K=i
 ```{r 3.2.3 KNN optimal k based on test/training set, warning=FALSE, echo=FALSE}
 #displaying the accuracy of the KNN algorithm given the K=i
 i=1
@@ -245,7 +245,7 @@ plot(k.optm, type="b", xlab="K-Value", ylab="Accuracy level")
 ```
 
 
-
+Plotting predicted test as a plot
 ```{r 3.2.4 KNN plot based test/training set, warning=FALSE, echo=FALSE}
 #plot
 plot.df = data.frame(compound_test, predicted = predictions)
@@ -270,25 +270,40 @@ border_plot+geom_polygon(data = boundary, aes(x,y), alpha = 0.5)
 Wee can use cross validation to get a more optimal k, by using the whole data set and split it up to several pieces, this way our training set will be larger, and we avoid the disadvantage of testing our whole data set in one go.
 ```{r 3.2.5 KNN 10 fold cross validation, warning=FALSE, echo=FALSE}
 
+set.seed(31040)
+
 trControl <- trainControl(method  = "cv",
                           number  = 10)
 
 cross_fit <- train(class ~ .,
              method     = "knn",
-             tuneGrid   = expand.grid(k = 1:10),
+             tuneGrid   = expand.grid(k = 3:10),
              trControl  = trControl,
              metric     = "Accuracy",
-             data       = compound.df)
-cross_fit
-#Cross validation best K
+             data       = norm.test)
+#Get the confusion matrix to see accuracy value and other parameter values
+confusionMatrix(cross_fit)
+#Cross validation best K as a plot
 plot(cross_fit)
+#Cross validation best K
+cross_fit
+#plot of ROC(repeated Cross-validation)
+plot(cross_fit, print.thres = 0.5, type="S")
+
+
+#Cross validation prediction tested on the dataset(remember, Kappe is the expected accuracy)
+knnPredict <- predict(cross_fit,newdata = norm.test )
+confusionMatrix(knnPredict,compound.df$class)
+
+
 
 #Cross validation prediction
-knnPredict <- predict(cross_fit,newdata = compound_test )
+knnPredict <- predict(cross_fit,newdata = norm.test )
 knnPredict
 #Get the confusion matrix to see accuracy value and other parameter values
 #plot of ROC(repeated Cross-validation)
 plot(cross_fit, print.thres = 0.5, type="S")
+
 ```
 
 
@@ -441,10 +456,17 @@ For the "More intresting data" we found IMDB review for the Shrek movies.
 It includes stars (1-10), review, review title, movie name and date. 
 We don't need the date, so it will be trimmed.
 We also omit missing values, as it can't really be used.
-```{r 5.0.1 Review data initialiation, warning=FALSE, echo=FALSE}
+Looking at the plots, any could be used, but none are easily clustered.
+
+```{r 5.1.1 Movie data source, warning=FALSE, echo=FALSE, results='hide'}
+# Source: https://github.com/raymondmyu/imdbreviews/tree/master/imdb_reviews
+```
+
+### 5.1 Data initiation
+<!-- XX TODO: Initiate more interesting data -->
+```{r 5.1.1 Review data initialiation, warning=FALSE, echo=FALSE}
 # Source: https://github.com/raymondmyu/imdbreviews/tree/master/imdb_reviews
 all.reviews <- read.csv("dataset/allreviews.csv", sep = ",") %>%
-  # select(-date) %>% # remove date from dataset
   dplyr::rename(review = text) %>% # Rename text to review
   mutate(review.and.title = paste(r_title, review)) %>%
   filter(title == c( # Filter for what movies to feature
@@ -467,23 +489,33 @@ all.reviews <- read.csv("dataset/allreviews.csv", sep = ",") %>%
          # , sentiment_title, sentiment_reveiw
          ) %>% 
   na.omit() %>%
+  mutate(
+    date = as.Date(date) #Set date as date format, to do date filtering and stuff
+  ) %>%
   group_by(title) %>% 
-  arrange(date) %>% 
-  top_n(50) #%>% 
+  arrange(title, date) %>% 
+  top_n(31) #%>% #Equal amount of points - limited by Shrek 4
   # mutate(date = as.numeric(date))
-
-all.reviews.means <- all.reviews %>% 
-  group_by(title) %>% 
-  summarise(stars = mean(stars),
-            # sentiment = mean(sentiment),
-            date = mean(date)
-            # sentiment_title = mean(sentiment_title),
-            # sentiment_reveiw = mean(sentiment_reveiw)
-            ) %>% 
-  arrange(stars)
+# all.reviews %>% dplyr::filter(title == "The Killing of a Sacred Deer")
 ```
 
-```{r 5.0.2 Review data Vizualization, warning=FALSE, echo=FALSE}
+```{r 5.1.2 Average data table, warning=FALSE, echo=FALSE, dev='png'}
+all.reviews.means <- all.reviews %>% 
+  dplyr::group_by(title) %>% 
+  mutate(
+    date = as.Date(date) #Set date as date format, to do date filtering and stuff
+  ) %>% 
+  dplyr::summarise(stars = mean(stars),
+            sentiment = mean(sentiment),
+            date = mean(date)
+            ) %>%
+  mutate(stars = round(stars, 2), sentiment = round(sentiment, 5)) %>% 
+  arrange(desc(stars))
+  
+all.reviews.means
+```
+
+```{r 5.1.3 Review data Vizualization, warning=FALSE, echo=FALSE}
 stars_sen <- all.reviews %>% # stars vs sentiment review
   select(title, stars, sentiment) %>%
   dplyr::rename("x" = stars,
@@ -514,9 +546,8 @@ ggplot(date_stars, aes(x, y, shape = class, color = class)) +
   labs(title = "Date and Stars") +
   theme_light()
 ```
-Looking at the plots, any could be used, but none are easily clustered.
 
-```{r 5.0.3 Unused shrek vizualizations, warning=FALSE, echo=FALSE}
+```{r 5.1.4 Unused shrek initialization and vizualizations, warning=FALSE, echo=FALSE}
 # shrek.1 <- read.csv("dataset/Shrek.csv", sep = ",")[-1]
 # shrek.2 <- read.csv("dataset/Shrek 2.csv", sep = ",")[-1]
 # shrek.3 <- read.csv("dataset/Shrek the Third.csv", sep = ",")[-1]
@@ -591,26 +622,93 @@ Looking at the plots, any could be used, but none are easily clustered.
 
 ```
 
-### 5.1 Data initiation
-<!-- XX TODO: Initiate more intersting data -->
+```{r 5.1.5 Focus data for 5, warning=FALSE, echo=FALSE}
+data <- all.reviews %>% # stars vs sentiment review
+  select(date, sentiment) %>%
+  mutate(date = as.numeric(date))
+
+data.points <- all.reviews %>% # stars vs sentiment review
+  ungroup() %>% 
+  select(date, sentiment) %>%
+  mutate(date = as.numeric(date))
+
+classNames <- all.reviews %>% # stars vs sentiment review
+  select(title) %>% 
+  .$title
+
+unique_class <- classNames %>% 
+  unique()
+```
+
+### 5.2 Analysis
+
+### 5.3 k-means
+With k-means we hoped it would be able to categorize
+the movies with time and sentiment. We do expect some of the reviews
+to be mislabeled. Especially Shrek.
+
+```{r 5.3.1 K-means testing methods, warning=FALSE, echo=FALSE}
+set.seed(42069) # Set seed to remove randomness when replicating results
+c_macqueen_shrek <- kmeans(data.points, 5, iter.max = 20, algorithm = "MacQueen")
+c_forgy_shrek <- kmeans(data.points, 5, iter.max = 20, algorithm = "Forgy")
+c_har_won_shrek <- kmeans(data.points, 5)
+
+test_shrek <- data.frame(macqueen = c_macqueen_shrek$cluster,
+                   forgy = c_forgy_shrek$cluster,
+                   har_won = c_har_won_shrek$cluster,
+                   class = classNames)
+
+macqueen_shrek <- table(test_shrek$macqueen, test_shrek$class, dnn = c("MacQueen", "Class"))
+forgy_shrek <- table(test_shrek$forgy, test_shrek$class, dnn = c("Forgy", "Class"))
+har_won_shrek <- table(test_shrek$har_won, test_shrek$class, dnn = c("Harting-Wong", "Class"))
+
+macqueen_shrek
+forgy_shrek
+har_won_shrek
+
+cluster_report(macqueen_shrek)
+cluster_report(forgy_shrek)
+cluster_report(har_won_shrek)
+
+si_shrek <- silhouette(c_har_won_shrek$cluster, dist(data.points))
+silhouette_score <- mean(si_shrek[,3])
+```
+
+```{r 5.3.2 k-means-visualization, warning=FALSE, echo=FALSE}
+data$macqueen <- factor(test_shrek$macqueen)
+data$forgy <- factor(test_shrek$forgy)
+data$har_won <- factor(test_shrek$har_won)
+
+plot_stuff <- function(df, predicted, cap) {
+  ggplot(df, aes(date, sentiment, shape = class, color = predicted)) +
+    geom_point() +
+    labs(title = cap) +
+    theme_light()
+}
 
 
-### 5.2 Methods  
+plot_stuff(data, data$macqueen, "Macqueen")
+plot_stuff(data, data$forgy, "Forgy")
+plot_stuff(data, data$har_won, "Hartigan Wong")
+```
+We were right.
+
+### 5.4 knn
 
 
-### 5.3 Algorithms and implementation  
-<!-- XX TODO: explain witch algorithms and implementations that were used -->
-
-  
-### 5.4 Analysis
-<!-- XX TODO: perform analysis -->
+### 5.5 OPTICS
 
 
-### 5.5 Results
+### 5.6 DBSCAN
+
+
+### 5.7 Silutte coefficient
+
+
+### 6 Results
 <!-- XX TODO: Explain what we found / sum up results -->
 
-
-### 6 Clustering results
+### 7 Clustering results
 <!-- XX Answer: What can you learn about that [new] data by using clustering? -->
 
 
