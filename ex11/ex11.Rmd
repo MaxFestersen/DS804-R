@@ -760,8 +760,8 @@ Hartigan Wong and Macqueen mixes shrek 1 and 2 up, and thinks shrek 4 is 2 movie
 set.seed(7010) # YOLO
 # data already set as data
 
-opt_clust_shrek <- optics(data.points, minPts = 7)
-plot(opt_clust_shrek, sub = "minPts = 7")
+opt_clust_shrek <- optics(data.points, minPts = 20)
+plot(opt_clust_shrek, sub = "minPts = 20")
 ```
 
 When looking at the "valleys" in the above reachability plot, it seems as if there are 5 classes with somewhat alike density.
@@ -769,13 +769,13 @@ When looking at the "valleys" in the above reachability plot, it seems as if the
 Comparing the reachability plot to the clustering order plot below, we can see that the clustering happens around the densest parts of the clusters.
 
 ```{r 3.3.1 Optics-order, warning=FALSE, echo=FALSE}
-plot(data.points, col = "grey", main = "Clustering order", sub = "minPts = 7")
+plot(data.points, col = "grey", main = "Clustering order", sub = "minPts = 20")
 polygon(data.points[opt_clust_shrek$order,])
 ```
 
 
 ```{r 3.3.2 Optics-dbscan, warning=FALSE, echo=FALSE}
-res_db_shrek <- extractDBSCAN(opt_clust_shrek, 1.55)
+res_db_shrek <- extractDBSCAN(opt_clust_shrek, 220)
 plot(res_db_shrek, sub = paste0("DBSCAN extraction eps = ", res_db_shrek$eps_cl))
 ```
 
@@ -793,13 +793,13 @@ db_clust_shrek <- table(data.points_db_clust, classNames)
 
 ```{r 3.3.3 Optics-dbscan_3, warning=FALSE, echo=FALSE}
 db_clust_shrek # 0 is noise points
-#cluster_report(db_clust) # doesn't work as dbscan method only finds 4 clusters
+cluster_report(db_clust_shrek) 
 ```
 
-Xi method: (but it does'nt do that well) 
+Xi method: (but it doesn't do that well) 
 
 ```{r 3.3.4 Optics-xi, warning=FALSE, echo=FALSE}
-res_xi_shrek <- extractXi(opt_clust_shrek, xi = 0.058)
+res_xi_shrek <- extractXi(opt_clust_shrek, xi = 0.225)
 plot(res_xi_shrek, sub = paste0("Xi extraction steepness threshold = ", res_xi_shrek$xi))
 ```
 
