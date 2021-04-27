@@ -185,6 +185,11 @@ ran <- sample(1:nrow(compound.df), 0.80* nrow(compound.df))
 nor <-function(x) { (x -min(x))/(max(x)-min(x))   }
 knn_compound_norm <- as.data.frame(lapply(compound.df[,c(1,2)], nor))
 
+#creating a normalized dataset with classes(for Cross validation)
+norm.test <- cbind(knn_compound_norm, compound.df$class)
+names(norm.test) <- c("x", "y", "class")
+
+
 #using all data, test and training are the same
 compound_train <- knn_compound_norm #all of data
 compound_test <- knn_compound_norm #all of data
@@ -198,6 +203,8 @@ compound_target_category <- compound.df[ran,3] #train data category
 compound_test_category <- compound.df[-ran,3] #test data category
 
 
+
+
 #when K=1: potential underfit
 #when K approaches total number of rows:potential overfit
 # K should be an odd number
@@ -206,7 +213,8 @@ sqrt(399)
 #KNN algorithm where key is equal to square root of total number of rows
 predictions <- knn(compound_train,compound_test,cl=compound_target_category,use.all = TRUE ,k=4)
 ```
-
+If we use the whole dataset as a training and test set, and also set K to 1. The the predictions will always be 100% correct, because we have overfitted the model to the exact same data as we test on.
+We can solve this issue be using a training and a test set that together form the whole dataset, but another problem then arise.
 
 ```{r 3.2.2 KNN confussion matrix/predictions, warning=FALSE, echo=FALSE}
 #confussion matrix
@@ -242,8 +250,10 @@ cat(k, '=',k.optm[i],'\n')
 
 plot(k.optm, type="b", xlab="K-Value", ylab="Accuracy level")
 ```
+When we want to set a new K we need to remember that as the complexity of the KNNmodel, is determined by the value of K(lower value= more complex). So training accuracy rises as the complexity increases(lower k=higher training accuracy).
+so testing accuracy is a more appropriate way to measure the quality, as it penalizes models that are too complex or not complex enough
 
-
+So when we maximize the training accuracy, we have a high chance of creating a to complex model, so the model ends up being overfitted to the data and not generalize enough.
 
 ```{r 3.2.4 KNN plot based test/training set, warning=FALSE, echo=FALSE}
 #plot
@@ -268,23 +278,29 @@ border_plot+geom_polygon(data = boundary, aes(x,y), alpha = 0.5)
 
 Wee can use cross validation to get a more optimal k, by using the whole data set and split it up to several pieces, this way our training set will be larger, and we avoid the disadvantage of testing our whole data set in one go.
 ```{r 3.2.5 KNN 10 fold cross validation, warning=FALSE, echo=FALSE}
-
+set.seed(41040)
 trControl <- trainControl(method  = "cv",
                           number  = 10)
 
+
+
+
+
 cross_fit <- train(class ~ .,
              method     = "knn",
-             tuneGrid   = expand.grid(k = 1:10),
+             tuneGrid   = expand.grid(k = 3:30),
              trControl  = trControl,
              metric     = "Accuracy",
-             data       = compound.df)
+             data       = norm.test)
+#optimal K based on average accuracy
 cross_fit
-#Cross validation best K
+confusionMatrix(cross_fit)
+#Cross validation best K as a plot
 plot(cross_fit)
 
-#Cross validation prediction
+#Cross validation prediction tested on the dataset
 knnPredict <- predict(cross_fit,newdata = compound_test )
-knnPredict
+confusionMatrix(knnPredict,compound.df$class)
 #Get the confusion matrix to see accuracy value and other parameter values
 #plot of ROC(repeated Cross-validation)
 plot(cross_fit, print.thres = 0.5, type="S")
