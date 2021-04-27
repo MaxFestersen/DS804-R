@@ -16,6 +16,7 @@ library(class)
 library(caret)
 library(plyr)
 library(fpc)
+library(e1071)
 # Source ----------------------------------------
 source("../cluster_quality.R") # Functions for data analysis
 ```
@@ -221,7 +222,8 @@ confusionMatrix(predictions ,compound_test_category)
 
 #CrossTable
 library(gmodels)
-CrossTable(y=compound_test_category,x=predictions,prop.chiq=FALSE)
+#not sure we need this
+#CrossTable(y=compound_test_category,x=predictions,prop.chiq=FALSE)
 
 
 ```
@@ -266,6 +268,8 @@ border_plot+geom_polygon(data = boundary, aes(x,y), alpha = 0.5)
 Wee can use cross validation to get a more optimal k, by using the whole data set and split it up to several pieces, this way our training set will be larger, and we avoid the disadvantage of testing our whole data set in one go.
 ```{r 3.2.5 KNN 10 fold cross validation, warning=FALSE, echo=FALSE}
 
+set.seed(31040)
+
 trControl <- trainControl(method  = "cv",
                           number  = 10)
 
@@ -276,8 +280,23 @@ cross_fit <- train(class ~ .,
              metric     = "Accuracy",
              data       = compound.df)
 cross_fit
+
+#Get the confusion matrix to see accuracy value and other parameter values
+confusionMatrix(cross_fit)
+#Cross validation best K as a plot
+
 #Cross validation best K
+
 plot(cross_fit)
+#plot of ROC(repeated Cross-validation)
+plot(cross_fit, print.thres = 0.5, type="S")
+
+
+#Cross validation prediction tested on the dataset(remember, Kappe is the expected accuracy)
+knnPredict <- predict(cross_fit,newdata = compound_test )
+confusionMatrix(knnPredict,compound.df$class)
+
+
 
 #Cross validation prediction
 knnPredict <- predict(cross_fit,newdata = compound_test )
@@ -285,6 +304,7 @@ knnPredict
 #Get the confusion matrix to see accuracy value and other parameter values
 #plot of ROC(repeated Cross-validation)
 plot(cross_fit, print.thres = 0.5, type="S")
+
 ```
 
 
@@ -292,21 +312,35 @@ plot(cross_fit, print.thres = 0.5, type="S")
 ### 3.3 OPTICS
 <!-- Alexander: XX TODO: perform analysis -->
 
-```{r 3.3.1 Optics, warning=FALSE, echo=FALSE}
+```{r 3.3.1 Optics-setup, warning=FALSE, echo=FALSE}
 set.seed(2)
 dat <- compound.df[1:2] # data
 
 opt_clust <- optics(dat, minPts = 7)
 plot(opt_clust, sub = "minPts = 7")
+```
 
+When looking at the "valleys" in the above reachability plot, it seems as if there are 5 classes with somewhat different density, however, there actually are 6 as we know from the data description.
+
+Comparing the reachability plot to the clustering order plot below, we can see that the clustering starts somewhere between the rain and the right eye, going to the left eye and moving further on to the mouth and tounge. Then it goes back into the rain, finds the corona-virus and finishes with the rain, which is most likely the bump at the end having the lowest density.
+
+```{r 3.3.1 Optics-order, warning=FALSE, echo=FALSE}
 plot(dat, col = "grey", main = "Clustering order", sub = "minPts = 7")
 polygon(dat[opt_clust$order,])
 ```
 
+**Extracting clusters**
 
-```{r 3.3.2 Optics, warning=FALSE, echo=FALSE}
-res_db <- extractDBSCAN(opt_clust, 1.6)
+To extract clusters from the OPTICS algorithm there are two methods, using DBSCAN with a fixed epsilon $\varepsilon$ or the Xi method which is based on a steepness threshold $\xi$ to identify clusters hierarchically. The Xi method is particularly good for identifying clusters with a varying density, whereas DBSCAN identifies clusters as the valleys below the given $\varepsilon$ value with separating hills. As the classes in this dataset have varying density the DBSCAN method, is most likely not a good choice for this dataset.
+
+```{r 3.3.2 Optics-dbscan, warning=FALSE, echo=FALSE}
+res_db <- extractDBSCAN(opt_clust, 1.55)
 plot(res_db, sub = paste0("DBSCAN extraction eps = ", res_db$eps_cl))
+```
+
+Looking at the above reachability plot, it is clear that the DBSCAN method only finds 5 clusters, however it finds the most dense clusters. In the plot below the clusters are visualized as a scatterplot.
+
+```{r 3.3.2 Optics-dbscan_2, warning=FALSE, echo=FALSE}
 hullplot(dat, res_db, sub = paste0("DBSCAN extraction eps = ", res_db$eps_cl))
 
 dat$db_clust <- as.factor(res_db$cluster)
@@ -314,25 +348,29 @@ dat$class <- compound.df$class
 db_clust <- table(dat$db_clust, dat$class)
 ```
 
-DBSCAN extraction only finds 4 clusters, most likely because the classes has a variable density. 
+The mouth and the tounge are perfectly identified, whereas the right and left eye are missing some points and the rain is missing completely. Furthermore, the corona-virus includes some points from the rain, but is otherwise very nicely identified. The same pattern can be seen in the confusion matrix below. 
 
-```{r 3.3.3 Optics, warning=FALSE, echo=FALSE}
+```{r 3.3.3 Optics-dbscan_3, warning=FALSE, echo=FALSE}
 db_clust # 0 is noise points
 #cluster_report(db_clust) # doesn't work as dbscan method only finds 4 clusters
 ```
 
+As mentioned before, another method for extracting clusters from OPTICS is the Xi method, which utilizes a Steepness threshold $\xi$ to identify clusters hierarchically. This method might just be better at identifying all the clusters especially the rain, as the rain is quite different density-wise from the other clusters. 
 
-Another method for extracting clusters from OPTICS is the Xi method, which utilizes a Steepness threshold to identify clusters hierarchically. 
-
-```{r 3.3.4 Optics, warning=FALSE, echo=FALSE}
+```{r 3.3.4 Optics-xi, warning=FALSE, echo=FALSE}
 res_xi <- extractXi(opt_clust, xi = 0.058)
 plot(res_xi, sub = paste0("Xi extraction steepness threshold = ", res_xi$xi))
+```
+
+When looking at the above reachability plot, it looks like 6 clusters have been identified, however, there are still some points which are not identified, i.e., classified as noise. In the plot below the identified clusters are visualized on a scatter plot.
+
+```{r 3.3.4 Optics-xi_2, warning=FALSE, echo=FALSE}
 hullplot(dat[1:2], res_xi, sub = paste0("Xi extraction steepness threshold = ", res_xi$xi))
 ```
 
-As seen in the above plot the Xi extraction is much better at finding the clusters.
+Looking at the above plot it is clear, that the mouth is still perfectly identified, whereas the tounge now is missing a point. More points have been identified of the left eye and maybe also the right eye. Furthermore, the corona-virus has some more points of the rain in it, but the rain is now also a cluster itself.
 
-```{r 3.3.5 Optics, warning=FALSE, echo=FALSE}
+```{r 3.3.5 Optics-xi_3, warning=FALSE, echo=FALSE}
 dat$xi_clust <- as.factor(res_xi$cluster)
 xi_clust <- table(dat$xi_clust, dat$class)
 
@@ -340,20 +378,23 @@ xi_clust # 0 is noise points
 cluster_report(xi_clust)
 ```
 
+Looking at the above confusion matrix and computed quality measures, it is clear that OPTICS paired with the Xi-method doesn't get all the points right, however, it is still very precise with almost all precision and recall scores above 0.8. The only class with a recall score below 0.8 is the rain, which with all of the clustering algorithms have been quite challenging to identify. 
+
 ### 3.4 DBSCAN
+#### Test 1
 <!-- Christian & Johannes: XX TODO: perform analysis -->
 ```{r 3.3.1 DBSCAN, warning=FALSE, echo=FALSE}
 ## Find suitable DBSCAN parameters:
 ## 1. We use minPts = dim + 1 = 5 for iris. A larger value can also be used.
 ## 2. We inspect the  k-NN distance plot for k = minPts - 1 = 4
-kNNdistplot(td, k = 2 - 1)
+kNNdistplot(td, k = 6-1)
 
 ## Noise seems to start around a 4-NN distance of .3
-abline(h=.2, col = "red", lty=2)
+abline(h=.17, col = "red", lty=2)
 
 # Fitting DBScan clustering Model 
 # to training dataset
-Dbscan_cl <- dbscan(td, eps = 0.2, MinPts = 2 + 1)
+Dbscan_cl <- dbscan(td, eps = 0.17, MinPts = 6 + 1)
 Dbscan_cl
 
 # Checking cluster
@@ -364,12 +405,39 @@ table(Dbscan_cl$cluster, compound.df$class)
 
 # Plotting Cluster
 plot(Dbscan_cl, td, main = "DBScan")
+
+
 ```
 DBscan has two parameters: minPts (Dimensionality + 1, or higher), and epsilon from KKn.
+We choose an epsilon from the Knn Distance plot (0.2) and use a minPts from the dimensionality 2 + 1 = 3
 
+DBScan suggests 6 clusters.
+
+"Lips", "Tongue", "Corona" are pretty good.
+
+#### Test 2
+```{r 3.3.1 DBSCAN_2, warning=FALSE, echo=FALSE}
+
+kNNdistplot(td, k = 6-1)
+
+abline(h=.17, col = "red", lty=2)
+
+Dbscan_cl <- dbscan(td, eps = 0.17, MinPts = 6 + 1)
+Dbscan_cl
+
+Dbscan_cl$cluster
+
+table(Dbscan_cl$cluster, compound.df$class)
+
+plot(Dbscan_cl, td, main = "DBScan")
+
+
+```
 
 ### 3.5 Silutte coefficient
 <!-- : XX TODO: perform analysis -->
+
+
 
 
 ## 4 Results
