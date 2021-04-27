@@ -553,20 +553,74 @@ ggplot(date_stars, aes(x, y, shape = class, color = class)) +
 
 ```{r 5.1.5 Focus data for 5, warning=FALSE, echo=FALSE}
 data <- all.reviews %>% # stars vs sentiment review
-  select(title, date, sentiment)
+  select(date, sentiment) %>%
+  mutate(date = as.numeric(date))
+
+data.points <- all.reviews %>% # stars vs sentiment review
+  ungroup() %>% 
+  select(date, sentiment) %>%
+  mutate(date = as.numeric(date))
+
+classNames <- all.reviews %>% # stars vs sentiment review
+  select(title) %>% 
+  .$title
+
+unique_class <- classNames %>% 
+  unique()
 ```
 
 ### 5.2 Analysis
 
 ### 5.3 k-means
+With k-means we hoped it would be able to categorize
+the movies with time and sentiment. We do expect some of the reviews
+to be mislabeled. Especially Shrek.
 
 ```{r 5.3.1 K-means testing methods, warning=FALSE, echo=FALSE}
 set.seed(42069) # Set seed to remove randomness when replicating results
+c_macqueen_shrek <- kmeans(data.points, 5, iter.max = 20, algorithm = "MacQueen")
+c_forgy_shrek <- kmeans(data.points, 5, iter.max = 20, algorithm = "Forgy")
+c_har_won_shrek <- kmeans(data.points, 5)
+
+test_shrek <- data.frame(macqueen = c_macqueen_shrek$cluster,
+                   forgy = c_forgy_shrek$cluster,
+                   har_won = c_har_won_shrek$cluster,
+                   class = classNames)
+
+macqueen_shrek <- table(test_shrek$macqueen, test_shrek$class, dnn = c("MacQueen", "Class"))
+forgy_shrek <- table(test_shrek$forgy, test_shrek$class, dnn = c("Forgy", "Class"))
+har_won_shrek <- table(test_shrek$har_won, test_shrek$class, dnn = c("Harting-Wong", "Class"))
+
+macqueen_shrek
+forgy_shrek
+har_won_shrek
+
+cluster_report(macqueen_shrek)
+cluster_report(forgy_shrek)
+cluster_report(har_won_shrek)
+
+si_shrek <- silhouette(c_har_won_shrek$cluster, dist(data.points))
+silhouette_score <- mean(si_shrek[,3])
 ```
 
 ```{r 5.3.2 k-means-visualization, warning=FALSE, echo=FALSE}
+data$macqueen <- factor(test_shrek$macqueen)
+data$forgy <- factor(test_shrek$forgy)
+data$har_won <- factor(test_shrek$har_won)
 
+plot_stuff <- function(df, predicted, cap) {
+  ggplot(df, aes(date, sentiment, shape = class, color = predicted)) +
+    geom_point() +
+    labs(title = cap) +
+    theme_light()
+}
+
+
+plot_stuff(data, data$macqueen, "Macqueen")
+plot_stuff(data, data$forgy, "Forgy")
+plot_stuff(data, data$har_won, "Hartigan Wong")
 ```
+We were right.
 
 ### 5.4 knn
 
