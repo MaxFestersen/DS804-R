@@ -64,6 +64,6 @@ cluster_report <- function(x, digits = 5, cap = "some cluster") {
   out %>% 
     kbl(caption = paste("Clustering quality measures", cap), booktabs = T) %>% 
     kable_styling(latex_options = "striped") %>% 
-    row_spec(7, hline_after = T)
+    row_spec(ncol(x), hline_after = T)
 }
 

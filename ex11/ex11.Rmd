@@ -408,8 +408,6 @@ table(Dbscan_cl$cluster, compound.df$class)
 
 # Plotting Cluster
 plot(Dbscan_cl, td, main = "DBScan")
-
-
 ```
 DBscan has two parameters: minPts (Dimensionality + 1, or higher), and epsilon from KKn.
 We choose an epsilon from the Knn Distance plot (0.2) and use a minPts from the dimensionality 2 + 1 = 3
