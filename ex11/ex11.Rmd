@@ -278,7 +278,7 @@ border_plot+geom_polygon(data = boundary, aes(x,y), alpha = 0.5)
 
 Wee can use cross validation to get a more optimal k, by using the whole data set and split it up to several pieces, this way our training set will be larger, and we avoid the disadvantage of testing our whole data set in one go.
 ```{r 3.2.5 KNN 10 fold cross validation, warning=FALSE, echo=FALSE}
-set.seed(41040)
+set.seed(31040)
 trControl <- trainControl(method  = "cv",
                           number  = 10)
 
@@ -294,16 +294,18 @@ cross_fit <- train(class ~ .,
              data       = norm.test)
 #optimal K based on average accuracy
 cross_fit
+#Get the confusion matrix to see accuracy value and other parameter values
 confusionMatrix(cross_fit)
 #Cross validation best K as a plot
 plot(cross_fit)
-
-#Cross validation prediction tested on the dataset
-knnPredict <- predict(cross_fit,newdata = compound_test )
-confusionMatrix(knnPredict,compound.df$class)
-#Get the confusion matrix to see accuracy value and other parameter values
 #plot of ROC(repeated Cross-validation)
 plot(cross_fit, print.thres = 0.5, type="S")
+
+#Cross validation prediction tested on the dataset(remember, Kappe is the expected accuracy)
+knnPredict <- predict(cross_fit,newdata = compound_test )
+confusionMatrix(knnPredict,compound.df$class)
+
+
 ```
 
 
