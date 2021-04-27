@@ -268,7 +268,8 @@ border_plot+geom_polygon(data = boundary, aes(x,y), alpha = 0.5)+theme(panel.gri
 panel.background = element_blank(), axis.line = element_line(colour = "black"))
 ```
 
-Wee can use cross validation to get a more optimal k, by using the whole data set and split it up to several pieces, this way our training set will be larger, and we avoid the disadvantage of testing our whole data set in one go.
+Wee can use cross validation to get a more optimal k, by using the whole data set and split it up to several pieces, this way our training set will be larger, and we avoid the disadvantage of testing our whole data set in one go(to avoid more bias).
+So we split the data up in 10, so 10*10% of the dataset will be tested and the average accuracy and the optimal K would be calculated.
 So we will get the Get the confusion matrix to see accuracy value and other parameter values
 ```{r 3.2.5 KNN 10 fold cross validation, warning=FALSE, echo=FALSE}
 
