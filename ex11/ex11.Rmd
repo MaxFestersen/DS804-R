@@ -796,7 +796,7 @@ Looking at the above confusion matrix and computed quality measures, it is clear
 
 ### 5.6 DBSCAN
 #### Test 1
-```{r 5.6.1 DBSCAN, warning=FALSE, echo=FALSE}
+```{r 5.6.1 DBSCAN test 1, warning=FALSE, echo=FALSE}
 ## Find suitable DBSCAN parameters:
 ## 1. We use minPts = dim + 1 = 5 for iris. A larger value can also be used.
 ## 2. We inspect the  k-NN distance plot for k = minPts - 1 = 4
@@ -807,7 +807,32 @@ abline(h=.17, col = "red", lty=2)
 
 # Fitting DBScan clustering Model 
 # to training dataset
-Dbscan_cl_shrek <- dbscan(data.points, eps = 0.17, MinPts = 5)
+Dbscan_cl_shrek <- dbscan(data.points, eps = 27, MinPts = 4)
+Dbscan_cl_shrek
+
+# Checking cluster
+Dbscan_cl_shrek$cluster
+
+# Table
+table(Dbscan_cl_shrek$cluster, classNames)
+
+# Plotting Cluster
+plot(Dbscan_cl_shrek, data.points, main = "DBScan")
+
+```
+#### Test 1
+```{r 5.6.2 DBSCAN test 2, warning=FALSE, echo=FALSE}
+## Find suitable DBSCAN parameters:
+## 1. We use minPts = dim + 1 = 5 for iris. A larger value can also be used.
+## 2. We inspect the  k-NN distance plot for k = minPts - 1 = 4
+kNNdistplot(data.points, k = 5)
+
+## Noise seems to start around a 4-NN distance of .3
+abline(h=.17, col = "red", lty=2)
+
+# Fitting DBScan clustering Model 
+# to training dataset
+Dbscan_cl_shrek <- dbscan(data.points, eps = 350, MinPts = 15)
 Dbscan_cl_shrek
 
 # Checking cluster
