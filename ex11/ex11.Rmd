@@ -799,7 +799,7 @@ trControl_shrek <- trainControl(method  = "cv",
 cross_fit_shrek <- train(class ~ .,
              method     = "knn",
              tuneGrid   = expand.grid(k = 1:30),
-             trControl  = cross_fit_shrek,
+             trControl  = trControl_shrek,
              metric     = "Accuracy",
              data       = norm.test.shrek)
 
