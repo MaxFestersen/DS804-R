@@ -492,8 +492,6 @@ grid.arrange(c_har_won7plot1, c_har_won7plot2, nrow =2, ncol = 1)
 fviz_nbclust(td, kmeans, method = "silhouette") +
   labs(subtitle = "Silhouette method")
 
-
-
 ```
 
 ## 4 Results
@@ -1004,14 +1002,9 @@ fviz_nbclust(data.points, kmeans, method = "silhouette") +
 
 
 ### 6 Results
-<!-- XX TODO: Explain what we found / sum up results -->
-
+All methods were usefull for the new dataset. 88-89% accuracy.
 
 ### 7 Clustering results
-<!-- XX Answer: What can you learn about that [new] data by using clustering? -->
-
-
-```{r name1, warning=FALSE, echo=FALSE}
-
-```
+Movies with different release years, can with the initial reviews after it's release, be clustered by date and the sentiment in the reviews.
+This could be useful for categorizing movies with  with sequals after each new entry.
 
