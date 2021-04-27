@@ -371,10 +371,10 @@ plot(Dbscan_cl, td, main = "DBScan")
 
 
 ```
-DBscan has two parameters: minPts (Dimensionality + 1, or higher), and epsilon from KKn.
-We choose an epsilon from the Knn Distance plot (0.2) and use a minPts from the dimensionality 2 + 1 = 3
+DBscan has two parameters: minPts (Dimensionality + 1, or higher), and epsilon from Knn.
+We choose an epsilon from the Knn Distance plot (0.17) and use a minPts from the dimensionality 6 + 1 = 7
 
-DBScan suggests 6 clusters.
+DBScan suggests 5 clusters.
 
 "Lips", "Tongue", "Corona" are pretty good.
 
