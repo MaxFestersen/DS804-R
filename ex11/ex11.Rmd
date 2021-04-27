@@ -262,9 +262,11 @@ border_plot<-ggplot(plot.df, aes(y, x, color = predicted, fill = predicted)) +
 #turn the graph so it is facing the right way
 border_plot<-border_plot+ coord_flip()
 #plot without border
-border_plot
+border_plot+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+panel.background = element_blank(), axis.line = element_line(colour = "black"))
 #plot with border
-border_plot+geom_polygon(data = boundary, aes(x,y), alpha = 0.5)
+border_plot+geom_polygon(data = boundary, aes(x,y), alpha = 0.5)+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+panel.background = element_blank(), axis.line = element_line(colour = "black"))
 ```
 
 Wee can use cross validation to get a more optimal k, by using the whole data set and split it up to several pieces, this way our training set will be larger, and we avoid the disadvantage of testing our whole data set in one go.
