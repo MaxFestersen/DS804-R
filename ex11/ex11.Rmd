@@ -700,8 +700,8 @@ compound_test_category_shrek <- classNames#all data
 #using actually training data and test data
 compound_train_shrek <- knn_compound_norm_shrek[ran_shrek,] #train data values
 compound_test_shrek <- knn_compound_norm_shrek[-ran_shrek,] #test data values
-compound_target_category_shrek <- data[ran_shrek,3] #train data category
-compound_test_category_shrek <- data[-ran_shrek,3] #test data category
+compound_target_category_shrek <- factor(data[ran_shrek,1]$class) #train data category
+compound_test_category_shrek <- factor(data[-ran_shrek,1]$class) #test data category
 
 
 #when K=1: potential underfit
@@ -710,7 +710,7 @@ compound_test_category_shrek <- data[-ran_shrek,3] #test data category
 #so we should cross validate
 sqrt(399)
 #KNN algorithm where key is equal to square root of total number of rows
-predictions_shrek <- knn(compound_train_shrek,compound_test_shrek,cl=compound_target_category_shrek,use.all = TRUE ,k=1)
+predictions_shrek <- knn(compound_train_shrek,compound_test_shrek,cl=compound_target_category_shrek,use.all = TRUE, k=1)
 
 ```
 
