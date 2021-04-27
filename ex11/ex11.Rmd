@@ -697,8 +697,8 @@ names(norm.test.shrek) <- c("date", "sentiment", "class")
 #using all data, test and training are the same
 compound_train_shrek <- knn_compound_norm_shrek #all of data
 compound_test_shrek <- knn_compound_norm_shrek #all of data
-compound_target_category_shrek <- classNames#all data
-compound_test_category_shrek <- classNames#all data
+compound_target_category_shrek <- factor(classNames)#all data
+compound_test_category_shrek <- factor(classNames)#all data
 
 #using actually training data and test data
 compound_train_shrek <- knn_compound_norm_shrek[ran_shrek,] #train data values
@@ -712,9 +712,9 @@ compound_test_category_shrek <- factor(data[-ran_shrek,1]$class) #test data cate
 #when K approaches total number of rows:potential overfit
 # K should be an odd number
 #so we should cross validate
-sqrt(399)
+sqrt(length(classNames))
 #KNN algorithm where key is equal to square root of total number of rows
-predictions_shrek <- knn(compound_train_shrek,compound_test_shrek,cl=compound_target_category_shrek,use.all = TRUE, k=1)
+predictions_shrek <- knn(compound_train_shrek,compound_test_shrek,cl=compound_target_category_shrek,use.all = TRUE, k=12)
 
 ```
 
@@ -722,7 +722,7 @@ confussion matrix of KNN with K=19 and a 80% training set, 20% test set
 
 ```{r 5.4.2 KNN confussion matrix/predictions, warning=FALSE, echo=FALSE}
 #confussion matrix
-set.seed(100440)
+set.seed(696969) # nice nice nice
 tab_shrek <- table(predictions_shrek, compound_test_category_shrek)
 #tab_shrek
 
@@ -746,13 +746,13 @@ plot that displaying the accuracy of the KNN algorithm given the K=i
 ```{r 5.4.3 KNN optimal k based on test/training set, warning=FALSE, echo=FALSE}
 #displaying the accuracy of the KNN algorithm given the K=i
 
-i=1
-k.optm=1
+i <- 1
+k.optm <- 1
 for (i in 1:40){
-knn.mod <- knn(train=compound_train_shrek, test=compound_test_shrek,cl=compound_target_category_shrek,k=i)
-k.optm[i] <- 100* sum(compound_test_category_shrek==knn.mod)/NROW(compound_test_category_shrek)
-k=i
-cat(k, '=',k.optm[i],'\n')
+  knn.mod <- knn(train=compound_train_shrek, test = compound_test_shrek, cl=compound_target_category_shrek, k=i)
+  k.optm[i] <- 100* sum(compound_test_category_shrek == knn.mod)/NROW(compound_test_category_shrek)
+  k=i
+  # cat(k, '=',k.optm[i],'\n')
 }
 
 plot(k.optm, type="b", xlab="K-Value", ylab="Accuracy level")
@@ -760,11 +760,12 @@ plot(k.optm, type="b", xlab="K-Value", ylab="Accuracy level")
 ```
 
 
-Plotting predicted test as a plot(Remember, this only shows the test data which is 20% of the total dataset)
+Plotting predicted test as a plot (Remember, this only shows the test data which is 20% of the total dataset)
 
 ```{r 5.4.4 KNN plot based test/training set, warning=FALSE, echo=FALSE}
 #plot
-set.seed(100440)
+set.seed(999) # NEIN NEIN NEIN
+
 plot.df_shrek = data.frame(compound_test_shrek, predicted = predictions_shrek)
 plot.df_shrek1 = data.frame(x = plot.df_shrek$sentiment, 
                       y = plot.df_shrek$date, 
@@ -772,16 +773,19 @@ plot.df_shrek1 = data.frame(x = plot.df_shrek$sentiment,
 
 boundary_shrek = ddply(plot.df_shrek1, .variables = "predicted", .fun = find_hull)
 
-border_plot<-ggplot(plot.df_shrek, aes(sentiment, date, color = predicted, fill = predicted)) +
+border_plot <- ggplot(plot.df_shrek, aes(sentiment, date, color = predicted, fill = predicted)) +
   geom_point(size = 2)
+
 #turn the graph so it is facing the right way
-border_plot<-border_plot+ coord_flip()
+border_plot <- border_plot+ coord_flip() +
+  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+                  panel.background = element_blank(), axis.line = element_line( colour = "black"))
+
 #plot without border
-border_plot+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-panel.background = element_blank(), axis.line = element_line(colour = "black"))
+border_plot
+
 #plot with border
-border_plot+geom_polygon(data = boundary_shrek, aes(x,y), alpha = 0.5)+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
-panel.background = element_blank(), axis.line = element_line(colour = "black"))
+border_plot + geom_polygon(data = boundary_shrek, aes(x,y), alpha = 0.5)
 
 ```
 
@@ -789,7 +793,7 @@ Wee can use cross validation to get a more optimal k, by using the whole data se
 So we split the data up in 10, so 10*10% of the dataset will be tested and the average accuracy and the optimal K would be calculated.
 So we will get the Get the confusion matrix to see accuracy value and other parameter values
 
-```{r 3.2.5 KNN 10 fold cross validation, warning=FALSE, echo=FALSE}
+```{r 5.4.5 KNN 10 fold cross validation, warning=FALSE, echo=FALSE}
 
 set.seed(104) # Vi må vi're
 
