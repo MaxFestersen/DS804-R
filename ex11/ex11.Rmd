@@ -204,10 +204,11 @@ compound_test_category <- compound.df[-ran,3] #test data category
 #so we should cross validate
 sqrt(399)
 #KNN algorithm where key is equal to square root of total number of rows
-predictions <- knn(compound_train,compound_test,cl=compound_target_category,use.all = TRUE ,k=4)
+predictions <- knn(compound_train,compound_test,cl=compound_target_category,use.all = TRUE ,k=19)
 ```
 
 
+confussion matrix of KNN with K=19 and a 80% training set, 20% test set
 ```{r 3.2.2 KNN confussion matrix/predictions, warning=FALSE, echo=FALSE}
 #confussion matrix
 tab <- table(predictions,compound_test_category)
