@@ -96,8 +96,6 @@ We normalize the data to be closer to zero (centered zero). This is done to norm
 
 
 ## 3 Analysis of the Methods
-<!-- XX TODO: find analysis methods -->
-
 
 ### 3.1 k-means
 With k-means we expected it would be able to create good clusters
