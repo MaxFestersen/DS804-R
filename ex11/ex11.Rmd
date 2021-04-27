@@ -674,7 +674,8 @@ ggplot(date_stars, aes(x, y, shape = class, color = class)) +
 ```{r 5.1.5 Focus data for 5, warning=FALSE, echo=FALSE}
 data <- all.reviews %>% # stars vs sentiment review
   select(date, sentiment) %>%
-  mutate(date = as.numeric(date))
+  dplyr::rename("class" = title)# %>% 
+  # mutate(date = as.numeric(date))
 
 data.points <- all.reviews %>% # stars vs sentiment review
   ungroup() %>% 
@@ -739,8 +740,10 @@ plot_stuff <- function(df, predicted, cap) {
 plot_stuff(data, data$macqueen, "Macqueen")
 plot_stuff(data, data$forgy, "Forgy")
 plot_stuff(data, data$har_won, "Hartigan Wong")
+
 ```
-We were right.
+We were right. Forgy does a damn good job.
+Hartigan Wong and Macqueen mixes shrek 1 and 2 up, and thinks shrek 4 is 2 movies.
 
 ### 5.4 knn
 
