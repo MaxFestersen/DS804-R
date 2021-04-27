@@ -20,10 +20,12 @@ library(e1071)
 library(gridExtra)
 # Source ----------------------------------------
 source("../cluster_quality.R") # Functions for data analysis
+
 ```
 
 ```{r 0.0.1 Seeding, echo = FALSE, message = FALSE}
 set.seed(42069) # Set seed to remove randomness when replicating results
+
 ```
 
 # **DS804 Assignment 1 - Clustering**
@@ -61,6 +63,7 @@ compound.df <- compound.df %>%
   mutate(class = ifelse(class == 6, "Tounge", class))
 
 compound.df$class <- factor(compound.df$class)
+
 ```
 
 ```{r 1.1.2 Plotting-initial-data, warning=FALSE, echo=FALSE}
@@ -68,6 +71,7 @@ ggplot(compound.df, aes(x, y, shape = class, color = class)) +
   geom_point() +
   labs(title = "Compound Data") +
   theme_light()
+
 ```
 Above the data can be seen, colored by class. The clases is named 1-8.
 The data had 8 classes, thus 8 colors are used.
@@ -86,6 +90,7 @@ ggplot(norm.compound, aes(x, y, shape = class, color = class)) +
 
 
 fviz_nbclust(norm.compound[1:2], kmeans, method='silhouette') # elbow plot
+
 ```
 We normalize the data to be closer to zero (centered zero). This is done to normalize the weight and remove bias from large numbers.
 
@@ -130,6 +135,7 @@ cluster_report(har_won, cap = "Hartigan Wong")
 
 si <- silhouette(c_har_won$cluster, dist(norm.compound))
 silhouette_score <- mean(si[,3])
+
 ```
 
 ```{r 3.1.2 k-means-visualization, warning=FALSE, echo=FALSE}
@@ -147,6 +153,7 @@ plot_stuff <- function(df, predicted, cap) {
 plot_stuff(norm.compound, norm.compound$macqueen, "Macqueen")
 plot_stuff(norm.compound, norm.compound$forgy, "Forgy")
 plot_stuff(norm.compound, norm.compound$har_won, "Hartigan Wong")
+
 ```
 Using the k-means algorithms: Macqueen, Loyd-Forgy and Hartigan-Wong. We found
 Hartigan-Wong was the most accurate when looking at the accuracy of estimates,
@@ -205,6 +212,7 @@ compound_test_category <- compound.df[-ran,3] #test data category
 sqrt(399)
 #KNN algorithm where key is equal to square root of total number of rows
 predictions <- knn(compound_train,compound_test,cl=compound_target_category,use.all = TRUE ,k=1)
+
 ```
 
 confussion matrix of KNN with K=19 and a 80% training set, 20% test set
@@ -230,6 +238,7 @@ library(gmodels)
 
 #error rate
 mean(compound_test_category != predictions)
+
 ```
 plot that displaying the accuracy of the KNN algorithm given the K=i
 ```{r 3.2.3 KNN optimal k based on test/training set, warning=FALSE, echo=FALSE}
@@ -245,6 +254,7 @@ cat(k, '=',k.optm[i],'\n')
 }
 
 plot(k.optm, type="b", xlab="K-Value", ylab="Accuracy level")
+
 ```
 
 
@@ -271,6 +281,7 @@ panel.background = element_blank(), axis.line = element_line(colour = "black"))
 #plot with border
 border_plot+geom_polygon(data = boundary, aes(x,y), alpha = 0.5)+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
 panel.background = element_blank(), axis.line = element_line(colour = "black"))
+
 ```
 
 Wee can use cross validation to get a more optimal k, by using the whole data set and split it up to several pieces, this way our training set will be larger, and we avoid the disadvantage of testing our whole data set in one go(to avoid more bias).
@@ -297,6 +308,7 @@ plot(cross_fit)
 cross_fit
 #plot of ROC(repeated Cross-validation)
 plot(cross_fit, print.thres = 0.5, type="S")
+
 ```
 Cross validation prediction tested on the dataset(remember, Kappe is the expected accuracy)
 
@@ -313,7 +325,6 @@ knnPredict <- predict(cross_fit,newdata = norm.test )
 knnPredict
 #Get the confusion matrix to see accuracy value and other parameter values
 
-
 ```
 
 
@@ -325,6 +336,7 @@ dat <- compound.df[1:2] # data
 
 opt_clust <- optics(dat, minPts = 7)
 plot(opt_clust, sub = "minPts = 7")
+
 ```
 
 When looking at the "valleys" in the above reachability plot, it seems as if there are 5 classes with somewhat different density, however, there actually are 6 as we know from the data description.
@@ -334,6 +346,7 @@ Comparing the reachability plot to the clustering order plot below, we can see t
 ```{r 3.3.1 Optics-order, warning=FALSE, echo=FALSE}
 plot(dat, col = "grey", main = "Clustering order", sub = "minPts = 7")
 polygon(dat[opt_clust$order,])
+
 ```
 
 **Extracting clusters**
@@ -353,6 +366,7 @@ hullplot(dat, res_db, sub = paste0("DBSCAN extraction eps = ", res_db$eps_cl))
 dat$db_clust <- as.factor(res_db$cluster)
 dat$class <- compound.df$class
 db_clust <- table(dat$db_clust, dat$class)
+
 ```
 
 The mouth and the tounge are perfectly identified, whereas the right and left eye are missing some points and the rain is missing completely. Furthermore, the corona-virus includes some points from the rain, but is otherwise very nicely identified. The same pattern can be seen in the confusion matrix below. 
@@ -360,6 +374,7 @@ The mouth and the tounge are perfectly identified, whereas the right and left ey
 ```{r 3.3.3 Optics-dbscan_3, warning=FALSE, echo=FALSE}
 db_clust # 0 is noise points
 #cluster_report(db_clust) # doesn't work as dbscan method only finds 4 clusters
+
 ```
 
 As mentioned before, another method for extracting clusters from OPTICS is the Xi method, which utilizes a Steepness threshold $\xi$ to identify clusters hierarchically. This method might just be better at identifying all the clusters especially the rain, as the rain is quite different density-wise from the other clusters. 
@@ -367,12 +382,14 @@ As mentioned before, another method for extracting clusters from OPTICS is the X
 ```{r 3.3.4 Optics-xi, warning=FALSE, echo=FALSE}
 res_xi <- extractXi(opt_clust, xi = 0.058)
 plot(res_xi, sub = paste0("Xi extraction steepness threshold = ", res_xi$xi))
+
 ```
 
 When looking at the above reachability plot, it looks like 6 clusters have been identified, however, there are still some points which are not identified, i.e., classified as noise. In the plot below the identified clusters are visualized on a scatter plot.
 
 ```{r 3.3.4 Optics-xi_2, warning=FALSE, echo=FALSE}
 hullplot(dat[1:2], res_xi, sub = paste0("Xi extraction steepness threshold = ", res_xi$xi))
+
 ```
 
 Looking at the above plot it is clear, that the mouth is still perfectly identified, whereas the tounge now is missing a point. More points have been identified of the left eye and maybe also the right eye. Furthermore, the corona-virus has some more points of the rain in it, but the rain is now also a cluster itself.
@@ -384,6 +401,7 @@ xi_clust <- table(dat$xi_clust, dat$class)
 xi_clust # 0 is noise points
 
 cluster_report(xi_clust, cap = "OPTICS Xi-method")
+
 ```
 
 Looking at the above confusion matrix and computed quality measures, it is clear that OPTICS paired with the Xi-method doesn't get all the points right, however, it is still very precise with almost all precision and recall scores above 0.8. The only class with a recall score below 0.8 is the rain, which with all of the clustering algorithms have been quite challenging to identify. 
@@ -413,6 +431,7 @@ table(Dbscan_cl$cluster, compound.df$class)
 
 # Plotting Cluster
 plot(Dbscan_cl, td, main = "DBScan")
+
 ```
 DBscan has two parameters: minPts (Dimensionality + 1, or higher), and epsilon from KKn.
 We choose an epsilon from the Knn Distance plot (0.2) and use a minPts from the dimensionality 2 + 1 = 3
@@ -503,7 +522,6 @@ c_har_won7plot1 <- fviz_cluster(c_har_won7, data = td,
 c_har_won7plot2 <- fviz_silhouette(sil_res7)
 grid.arrange(c_har_won7plot1, c_har_won7plot2, nrow =2, ncol = 1)
 
-
 ```
 
 
@@ -566,6 +584,7 @@ all.reviews <- read.csv("dataset/allreviews.csv", sep = ",") %>%
   top_n(31) #%>% #Equal amount of points - limited by Shrek 4
   # mutate(date = as.numeric(date))
 # all.reviews %>% dplyr::filter(title == "The Killing of a Sacred Deer")
+
 ```
 
 ```{r 5.1.2 Average data table, warning=FALSE, echo=FALSE, dev='png'}
@@ -582,6 +601,7 @@ all.reviews.means <- all.reviews %>%
   arrange(desc(stars))
   
 all.reviews.means
+
 ```
 
 ```{r 5.1.3 Review data Vizualization, warning=FALSE, echo=FALSE}
@@ -614,6 +634,7 @@ ggplot(date_stars, aes(x, y, shape = class, color = class)) +
   geom_point() +
   labs(title = "Date and Stars") +
   theme_light()
+
 ```
 
 ```{r 5.1.5 Focus data for 5, warning=FALSE, echo=FALSE}
@@ -633,6 +654,7 @@ classNames <- all.reviews %>% # stars vs sentiment review
 
 unique_class <- classNames %>% 
   unique()
+
 ```
 
 ### 5.2 Analysis
@@ -667,6 +689,7 @@ cluster_report(har_won_shrek, cap = "Hartigan Wong")
 
 si_shrek <- silhouette(c_har_won_shrek$cluster, dist(data.points))
 silhouette_score <- mean(si_shrek[,3])
+
 ```
 
 ```{r 5.3.2 k-means-visualization, warning=FALSE, echo=FALSE}
@@ -700,6 +723,7 @@ set.seed(7010) # YOLO
 
 opt_clust_shrek <- optics(data.points, minPts = 20)
 plot(opt_clust_shrek, sub = "minPts = 20")
+
 ```
 
 When looking at the "valleys" in the above reachability plot, it seems as if there are 5 classes with somewhat alike density.
@@ -709,12 +733,14 @@ Comparing the reachability plot to the clustering order plot below, we can see t
 ```{r 5.5.1 Optics-order, warning=FALSE, echo=FALSE}
 plot(data.points, col = "grey", main = "Clustering order", sub = "minPts = 20")
 polygon(data.points[opt_clust_shrek$order,])
+
 ```
 
 
 ```{r 5.5.2 Optics-dbscan, warning=FALSE, echo=FALSE}
 res_db_shrek <- extractDBSCAN(opt_clust_shrek, 250)
 plot(res_db_shrek, sub = paste0("DBSCAN extraction eps = ", res_db_shrek$eps_cl))
+
 ```
 
 Looking at the above reachability plot, it is clear that the DBSCAN method only finds 5 clusters, however it finds the most dense clusters. In the plot below the clusters are visualized as a scatterplot.
@@ -725,13 +751,15 @@ hullplot(data.points, res_db_shrek, sub = paste0("DBSCAN extraction eps = ", res
 
 data.points_db_clust <- as.factor(res_db_shrek$cluster)
 db_clust_shrek <- table(data.points_db_clust, classNames)
+
 ```
 It does do a good job, but shrek 1 seems to be more limited than the others.
  
 
 ```{r 5.5.3 Optics-dbscan_3, warning=FALSE, echo=FALSE}
 db_clust_shrek # 0 is noise points
-cluster_report(db_clust_shrek, cap = "DBSCAN extraction") 
+cluster_report(db_clust_shrek, cap = "DBSCAN extraction")
+
 ```
 
 Xi method:
@@ -739,6 +767,7 @@ Xi method:
 ```{r 5.5.4 Optics-xi, warning=FALSE, echo=FALSE}
 res_xi_shrek <- extractXi(opt_clust_shrek, xi = 0.225)
 plot(res_xi_shrek, sub = paste0("Xi extraction steepness threshold = ", res_xi_shrek$xi))
+
 ```
 
 When looking at the above reachability plot, it looks like most movies were identified, however, shrek 2 seems to be overlapping with shrek- 2 and 3.
@@ -747,6 +776,7 @@ In the plot below the identified clusters are visualized on a scatter plot.
 
 ```{r 5.5.4 Optics-xi_2, warning=FALSE, echo=FALSE}
 hullplot(data.points, res_xi_shrek, sub = paste0("Xi extraction steepness threshold = ", res_xi_shrek$xi))
+
 ```
 
 Looking at the above plot, The movies do create some meaningful clusters, but it does have some trouble with Shrek 2, as well as some points that overlap in other clusters. 
@@ -758,6 +788,7 @@ xi_clust_shrek <- table(data_xi_clust, classNames)
 xi_clust_shrek # 0 is noise points
 
 cluster_report(xi_clust_shrek, cap = "OPTICS Xi-method")
+
 ```
 
 Looking at the above confusion matrix and computed quality measures, it is clear that OPTICS paired with the Xi-method doesn't get all the points right, however, it is still very precise. 
