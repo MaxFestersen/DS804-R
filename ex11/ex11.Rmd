@@ -93,6 +93,11 @@ We normalize the data to be closer to zero (centered zero). This is done to norm
 
 
 ### 2.1 Algorithms and implementation  
+* K-means
+* KNN
+* OPTICS
+* DBSCAN
+* Silhouette coefficient
 
 
 ## 3 Analysis of the Methods
