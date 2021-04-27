@@ -224,7 +224,8 @@ confusionMatrix(predictions ,compound_test_category)
 
 #CrossTable
 library(gmodels)
-CrossTable(y=compound_test_category,x=predictions,prop.chiq=FALSE)
+#not sure we need this
+#CrossTable(y=compound_test_category,x=predictions,prop.chiq=FALSE)
 
 
 ```
@@ -268,11 +269,9 @@ border_plot+geom_polygon(data = boundary, aes(x,y), alpha = 0.5)
 
 Wee can use cross validation to get a more optimal k, by using the whole data set and split it up to several pieces, this way our training set will be larger, and we avoid the disadvantage of testing our whole data set in one go.
 ```{r 3.2.5 KNN 10 fold cross validation, warning=FALSE, echo=FALSE}
-<<<<<<< HEAD
-set.seed(31040)
-=======
 
->>>>>>> fc2985af170a4b1ad9dd43d8d68978a2fa6c8bfb
+set.seed(31040)
+
 trControl <- trainControl(method  = "cv",
                           number  = 10)
 
@@ -283,31 +282,31 @@ cross_fit <- train(class ~ .,
              metric     = "Accuracy",
              data       = compound.df)
 cross_fit
-<<<<<<< HEAD
+
 #Get the confusion matrix to see accuracy value and other parameter values
 confusionMatrix(cross_fit)
 #Cross validation best K as a plot
-=======
+
 #Cross validation best K
->>>>>>> fc2985af170a4b1ad9dd43d8d68978a2fa6c8bfb
+
 plot(cross_fit)
 #plot of ROC(repeated Cross-validation)
 plot(cross_fit, print.thres = 0.5, type="S")
 
-<<<<<<< HEAD
+
 #Cross validation prediction tested on the dataset(remember, Kappe is the expected accuracy)
 knnPredict <- predict(cross_fit,newdata = compound_test )
 confusionMatrix(knnPredict,compound.df$class)
 
 
-=======
+
 #Cross validation prediction
 knnPredict <- predict(cross_fit,newdata = compound_test )
 knnPredict
 #Get the confusion matrix to see accuracy value and other parameter values
 #plot of ROC(repeated Cross-validation)
 plot(cross_fit, print.thres = 0.5, type="S")
->>>>>>> fc2985af170a4b1ad9dd43d8d68978a2fa6c8bfb
+
 ```
 
 
