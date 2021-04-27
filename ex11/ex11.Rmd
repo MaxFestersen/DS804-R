@@ -748,6 +748,37 @@ Looking at the above confusion matrix and computed quality measures, it is clear
 <!-- XX TODO: Fix text -->
 
 ### 5.6 DBSCAN
+#### Test 1
+```{r 5.6.1 DBSCAN, warning=FALSE, echo=FALSE}
+## Find suitable DBSCAN parameters:
+## 1. We use minPts = dim + 1 = 5 for iris. A larger value can also be used.
+## 2. We inspect the  k-NN distance plot for k = minPts - 1 = 4
+kNNdistplot(data.points, k = 5)
+
+## Noise seems to start around a 4-NN distance of .3
+abline(h=.17, col = "red", lty=2)
+
+# Fitting DBScan clustering Model 
+# to training dataset
+Dbscan_cl <- dbscan(td, eps = 0.17, MinPts = 6 + 1)
+Dbscan_cl
+
+# Checking cluster
+Dbscan_cl$cluster
+
+# Table
+table(Dbscan_cl$cluster, compound.df$class)
+
+# Plotting Cluster
+plot(Dbscan_cl, td, main = "DBScan")
+```
+DBscan has two parameters: minPts (Dimensionality + 1, or higher), and epsilon from KKn.
+We choose an epsilon from the Knn Distance plot (0.2) and use a minPts from the dimensionality 2 + 1 = 3
+
+DBScan suggests 6 clusters.
+
+"Lips", "Tongue", "Corona" are pretty good.
+
 
 
 ### 5.7 Silutte coefficient
