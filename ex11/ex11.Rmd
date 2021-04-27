@@ -561,6 +561,7 @@ all.reviews <- read.csv("dataset/allreviews.csv", sep = ",") %>%
 all.reviews.means <- all.reviews %>% 
   dplyr::group_by(title) %>% 
   mutate(
+    sentiment = as.numeric(sentiment),
     date = as.Date(date) #Set date as date format, to do date filtering and stuff
   ) %>% 
   dplyr::summarise(stars = mean(stars),
@@ -684,7 +685,9 @@ To use KNN we need to have noise free dataset and all attributes of the dataset 
 we start by choosing the value of K we square root the total number of data points available in the dataset, generally it is a good idea for k to be a odd number.
 
 ```{r 5.4.1 KNN preproccesing, warning=FALSE, echo=FALSE}
-set.seed(13355335)
+data <- data %>% 
+  dplyr::select(class, date, sentiment)
+set.seed(13355345) #leek speak
 #getting data ready
 ran_shrek <- sample(1:nrow(data.points), 0.80* nrow(data.points))
 knn_compound_norm_shrek <- as.data.frame(lapply(data.points, nor))
@@ -700,8 +703,8 @@ compound_test_category_shrek <- classNames#all data
 #using actually training data and test data
 compound_train_shrek <- knn_compound_norm_shrek[ran_shrek,] #train data values
 compound_test_shrek <- knn_compound_norm_shrek[-ran_shrek,] #test data values
-compound_target_category_shrek <- data[ran_shrek,3] #train data category
-compound_test_category_shrek <- data[-ran_shrek,3] #test data category
+compound_target_category_shrek <- data[ran_shrek,1]$class #train data category
+compound_test_category_shrek <- data[-ran_shrek,1]$class #test data category
 
 
 #when K=1: potential underfit
@@ -710,7 +713,7 @@ compound_test_category_shrek <- data[-ran_shrek,3] #test data category
 #so we should cross validate
 sqrt(399)
 #KNN algorithm where key is equal to square root of total number of rows
-predictions_shrek <- knn(compound_train_shrek,compound_test_shrek,cl=compound_target_category_shrek,use.all = TRUE ,k=1)
+predictions_shrek <- knn(compound_train_shrek, compound_test_shrek, cl=compound_target_category_shrek, use.all = TRUE, k=1)
 
 ```
 
@@ -726,7 +729,7 @@ tab_shrek <- table(predictions_shrek, compound_test_category_shrek)
 predictions_shrek
 
 #confusion Matrix with accuracy
-confusionMatrix(predictions_shrek ,compound_test_category_shrek)
+confusionMatrix(predictions_shrek, compound_test_category_shrek)
 
 #CrossTable
 library(gmodels)
