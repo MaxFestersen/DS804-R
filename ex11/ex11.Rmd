@@ -321,8 +321,7 @@ confusionMatrix(knnPredict,compound.df$class)
 
 
 #Cross validation prediction
-knnPredict <- predict(cross_fit,newdata = norm.test )
-knnPredict
+#knnPredict
 #Get the confusion matrix to see accuracy value and other parameter values
 
 ```
