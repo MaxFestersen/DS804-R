@@ -229,8 +229,6 @@ library(gmodels)
 
 #error rate
 mean(compound_test_category != predictions)
-
-
 ```
 plot that displaying the accuracy of the KNN algorithm given the K=i
 ```{r 3.2.3 KNN optimal k based on test/training set, warning=FALSE, echo=FALSE}
@@ -307,7 +305,6 @@ set.seed(100440)
 
 knnPredict <- predict(cross_fit,newdata = norm.test )
 confusionMatrix(knnPredict,compound.df$class)
-
 
 
 #Cross validation prediction
