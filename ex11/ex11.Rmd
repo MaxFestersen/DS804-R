@@ -444,6 +444,22 @@ plot(Dbscan_cl, td, main = "DBScan")
 <!-- : Johannes TODO: perform analysis -->
 ```{r}
 set.seed(42069)
+
+#Odd test , remove this.
+fviz_nbclust(td, kmeans, method = "silhouette") +
+  labs(subtitle = "Silhouette method")
+
+#Just a test: 3 clusters
+c_har_won3 <- kmeans(td, 3)
+sil_res3 <- silhouette(c_har_won3$cluster, dist(norm.compound))
+c_har_won3plot1 <- fviz_cluster(c_har_won3, data = td,
+             geom = "point",
+             ellipse.type = "convex", 
+             ggtheme = theme_bw()
+             )
+c_har_won3plot2 <- fviz_silhouette(sil_res3)
+grid.arrange(c_har_won3plot1, c_har_won3plot2, nrow =2, ncol = 1)
+
 # 4 clusters
 c_har_won4 <- kmeans(td, 4)
 sil_res4 <- silhouette(c_har_won4$cluster, dist(norm.compound))
@@ -715,7 +731,7 @@ It does do a good job, but shrek 1 seems to be more limited than the others.
 
 ```{r 5.5.3 Optics-dbscan_3, warning=FALSE, echo=FALSE}
 db_clust_shrek # 0 is noise points
-cluster_report(db_clust_shrek) 
+cluster_report(db_clust_shrek, cap = "DBSCAN extraction") 
 ```
 
 Xi method:
