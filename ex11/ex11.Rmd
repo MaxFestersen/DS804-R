@@ -190,7 +190,7 @@ compound_test <- knn_compound_norm #all of data
 compound_target_category <- compound.df[,3]#all data
 compound_test_category <- compound.df[,3]#all data
 
-#using acutally training data and test data
+#using actually training data and test data
 compound_train <- knn_compound_norm[ran,] #train data values
 compound_test <- knn_compound_norm[-ran,] #test data values
 compound_target_category <- compound.df[ran,3] #train data category
