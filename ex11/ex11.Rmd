@@ -695,11 +695,12 @@ We were right.
 
 ### 5.5 OPTICS
 
+
 ### 5.6 DBSCAN
 
 
 ### 5.7 Silutte coefficient
-<!-- : XX TODO: perform analysis -->
+
 
 ### 6 Results
 <!-- XX TODO: Explain what we found / sum up results -->
