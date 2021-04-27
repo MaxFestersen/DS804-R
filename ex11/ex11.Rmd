@@ -172,7 +172,6 @@ together and sometimes together with Lips and Tongue.
 
 ### 3.2 knn
 <!-- Mathias: XX TODO: perform analysis -->
-<!-- Mathias: XX TODO: perform analysis -->
 to use KNN we need to have noise free dataset and all attributes of the dataset need to belong to a class.
 we start by choosing the value of K we square root the total number of data points available in the dataset, generally it is a good idea for k to be a odd number.
 
@@ -245,7 +244,7 @@ plot(k.optm, type="b", xlab="K-Value", ylab="Accuracy level")
 ```
 
 
-
+Plotting predicted test as a plot
 ```{r 3.2.4 KNN plot based test/training set, warning=FALSE, echo=FALSE}
 #plot
 plot.df = data.frame(compound_test, predicted = predictions)
@@ -281,15 +280,12 @@ cross_fit <- train(class ~ .,
              trControl  = trControl,
              metric     = "Accuracy",
              data       = norm.test)
-cross_fit
-
 #Get the confusion matrix to see accuracy value and other parameter values
 confusionMatrix(cross_fit)
 #Cross validation best K as a plot
-
-#Cross validation best K
-
 plot(cross_fit)
+#Cross validation best K
+cross_fit
 #plot of ROC(repeated Cross-validation)
 plot(cross_fit, print.thres = 0.5, type="S")
 
