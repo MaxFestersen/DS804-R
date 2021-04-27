@@ -203,7 +203,7 @@ compound_test_category <- compound.df[-ran,3] #test data category
 #so we should cross validate
 sqrt(399)
 #KNN algorithm where key is equal to square root of total number of rows
-predictions <- knn(compound_train,compound_test,cl=compound_target_category,use.all = TRUE ,k=19)
+predictions <- knn(compound_train,compound_test,cl=compound_target_category,use.all = TRUE ,k=1)
 ```
 
 confussion matrix of KNN with K=19 and a 80% training set, 20% test set
@@ -276,14 +276,14 @@ So we split the data up in 10, so 10*10% of the dataset will be tested and the a
 So we will get the Get the confusion matrix to see accuracy value and other parameter values
 ```{r 3.2.5 KNN 10 fold cross validation, warning=FALSE, echo=FALSE}
 
-set.seed(31040)
+set.seed(79040)
 
 trControl <- trainControl(method  = "cv",
                           number  = 10)
 
 cross_fit <- train(class ~ .,
              method     = "knn",
-             tuneGrid   = expand.grid(k = 3:10),
+             tuneGrid   = expand.grid(k = 1:10),
              trControl  = trControl,
              metric     = "Accuracy",
              data       = norm.test)
