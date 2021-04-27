@@ -17,6 +17,7 @@ library(caret)
 library(plyr)
 library(fpc)
 library(e1071)
+library(gridExtra)
 # Source ----------------------------------------
 source("../cluster_quality.R") # Functions for data analysis
 ```
@@ -318,8 +319,6 @@ knnPredict
 
 
 ### 3.3 OPTICS
-<!-- Alexander: XX TODO: perform analysis -->
-
 ```{r 3.3.1 Optics-setup, warning=FALSE, echo=FALSE}
 set.seed(2)
 dat <- compound.df[1:2] # data
@@ -442,7 +441,7 @@ plot(Dbscan_cl, td, main = "DBScan")
 ```
 
 ### 3.5 Silutte coefficient
-<!-- : XX TODO: perform analysis -->
+<!-- : Johannes TODO: perform analysis -->
 ```{r}
 set.seed(42069)
 # 4 clusters
@@ -487,6 +486,8 @@ c_har_won7plot1 <- fviz_cluster(c_har_won7, data = td,
              )
 c_har_won7plot2 <- fviz_silhouette(sil_res7)
 grid.arrange(c_har_won7plot1, c_har_won7plot2, nrow =2, ncol = 1)
+
+
 ```
 
 
@@ -752,7 +753,74 @@ Hartigan Wong and Macqueen mixes shrek 1 and 2 up, and thinks shrek 4 is 2 movie
 
 
 ### 5.5 OPTICS
+```{r 3.3.1 Optics-setup, warning=FALSE, echo=FALSE}
+set.seed(7010) # YOLO
+# data already set as data
 
+opt_clust_shrek <- optics(data.points, minPts = 7)
+plot(opt_clust_shrek, sub = "minPts = 7")
+```
+
+When looking at the "valleys" in the above reachability plot, it seems as if there are 5 classes with somewhat alike density.
+
+Comparing the reachability plot to the clustering order plot below, we can see that the clustering happens around the densest parts of the clusters.
+
+```{r 3.3.1 Optics-order, warning=FALSE, echo=FALSE}
+plot(data.points, col = "grey", main = "Clustering order", sub = "minPts = 7")
+polygon(data.points[opt_clust_shrek$order,])
+```
+
+
+```{r 3.3.2 Optics-dbscan, warning=FALSE, echo=FALSE}
+res_db_shrek <- extractDBSCAN(opt_clust_shrek, 1.55)
+plot(res_db_shrek, sub = paste0("DBSCAN extraction eps = ", res_db_shrek$eps_cl))
+```
+
+Looking at the above reachability plot, it is clear that the DBSCAN method only finds 5 clusters, however it finds the most dense clusters. In the plot below the clusters are visualized as a scatterplot.
+<!-- XX TODO: rewrite statement and dix the remodeling that happens for no reason now? -->
+
+```{r 3.3.2 Optics-dbscan_2, warning=FALSE, echo=FALSE}
+hullplot(data.points, res_db_shrek, sub = paste0("DBSCAN extraction eps = ", res_db_shrek$eps_cl))
+
+data.points_db_clust <- as.factor(res_db_shrek$cluster)
+db_clust_shrek <- table(data.points_db_clust, classNames)
+```
+
+ 
+
+```{r 3.3.3 Optics-dbscan_3, warning=FALSE, echo=FALSE}
+db_clust_shrek # 0 is noise points
+#cluster_report(db_clust) # doesn't work as dbscan method only finds 4 clusters
+```
+
+Xi method: (but it does'nt do that well) 
+
+```{r 3.3.4 Optics-xi, warning=FALSE, echo=FALSE}
+res_xi_shrek <- extractXi(opt_clust_shrek, xi = 0.058)
+plot(res_xi_shrek, sub = paste0("Xi extraction steepness threshold = ", res_xi_shrek$xi))
+```
+
+When looking at the above reachability plot, it looks like most movies were identified, however, There are to many splits and many points which are not identified, i.e., classified as noise.
+
+In the plot below the identified clusters are visualized on a scatter plot.
+
+```{r 3.3.4 Optics-xi_2, warning=FALSE, echo=FALSE}
+hullplot(data.points, res_xi_shrek, sub = paste0("Xi extraction steepness threshold = ", res_xi_shrek$xi))
+```
+
+Looking at the above plot, The movies do create some meaningful clusters, but it does have some trouble with movies that are not Shrek. For Shrek is love. Shrek is life. 
+
+```{r 3.3.5 Optics-xi_3, warning=FALSE, echo=FALSE}
+data_xi_clust <- as.factor(res_xi_shrek$cluster)
+xi_clust_shrek <- table(data_xi_clust, classNames)
+
+xi_clust_shrek # 0 is noise points
+
+cluster_report(xi_clust_shrek, cap = "OPTICS Xi-method")
+```
+
+Looking at the above confusion matrix and computed quality measures, it is clear that OPTICS paired with the Xi-method doesn't get all the points right, however, it is still very precise. 
+<!-- XX TODO: Fix text -->
 
 ### 5.6 DBSCAN
 
