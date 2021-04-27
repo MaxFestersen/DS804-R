@@ -182,6 +182,8 @@ set.seed(42069)
 ran <- sample(1:nrow(compound.df), 0.80* nrow(compound.df))
 nor <-function(x) { (x -min(x))/(max(x)-min(x))   }
 knn_compound_norm <- as.data.frame(lapply(compound.df[,c(1,2)], nor))
+norm.test <- cbind(knn_compound_norm, compound.df$class)
+names(norm.test) <- c("x", "y", "class")
 
 #using all data, test and training are the same
 compound_train <- knn_compound_norm #all of data
@@ -275,10 +277,10 @@ trControl <- trainControl(method  = "cv",
 
 cross_fit <- train(class ~ .,
              method     = "knn",
-             tuneGrid   = expand.grid(k = 1:10),
+             tuneGrid   = expand.grid(k = 3:10),
              trControl  = trControl,
              metric     = "Accuracy",
-             data       = compound.df)
+             data       = norm.test)
 cross_fit
 
 #Get the confusion matrix to see accuracy value and other parameter values
@@ -293,13 +295,13 @@ plot(cross_fit, print.thres = 0.5, type="S")
 
 
 #Cross validation prediction tested on the dataset(remember, Kappe is the expected accuracy)
-knnPredict <- predict(cross_fit,newdata = compound_test )
+knnPredict <- predict(cross_fit,newdata = norm.test )
 confusionMatrix(knnPredict,compound.df$class)
 
 
 
 #Cross validation prediction
-knnPredict <- predict(cross_fit,newdata = compound_test )
+knnPredict <- predict(cross_fit,newdata = norm.test )
 knnPredict
 #Get the confusion matrix to see accuracy value and other parameter values
 #plot of ROC(repeated Cross-validation)
