@@ -807,17 +807,18 @@ abline(h=.17, col = "red", lty=2)
 
 # Fitting DBScan clustering Model 
 # to training dataset
-Dbscan_cl <- dbscan(td, eps = 0.17, MinPts = 6 + 1)
-Dbscan_cl
+Dbscan_cl_shrek <- dbscan(data.points, eps = 0.17, MinPts = 5)
+Dbscan_cl_shrek
 
 # Checking cluster
-Dbscan_cl$cluster
+Dbscan_cl_shrek$cluster
 
 # Table
-table(Dbscan_cl$cluster, compound.df$class)
+table(Dbscan_cl_shrek$cluster, classNames)
 
 # Plotting Cluster
-plot(Dbscan_cl, td, main = "DBScan")
+plot(Dbscan_cl_shrek, data.points, main = "DBScan")
+
 ```
 DBscan has two parameters: minPts (Dimensionality + 1, or higher), and epsilon from KKn.
 We choose an epsilon from the Knn Distance plot (0.2) and use a minPts from the dimensionality 2 + 1 = 3
