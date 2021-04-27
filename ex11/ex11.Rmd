@@ -17,6 +17,7 @@ library(caret)
 library(plyr)
 library(fpc)
 library(e1071)
+library(gridEkstra)
 # Source ----------------------------------------
 source("../cluster_quality.R") # Functions for data analysis
 ```
@@ -439,7 +440,7 @@ plot(Dbscan_cl, td, main = "DBScan")
 ```
 
 ### 3.5 Silutte coefficient
-<!-- : XX TODO: perform analysis -->
+<!-- : Johannes TODO: perform analysis -->
 ```{r}
 set.seed(42069)
 # 4 clusters
@@ -484,6 +485,8 @@ c_har_won7plot1 <- fviz_cluster(c_har_won7, data = td,
              )
 c_har_won7plot2 <- fviz_silhouette(sil_res7)
 grid.arrange(c_har_won7plot1, c_har_won7plot2, nrow =2, ncol = 1)
+
+
 ```
 
 
