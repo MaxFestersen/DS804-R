@@ -226,6 +226,9 @@ library(gmodels)
 #not sure we need this
 #CrossTable(y=compound_test_category,x=predictions,prop.chiq=FALSE)
 
+#error rate
+mean(compound_test_category != predictions)
+
 
 ```
 plot that displaying the accuracy of the KNN algorithm given the K=i
