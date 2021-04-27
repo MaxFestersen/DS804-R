@@ -489,9 +489,8 @@ c_har_won7plot2 <- fviz_silhouette(sil_res7)
 grid.arrange(c_har_won7plot1, c_har_won7plot2, nrow =2, ncol = 1)
 ```
 
-The silhouette value is a measure of how similar an object is to its own cluster (cohesion) compared to other clusters (separation).
 
-The silhouette ranges from −1 to +1, where a high value indicates that the object is well matched to its own cluster and poorly matched to neighboring clusters.
+
 
 
 
@@ -678,7 +677,8 @@ ggplot(date_stars, aes(x, y, shape = class, color = class)) +
 ```{r 5.1.5 Focus data for 5, warning=FALSE, echo=FALSE}
 data <- all.reviews %>% # stars vs sentiment review
   select(date, sentiment) %>%
-  mutate(date = as.numeric(date))
+  dplyr::rename("class" = title)# %>% 
+  # mutate(date = as.numeric(date))
 
 data.points <- all.reviews %>% # stars vs sentiment review
   ungroup() %>% 
@@ -733,7 +733,7 @@ data$forgy <- factor(test_shrek$forgy)
 data$har_won <- factor(test_shrek$har_won)
 
 plot_stuff <- function(df, predicted, cap) {
-  ggplot(df, aes(date, sentiment, shape = title, color = predicted)) +
+  ggplot(df, aes(date, sentiment, shape = class, color = predicted)) +
     geom_point() +
     labs(title = cap) +
     theme_light()
@@ -743,8 +743,10 @@ plot_stuff <- function(df, predicted, cap) {
 plot_stuff(data, data$macqueen, "Macqueen")
 plot_stuff(data, data$forgy, "Forgy")
 plot_stuff(data, data$har_won, "Hartigan Wong")
+
 ```
-We were right.
+We were right. Forgy does a damn good job.
+Hartigan Wong and Macqueen mixes shrek 1 and 2 up, and thinks shrek 4 is 2 movies.
 
 ### 5.4 knn
 
