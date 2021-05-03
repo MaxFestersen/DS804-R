@@ -3,8 +3,7 @@
 
 # a) ----------------------------------------------------------------------
 # Some dataset
-# TODO
-
+head(ToothGrowth)
 
 # > Decision trees --------------------------------------------------------
 
@@ -12,7 +11,7 @@
 
 
 # > The naïve Bayes classifier --------------------------------------------
-
+# https://www.geeksforgeeks.org/naive-bayes-classifier-in-r-programming/
 
 
 
