@@ -1,18 +1,132 @@
 # Ex 12 -------------------------------------------------------------------
-
+library(tidyverse)
 
 # a) ----------------------------------------------------------------------
-# Some dataset
-head(ToothGrowth)
+# Some dataset: ToothGrowth
+head(ToothGrowth, 5)
+unique(ToothGrowth$supp)
+unique(ToothGrowth$dose)
+unique(ToothGrowth$len)
+data <- ToothGrowth %>%
+  rowwise() %>% # Work with rows (to perform task on each row)
+  mutate("len_rate" = ifelse(len>7, # categorise by len
+                             ifelse(
+                               len>14,
+                               ifelse(
+                                 len>21,
+                                 ifelse(
+                                   len>28,
+                                   "29<"
+                                   ,
+                                   "22-28"
+                                 ),
+                                 "15-21"
+                               ),
+                               "7-14"
+                             ),
+                             "<=7"
+                      )
+  ) %>% 
+  select(-len) # Do not select len
+unique(data$len_rate)
+
 
 # > Decision trees --------------------------------------------------------
+library(rpart)
 
+# Find supplement (supp) from categorised teeth length and dose
+data.supp <- rpart(formula = supp ~ .,
+      data = data
+      )
 
+data.supp.method.class <- rpart(formula = supp ~ .,
+                   data = data,
+                   method = "class" 
+)
 
+data.supp.method.poisson <- rpart(formula = supp ~ .,
+                   data = data,
+                   method = "poisson" 
+)
+
+# Find dose from categorised teeth length and supplement
+data.dose <- rpart(formula = dose ~ .,
+      data = data
+      )
+
+data.dose.method.class <- rpart(formula = dose ~ .,
+                                data = data,
+                                method = "class" 
+)
+
+data.dose.method.poisson <- rpart(formula = dose ~ .,
+                                data = data,
+                                method = "poisson" 
+)
+
+# Find supplement (supp) from  teeth length and dose
+orr.supp <- rpart(formula = supp ~ .,
+      data = ToothGrowth
+      )
+
+# Find dose from teeth length and supplement
+orr.dose <- rpart(formula = dose ~ .,
+      data = ToothGrowth
+      )
+
+# Visualize decision treee results
+library(rpart.plot)
+rpart.plot(data.supp)
+rpart.plot(data.supp.method.class)
+rpart.plot(data.supp.method.poisson)
+rpart.plot(data.dose)
+rpart.plot(data.dose.method.class)
+rpart.plot(data.dose.method.poisson)
+rpart.plot(orr.supp)
+rpart.plot(orr.dose)
+
+cat(paste(
+  "Note: results are not perfect, and some randomness is involved.",
+  "By specifiyng what the formula should find, and the method to do so, we could imporve results",
+  sep="\n"
+))
 
 # > The naïve Bayes classifier --------------------------------------------
 # https://www.geeksforgeeks.org/naive-bayes-classifier-in-r-programming/
+# Installing Packages
+# install.packages("e1071")
+# install.packages("caTools")
+# install.packages("caret")
 
+# Loading package
+library(e1071)
+library(caTools)
+library(caret)
+
+# Splitting data into train and test data
+split <- sample.split(ToothGrowth, SplitRatio = 0.7)
+train_cl <- subset(ToothGrowth, split == "TRUE")
+test_cl <- subset(ToothGrowth, split == "FALSE")
+
+# Feature Scaling
+train_scale <- scale(select(train_cl, -supp))
+test_scale <- scale(select(test_cl, -supp))
+
+# Fitting Naive Bayes Model 
+# to training dataset
+set.seed(120)  # Setting Seed
+classifier_cl <- naiveBayes(supp ~ ., data = train_cl)
+classifier_cl
+
+# Predicting on test data'
+y_pred <- predict(classifier_cl, newdata = test_cl)
+
+# Confusion Matrix
+cm <- table(test_cl$supp, y_pred)
+cm
+
+# Model Evauation
+confusionMatrix(cm)
 
 
 # > k nearest neighbor ----------------------------------------------------
