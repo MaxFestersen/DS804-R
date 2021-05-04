@@ -1,5 +1,6 @@
 # Ex 12 -------------------------------------------------------------------
 library(tidyverse)
+set.seed(120)  # Setting Seed
 
 # a) ----------------------------------------------------------------------
 # Some dataset: ToothGrowth
@@ -117,7 +118,6 @@ test_scale <- scale(select(test_cl, -supp))
 
 # Fitting Naive Bayes Model 
 # to training dataset
-set.seed(120)  # Setting Seed
 classifier_cl <- naiveBayes(supp ~ ., data = train_cl)
 classifier_cl
 
