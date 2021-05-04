@@ -121,6 +121,10 @@ prop.table(table(train_tooth$dose))
 trained_tooth <- rpart(dose~., data = train_tooth, method = 'class')
 
 
+# Adjusting hyperparameters
+control <- rpart.control(minsplit = 8, minbucket = round(20/3), cp = 0.01) # for adjusting hyperparameters
+trained_tooth_2 <- rpart(dose~., data = train_tooth, method = "class", control = control)
+
 # Test training data
 
 
