@@ -205,23 +205,66 @@ confusionMatrix(cm)
 
 sum(diag(cm)) / sum(cm) # Accuracy for Naïve bayers
 
-
+# Obervations
+cat(paste(
+  "Naïve Bayers is pretty accurate in our test.",
+  "To adjust values, the test data and formula is the best parameters to adjust.",
+  sep = "\n"
+  ))
 
 # > k nearest neighbor ----------------------------------------------------
-train <- train_tooth
-test <- test_tooth
-cl <- train_tooth[1,1] #ingen anelse om, hvad det her er
-knn(train, test, cl, k = 2, l = 0, prob = FALSE, use.all = TRUE)
+train <- train_tooth[-3] %>% # Do not select class label
+  rowwise() %>% # Work with each row
+  mutate(supp = as.numeric( # Format text rows as numbers
+                ifelse(supp == "OJ",
+                       1,
+                       0)
+              )
+           )
+test <- test_tooth[-3] %>% 
+  rowwise() %>% 
+  mutate(supp = as.numeric(
+    ifelse(supp == "OJ",
+           1,
+           0)
+  )
+  )
+cl <- factor(train_tooth$dose) # Select class as factor
+knn_tooth <- knn(train, test, cl, k = 20, l = 5, prob = FALSE, use.all = TRUE) # Perform knn
 
+# Confusion Matrix
+cm <- table(test_tooth$dose, knn_tooth)
+cm
+
+# Model Evauation
+confusionMatrix(cm)
+
+sum(diag(cm)) / sum(cm) # Accuracy for Naïve bayers
+
+cat(paste(
+  "Knn was initially not very accurate.",
+  "Adjusting k did not really alter results with values less than 25. Over is only worse.",
+  "Adjusting l (minimum vote for definite decision) does improve results (l is usually k-1)",
+  sep = "\n"
+))
 
 # b) ----------------------------------------------------------------------
 # How does the behavior of the k nearest neighbor classifier
 # change with the choice of k?
+print("Larger k did impove our result.")
 
 # c) ----------------------------------------------------------------------
 # What is the impact of parameter choices on the quality of decision trees?
-
+cat(paste(
+  "Using test data could improve results.",
+  "Altering formula, will alter what we find.",
+  "minsplit creates more splits (but did not do much for our data)",
+  "Minbucket defines required obervations in end leafs. It did not imrpove our results.",
+  "Weights could weight data. We didn't try to apply it.",
+  "CP can define required improvement. We could not create improvements.",
+  sep = "\n"
+))
 # d) ----------------------------------------------------------------------
 # How does the behavior of the three classifiers change with the amount
 # of training data (e.g., choice of training-test-splits)?
-
+print("More training data, improves results, but limits test data and vice versa.")
