@@ -2,6 +2,7 @@
 library(tidyverse) # For convenience
 library(rpart) # For decision trees
 library(rpart.plot) # For visualizing decision trees
+library(class) # For kNN
 
 set.seed(120)  # Setting Seed
 
@@ -186,7 +187,10 @@ confusionMatrix(cm)
 
 
 # > k nearest neighbor ----------------------------------------------------
-
+train <- train_tooth
+test <- test_tooth
+cl <- train_tooth[1,1] #ingen anelse om, hvad det her er
+knn(train, test, cl, k = 2, l = 0, prob = FALSE, use.all = TRUE)
 
 
 # b) ----------------------------------------------------------------------
