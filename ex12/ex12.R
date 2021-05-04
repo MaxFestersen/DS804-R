@@ -1,5 +1,8 @@
 # Ex 12 -------------------------------------------------------------------
-library(tidyverse)
+library(tidyverse) # For convenience
+library(rpart) # For decision trees
+library(rpart.plot) # For visualizing decision trees
+
 set.seed(120)  # Setting Seed
 
 # a) ----------------------------------------------------------------------
@@ -33,7 +36,6 @@ unique(data$len_rate)
 
 
 # > Decision trees --------------------------------------------------------
-library(rpart)
 
 # Find supplement (supp) from categorised teeth length and dose
 data.supp <- rpart(formula = supp ~ .,
@@ -76,7 +78,6 @@ orr.dose <- rpart(formula = dose ~ .,
       )
 
 # Visualize decision treee results
-library(rpart.plot)
 rpart.plot(data.supp)
 rpart.plot(data.supp.method.class)
 rpart.plot(data.supp.method.poisson)
