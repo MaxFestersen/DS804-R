@@ -87,6 +87,9 @@ rpart.plot(orr.dose)
 
 cat(paste(
   "Note: results are not perfect, and some randomness is involved.",
+  "Decision trees are not allways posible to create, which was the case for some of the tests.",
+  "There is quite some randomness involved in the process. The result might the most optimal. One should try adjusting the formula to acchive reults.",
+  "Working results can easily be identified by the labels apearing in the top right of the visualization.",
   "By specifiyng what the formula should find, and the method to do so, we could imporve results",
   sep="\n"
 ))
