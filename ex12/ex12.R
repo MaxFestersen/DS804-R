@@ -2,6 +2,9 @@
 library(tidyverse) # For convenience
 library(rpart) # For decision trees
 library(rpart.plot) # For visualizing decision trees
+library(e1071) # For naiveBayes algorithm - great package name btw.
+#library(caTools) # modefies some base code and some other stuff.
+library(caret) # For confusionMatrix
 
 set.seed(120)  # Setting Seed
 
@@ -120,13 +123,29 @@ prop.table(table(train_tooth$dose))
 # Step 4: Build model
 trained_tooth <- rpart(dose~., data = train_tooth, method = 'class')
 
+# Step 5: make prediction
+predict_w_trained_tooth <- predict(trained_tooth, test_tooth, type = 'class')
 
+# Optional: get accuracy
+confusionmatrix_tooth <- table(test_tooth$dose, predict_w_trained_tooth)
+
+accuracy_tooth <- sum(diag(confusionmatrix_tooth)) / sum(confusionmatrix_tooth)
+accuracy_tooth
+
+# Step 7: tuning (of hyper parameters)
 # Adjusting hyperparameters
-control <- rpart.control(minsplit = 8, minbucket = round(20/3), cp = 0.01) # for adjusting hyperparameters
+control <- rpart.control(minsplit = 8, minbucket = 8/2, cp = 0.001) # for adjusting hyperparameters
+# Minsplit: most optimal for this data at 5-48
+# minbucket and cp don't really do all that much for this data.
+
 trained_tooth_2 <- rpart(dose~., data = train_tooth, method = "class", control = control)
 
-# Test training data
+predict_w_trained_tooth_2 <-predict(trained_tooth_2, test_tooth, type = 'class')
 
+confusionmatrixtest_tooth <- table(test_tooth$dose, predict_w_trained_tooth_2)
+
+accuracytest_tooth <- sum(diag(confusionmatrixtest_tooth)) / sum(confusionmatrixtest_tooth)
+accuracytest_tooth
 
 # Visualize decision treee results
 rpart.plot(data.supp)
@@ -138,6 +157,7 @@ rpart.plot(data.dose.method.poisson)
 rpart.plot(orr.supp)
 rpart.plot(orr.dose)
 rpart.plot(trained_tooth)
+rpart.plot(trained_tooth_2)
 
 cat(paste(
   "Decision trees are not allways posible to create, which was the case for some of the tests.",
@@ -150,39 +170,40 @@ cat(paste(
 
 # > The naïve Bayes classifier --------------------------------------------
 # https://www.geeksforgeeks.org/naive-bayes-classifier-in-r-programming/
-# Installing Packages
-# install.packages("e1071")
-# install.packages("caTools")
-# install.packages("caret")
 
-# Loading package
-library(e1071)
-library(caTools)
-library(caret)
-
-# splitsting data into train and test data - Done in previous section
+# Splitsting data into train and test data - Done in previous section
 # splits <- sample.splits(ToothGrowth, splitsRatio = 0.7)
 # train_tooth <- subset(ToothGrowth, splits == "TRUE")
 # test_tooth <- subset(ToothGrowth, splits == "FALSE")
 
 # Feature Scaling
-train_scale <- scale(select(train_tooth, -supp))
-test_scale <- scale(select(test_tooth, -supp))
+# Note: not needed for this data
+# train_scale <- scale(select(train_tooth, -supp)) # scalce - base code - centers valeus / similar too nomalization
+# test_scale <- scale(select(test_tooth, -supp))
 
-# Fitting Naive Bayes Model 
-# to training dataset
-classifier_cl <- naiveBayes(supp ~ ., data = train_tooth)
+# Factoring columns - sometimes needed?
+train_tooth <- train_tooth %>% 
+  mutate(dose = factor(dose))
+test_tooth <- test_tooth %>% 
+  mutate(dose = factor(dose))
+
+
+# Fitting Naive Bayes Model to training dataset
+classifier_cl <- naiveBayes(dose ~ ., data = train_tooth)
 classifier_cl
 
-# Predicting on test data'
-y_pred <- predict(classifier_cl, newdata = test_tooth)
+# Predicting on test data
+y_pred <- predict(classifier_cl, newdata = test_tooth, type = "class")
 
 # Confusion Matrix
-cm <- table(test_tooth$supp, y_pred)
+cm <- table(test_tooth$dose, y_pred)
 cm
 
 # Model Evauation
 confusionMatrix(cm)
+
+sum(diag(cm)) / sum(cm) # Accuracy for Naïve bayers
+
 
 
 # > k nearest neighbor ----------------------------------------------------
