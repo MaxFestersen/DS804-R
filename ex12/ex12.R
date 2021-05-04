@@ -5,6 +5,7 @@ library(rpart.plot) # For visualizing decision trees
 library(e1071) # For naiveBayes algorithm - great package name btw.
 #library(caTools) # modefies some base code and some other stuff.
 library(caret) # For confusionMatrix
+library(class) # For kNN
 
 set.seed(120)  # Setting Seed
 
@@ -207,7 +208,10 @@ sum(diag(cm)) / sum(cm) # Accuracy for Naïve bayers
 
 
 # > k nearest neighbor ----------------------------------------------------
-
+train <- train_tooth
+test <- test_tooth
+cl <- train_tooth[1,1] #ingen anelse om, hvad det her er
+knn(train, test, cl, k = 2, l = 0, prob = FALSE, use.all = TRUE)
 
 
 # b) ----------------------------------------------------------------------
