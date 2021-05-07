@@ -9,6 +9,7 @@ library(class) # For kNN
 
 set.seed(120)  # Setting Seed
 
+
 # a) ----------------------------------------------------------------------
 # Some dataset: ToothGrowth
 head(ToothGrowth, 5)
@@ -169,6 +170,7 @@ cat(paste(
   sep="\n"
 ))
 
+
 # > The naïve Bayes classifier --------------------------------------------
 # https://www.geeksforgeeks.org/naive-bayes-classifier-in-r-programming/
 
@@ -185,6 +187,7 @@ cat(paste(
 # Factoring columns - sometimes needed?
 train_tooth <- train_tooth %>% 
   mutate(dose = factor(dose))
+
 test_tooth <- test_tooth %>% 
   mutate(dose = factor(dose))
 
@@ -221,6 +224,7 @@ train <- train_tooth[-3] %>% # Do not select class label
                        0)
               )
            )
+
 test <- test_tooth[-3] %>% 
   rowwise() %>% 
   mutate(supp = as.numeric(
@@ -248,10 +252,12 @@ cat(paste(
   sep = "\n"
 ))
 
+
 # b) ----------------------------------------------------------------------
 # How does the behavior of the k nearest neighbor classifier
 # change with the choice of k?
 print("Larger k did impove our result.")
+
 
 # c) ----------------------------------------------------------------------
 # What is the impact of parameter choices on the quality of decision trees?
@@ -264,6 +270,8 @@ cat(paste(
   "CP can define required improvement. We could not create improvements.",
   sep = "\n"
 ))
+
+
 # d) ----------------------------------------------------------------------
 # How does the behavior of the three classifiers change with the amount
 # of training data (e.g., choice of training-test-splits)?
