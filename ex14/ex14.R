@@ -10,18 +10,24 @@ test2 <- read.table("datatest2.txt", sep = ",")
 training <- read.table("datatraining.txt", sep = ",")
 
 
+# Choice of Algorithms ----------------------------------------------------
+
+
+## Decision Tree ----------------------------------------------------------
+
+
 # Decision Tree -----------------------------------------------------------
  
 
 
-
-
-# SVM ---------------------------------------------------------------------
-
+## Support Vectors and Margin (SVM)----------------------------------------
 
 
 
-# Neural Network ----------------------------------------------------------
+
+
+
+## Neural Network ----------------------------------------------------------
 library(neuralnet)
 
 training$Occupancy <- factor(training$Occupancy)
@@ -35,5 +41,6 @@ net <- neuralnet(Occupancy ~ Temperature + Humidity + Light + CO2 + HumidityRati
 
 
 plot(net)
+
 
 
