@@ -31,7 +31,11 @@ print(svmfit)
 
 ## Neural Network ----------------------------------------------------------
 library(neuralnet)
-set.seed(111)
+set.seed(42069701051146) # 420 69 yolo swag
+
+training$Occupancy <- factor(training$Occupancy)
+
+
 net <- neuralnet(Occupancy ~ Temperature + Humidity + Light + CO2 + HumidityRatio,
                  data = training,
                  hidden = 2,
@@ -45,5 +49,7 @@ plot(net)
 
 
 
-## Na?ve Bayes ------------------------------------------------------------
+
+
+## Naïve Bayes ------------------------------------------------------------
 
