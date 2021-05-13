@@ -29,6 +29,7 @@ training <- read.table("datatraining.txt", sep = ",")
 
 ## Neural Network ----------------------------------------------------------
 library(neuralnet)
+set.seed(42069701051146) # 420 69 yolo swag
 
 training$Occupancy <- factor(training$Occupancy)
 
@@ -45,5 +46,5 @@ plot(net)
 
 
 
-## Naïve Bayes ------------------------------------------------------------
+## NaÃ¯ve Bayes ------------------------------------------------------------
 
