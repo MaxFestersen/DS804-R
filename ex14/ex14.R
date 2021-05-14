@@ -24,11 +24,13 @@ training$date <- as.numeric(ymd_hms(training$date))
 pairs(training[-1], diag.panel = panel.boxplot)
 
 ## Decision Tree ----------------------------------------------------------
-tree <- rpart(Occupancy ~ ., 
-              data = training, 
-              method = 'class') # No changes to control element
-rpart.plot(tree) # plotting Decision tree
-
+set.seed(44444444)
+control <- rpart.control(minsplit = 8, minbucket = 8/2, cp = 0.001) # for adjusting hyperparameters
+tree <- rpart(Occupancy ~ .,
+               method = "class",
+               data = training,
+              control = control)
+rpart.plot(tree)
 
 predictions <- predict(tree, test, type = 'class') # predicting unseen test data
 cm <- table(test$Occupancy, predictions) # confusion matrix
@@ -40,9 +42,8 @@ print(svmfit)
 
 
 ## Neural Network ----------------------------------------------------------
-set.seed(42069701051146) # 420 69 yolo swag
-
-
+library(neuralnet)
+set.seed(12345689) # Men how, vi glemte 7, men det gør ikke noget, for vi har det sjovt.
 
 net <- neuralnet(Occupancy ~ Temperature + Humidity + Light + CO2 + HumidityRatio,
                  data = training,
