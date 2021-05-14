@@ -16,9 +16,9 @@ test2 <- read.table("datatest2.txt", sep = ",")
 training <- read.table("datatraining.txt", sep = ",")
 
 training$Occupancy <- factor(training$Occupancy) # converting class label to factor
-training$test <- factor(training$test) # converting class label to factor
-training$date <- as.numeric(ymd_hms(training$date))
-
+test$Occupancy <- factor(test$Occupancy) # converting class label to factor
+training$date <- as.numeric(ymd_hms(training$date)) # Converting date to numeric
+test$date <- as.numeric(ymd_hms(test$date)) # Converting date to numeric
 
 # Choice of Algorithms ----------------------------------------------------
 pairs(training[-1], diag.panel = panel.boxplot)
@@ -39,7 +39,6 @@ cluster_report(cm, cap = "Decision Tree") # Quality measures of Decision tree
 ## Support Vectors and Margin (SVM)----------------------------------------
 svmfit <- svm(Occupancy ~ ., data = training, kernel = "linear", cost = 10, scale = FALSE)
 print(svmfit)
-
 
 ## Neural Network ----------------------------------------------------------
 library(neuralnet)
