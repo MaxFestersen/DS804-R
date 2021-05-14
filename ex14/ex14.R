@@ -182,8 +182,13 @@ plot(netmodel)
 test_sample <- training[sample(nrow(training), size = 400, replace = FALSE), ]
 test_sample <- test_sample[2:7]
 
+#taking a test sample from the test data
+test_sample <- test2[sample(nrow(test2), size = 2665, replace = FALSE), ]
+test_sample <- test_sample[2:7]
 
-net.results <- compute(netmodel, test_sample)
+
+#saves result
+net.results <- neuralnet::compute(netmodel, test_sample)
 ls(net.results)
 print(net.results$net.result)
 
