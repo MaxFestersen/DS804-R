@@ -118,46 +118,6 @@ netmodel <- neuralnet(Occupancy ~ Temperature + Humidity + Light + CO2 + Humidit
 plot(netmodel)
 
 
-#another NNET method
-#training parameters
-train_params <- trainControl(method = "repeatedcv", number = 2, repeats=1)
-
-#train model
-nnet_model <- train(Occupancy ~ Temperature + Humidity + Light + CO2 + HumidityRatio,
-                    training$Occupancy,
-                    method = "nnet",
-                    trControl= train_params,
-                    preProcess=c("scale","center")
-)
-
-nnet_model <- train(Occupancy ~.,
-                    training,
-                    method = "nnet",
-                    trControl= train_params,
-                    preProcess=c("scale","center")
-)
-
-#Baseline Accuracy
-prop.table(table(training$Occupancy))
-
-
-# Predictions on the training set
-nnet_predictions_train <-predict(nnet_model, training)
-
-# Confusion matrix on training data
-table(training$Occupancy, nnet_predictions_train)
-(278+125)/nrow(training)                    
-
-
-#Predictions on the test set
-nnet_predictions_test <-predict(nnet_model, test)
-
-# Confusion matrix on test set
-table(test$Occupancy, nnet_predictions_test)
-157/nrow(test) 
-
-
-
 
 # another method
 netmodel <- neuralnet(Occupancy ~ Temperature + Humidity + Light + CO2 + HumidityRatio,
