@@ -12,16 +12,19 @@ library(nnet)
 library(caret)
 
 # Dataset -----------------------------------------------------------------
+# We have chosen the Occupancy dataset: http://archive.ics.uci.edu/ml/datasets/Occupancy+Detection+#
+
+# > Loading data ----
+test <- read.table("datatest.txt", sep = ",")
+test2 <- read.table("datatest2.txt", sep = ",")
+training <- read.table("datatraining.txt", sep = ",")
+
+# > Formatting data ----
 formating <- function(x) {
   x$Occupancy <- factor(x$Occupancy) # Factor Occupancy
   x$date <- ymd_hms(x$date) # Change date from char to date
   return(x)
 }
-# We have chosen the Occupancy dataset: http://archive.ics.uci.edu/ml/datasets/Occupancy+Detection+#
-
-test <- read.table("datatest.txt", sep = ",")
-test2 <- read.table("datatest2.txt", sep = ",")
-training <- read.table("datatraining.txt", sep = ",")
 
 test <- formating(test)
 test2 <- formating(test2)
