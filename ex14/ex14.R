@@ -31,7 +31,7 @@ print(svmfit)
 
 ## Neural Network ----------------------------------------------------------
 library(neuralnet)
-set.seed(42069701051146) # 420 69 yolo swag
+set.seed(12345689) # Men how, vi glemte 7, men det gør ikke noget, for vi har det sjovt.
 
 training$Occupancy <- factor(training$Occupancy)
 
