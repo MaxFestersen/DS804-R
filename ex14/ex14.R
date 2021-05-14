@@ -8,6 +8,8 @@ library(rpart.plot) # Visualizing Decision Tree
 library(e1071) # Support Vector Machine
 library(neuralnet) # Neural Network
 library(lubridate)
+library(nnet)
+library(caret)
 
 # Dataset -----------------------------------------------------------------
 
@@ -45,20 +47,49 @@ print(svmfit)
 library(neuralnet)
 set.seed(12345689) # Men how, vi glemte 7, men det gør ikke noget, for vi har det sjovt.
 
-net <- neuralnet(Occupancy ~ Temperature + Humidity + Light + CO2 + HumidityRatio,
+print(dim(training)); print(dim(test))
+
+netmodel <- neuralnet(Occupancy ~ Temperature + Humidity + Light + CO2 + HumidityRatio,
                  data = training,
                  hidden = 2,
                  linear.output = FALSE, 
                  err.fct = 'ce', 
                  likelihood = TRUE)
 
-
-plot(net)
-
+plot(netmodel)
 
 
 
+#another NNET method
+#training parameters
+train_params <- trainControl(method = "repeatedcv", number = 2, repeats=1)
 
+#train model
+nnet_model <- train(Occupancy ~ Temperature + Humidity + Light + CO2 + HumidityRatio,
+                    training,
+                    method = "nnet",
+                    trControl= train_params,
+                    preProcess=c("scale","center")
+)
+
+#Baseline Accuracy
+prop.table(table(training$Occupancy))
+
+
+# Predictions on the training set
+nnet_predictions_train <-predict(nnet_model, training)
+
+# Confusion matrix on training data
+table(training$Occupancy, nnet_predictions_train)
+(278+125)/nrow(training)                    
+
+
+#Predictions on the test set
+nnet_predictions_test <-predict(nnet_model, test)
+
+# Confusion matrix on test set
+table(test$Occupancy, nnet_predictions_test)
+157/nrow(test) 
 
 ## Naïve Bayes ------------------------------------------------------------
 
