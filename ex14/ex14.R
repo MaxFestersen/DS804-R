@@ -25,11 +25,14 @@ pairs(training[-1], diag.panel = panel.boxplot)
 
 ## Decision Tree ----------------------------------------------------------
 set.seed(44444444)
-tree <- rpart(Occupancy ~ Temperature + Humidity + Light + CO2 + HumidityRatio,
+tree <- rpart(Occupancy ~ .,
               method = "class",
               data = training)
 rpart.plot(tree) # A bit simple? Lets try with some control
 
+predictions <- predict(tree, test, type = 'class') # predicting unseen test data
+cm <- table(test$Occupancy, predictions) # confusion matrix
+cluster_report(cm, cap = "Decision Tree") # Quality measures of Decision tree
 
 control <- rpart.control(minsplit = 128, minbucket = 128/2, cp = 0.001) # for adjusting hyperparameters
 tree <- rpart(Occupancy ~ Temperature + Humidity + Light + CO2 + HumidityRatio + date,
