@@ -1,7 +1,13 @@
 # Exercise 14 / Classification project ------------------------------------
 
-
-
+## Libraries
+source("../cluster_quality.R") # For checking quality of fit
+library(SciViews) # to use boxplots and scatterplots together with pairs function
+library(rpart) # Decision Tree
+library(rpart.plot) # Visualizing Decision Tree
+library(e1071) # Support Vector Machine
+library(neuralnet) # Neural Network
+library(lubridate)
 
 # Dataset -----------------------------------------------------------------
 
@@ -10,14 +16,14 @@ test2 <- read.table("datatest2.txt", sep = ",")
 training <- read.table("datatraining.txt", sep = ",")
 
 training$Occupancy <- factor(training$Occupancy) # converting class label to factor
+training$test <- factor(training$test) # converting class label to factor
+training$date <- as.numeric(ymd_hms(training$date))
+
 
 # Choice of Algorithms ----------------------------------------------------
-
+pairs(training[-1], diag.panel = panel.boxplot)
 
 ## Decision Tree ----------------------------------------------------------
-library(rpart)
-library(rpart.plot)
-
 set.seed(44444444)
 tree <- rpart(Occupancy ~ Temperature + Humidity + Light + CO2 + HumidityRatio,
               method = "class",
@@ -27,25 +33,24 @@ rpart.plot(tree) # A bit simple? Lets try with some control
 
 control <- rpart.control(minsplit = 128, minbucket = 128/2, cp = 0.001) # for adjusting hyperparameters
 tree <- rpart(Occupancy ~ Temperature + Humidity + Light + CO2 + HumidityRatio,
+# tree <- rpart(Occupancy ~ .,
                method = "class",
                data = training,
               control = control)
 rpart.plot(tree) # A bit better.
 
-## Support Vectors and Margin (SVM)----------------------------------------
-library(e1071)
+predictions <- predict(tree, test, type = 'class') # predicting unseen test data
+cm <- table(test$Occupancy, predictions) # confusion matrix
+cluster_report(cm, cap = "Decision Tree") # Quality measures of Decision tree
 
+## Support Vectors and Margin (SVM)----------------------------------------
 svmfit <- svm(Occupancy ~ ., data = training, kernel = "linear", cost = 10, scale = FALSE)
 print(svmfit)
-
 
 
 ## Neural Network ----------------------------------------------------------
 library(neuralnet)
 set.seed(12345689) # Men how, vi glemte 7, men det gør ikke noget, for vi har det sjovt.
-
-training$Occupancy <- factor(training$Occupancy)
-
 
 net <- neuralnet(Occupancy ~ Temperature + Humidity + Light + CO2 + HumidityRatio,
                  data = training,
