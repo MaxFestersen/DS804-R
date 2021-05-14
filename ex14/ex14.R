@@ -20,9 +20,13 @@ test2 <- read.table("datatest2.txt", sep = ",")
 training <- read.table("datatraining.txt", sep = ",")
 
 # > Formatting data ----
+# Date might be an issue, as we will never test the results are based on a specific period
 formating <- function(x) {
   x$Occupancy <- factor(x$Occupancy) # Factor Occupancy
-  x$date <- ymd_hms(x$date) # Change date from char to date
+  x <- mutate(x, time = strsplit(date, " ")[[1]][2])
+  x <- mutate(x, date = strsplit(date, " ")[[1]][1])
+  x$date <- ymd(x$date) # Change date from char to date
+  x$time <- hms(x$time)
   return(x)
 }
 
@@ -86,12 +90,10 @@ max(accuracy.arr)
 # Control did not improve results, as the best split result was already reached
 
 # Light seems to be a very domminent attribute.
-# Date might also be an issue, as we will never test the results are based on a specific period
 # What if we remove it?
 # >> Formatting data ----
 remove.light <- function(x) {
-  x <- select(x, -Light) %>% 
-    select(-date)
+  x <- select(x, -Light)
 }
 
 test.f <- remove.light(test) # f as in filtered
