@@ -49,7 +49,6 @@ cm <- table(test$Occupancy, predictions) # confusion matrix
 cluster_report(cm, cap = "Decision Tree") # Quality measures of Decision tree
 
 # Inital results are good though. No Control is really needed.
-
 # Generated with control parameters
 control <- rpart.control(minsplit = 32, minbucket = 32/2, cp = 0.001) # for adjusting hyperparameters
 #tree <- rpart(Occupancy ~ Temperature + Humidity + Light + CO2 + HumidityRatio + date,
@@ -65,7 +64,26 @@ predictions.c <- predict(tree.c, test, type = 'class') # predicting unseen test 
 cm.c <- table(test$Occupancy, predictions.c) # confusion matrix
 cluster_report(cm.c, cap = "Decision Tree with control") # Quality measures of Decision tree
 
-# Control did not improve results.
+accuracy.test <- function(minsplit){
+  control <- rpart.control(minsplit = minsplit, minbucket = minsplit/2, cp = 0.001) # for adjusting hyperparameters
+  tree <- rpart(Occupancy ~ .,
+                method = "class",
+                data = training,
+                control = control)
+  predictions <- predict(tree, test, type = 'class') # predicting unseen test data
+  cm <- table(test$Occupancy, predictions) # confusion matrix
+  return(sum(diag(cm)) / sum(cm))
+}
+
+# Control did not improve results. But maybe, we choose poorly. Let's try 128 different minsplit values.
+accuracy.arr <- c()
+for (i in 1:128) {
+  accuracy.arr <- c(accuracy.arr, accuracy.test(i))
+}
+accuracy.arr
+max(accuracy.arr)
+
+# Control did not improve results, as the best split result was already reached
 
 ## Support Vectors and Margin (SVM)----------------------------------------
 svmfit <- svm(Occupancy ~ .,
