@@ -20,9 +20,13 @@ test2 <- read.table("datatest2.txt", sep = ",")
 training <- read.table("datatraining.txt", sep = ",")
 
 # > Formatting data ----
+# Date might be an issue, as we will never test the results are based on a specific period
 formating <- function(x) {
   x$Occupancy <- factor(x$Occupancy) # Factor Occupancy
-  x$date <- ymd_hms(x$date) # Change date from char to date
+  x <- mutate(x, time = strsplit(date, " ")[[1]][2])
+  x <- mutate(x, date = strsplit(date, " ")[[1]][1])
+  x$date <- ymd(x$date) # Change date from char to date
+  x$time <- hms(x$time)
   return(x)
 }
 
@@ -86,12 +90,10 @@ max(accuracy.arr)
 # Control did not improve results, as the best split result was already reached
 
 # Light seems to be a very domminent attribute.
-# Date might also be an issue, as we will never test the results are based on a specific period
 # What if we remove it?
 # >> Formatting data ----
 remove.light <- function(x) {
-  x <- select(x, -Light) %>% 
-    select(-date)
+  x <- select(x, -Light)
 }
 
 test.f <- remove.light(test) # f as in filtered
@@ -135,7 +137,7 @@ cluster_report(cm.c.f, cap = "Decision Tree without light and minsplit = 92") # 
 
 
 ## Support Vectors and Margin (SVM)----------------------------------------
-svmfit <- svm(Occupancy ~ .,
+svmfit <- svm(Occupancy ~ Temperature + Humidity + Light + CO2 + HumidityRatio + time,
               data = training,
               type = "C-classification",
               kernel = "radial",
@@ -144,7 +146,7 @@ svmfit <- svm(Occupancy ~ .,
               scale = TRUE)
 summary(svmfit)
 plot(svmfit, training, CO2 ~ HumidityRatio,
-     slice=list(Humidity=3, Light=4, date=5, Temperature = 6))
+     slice=list(Humidity=3, Light=4, time=5, Temperature = 6))
 predictions <- predict(svmfit, test, type = 'class') # predicting unseen test data
 cm <- table(test$Occupancy, predictions) # confusion matrix
 cluster_report(cm, cap = "Support-Vector-Machine") # Quality measures of SVM
