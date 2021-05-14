@@ -18,7 +18,9 @@ training$Occupancy <- factor(training$Occupancy) # converting class label to fac
 library(rpart)
 library(rpart.plot)
 
-tree <- rpart(Occupancy ~ Temperature + Humidity + Light + CO2 + HumidityRatio, data = training)
+tree <- rpart(Occupancy ~ Temperature + Humidity + Light + CO2 + HumidityRatio,
+               method = "class",
+               data = training)
 rpart.plot(tree)
 
 ## Support Vectors and Margin (SVM)----------------------------------------
