@@ -137,7 +137,7 @@ cluster_report(cm.c.f, cap = "Decision Tree without light and minsplit = 92") # 
 
 
 ## Support Vectors and Margin (SVM)----------------------------------------
-svmfit <- svm(Occupancy ~ .,
+svmfit <- svm(Occupancy ~ Temperature + Humidity + Light + CO2 + HumidityRatio + time,
               data = training,
               type = "C-classification",
               kernel = "radial",
@@ -146,7 +146,7 @@ svmfit <- svm(Occupancy ~ .,
               scale = TRUE)
 summary(svmfit)
 plot(svmfit, training, CO2 ~ HumidityRatio,
-     slice=list(Humidity=3, Light=4, date=5, Temperature = 6))
+     slice=list(Humidity=3, Light=4, time=5, Temperature = 6))
 predictions <- predict(svmfit, test, type = 'class') # predicting unseen test data
 cm <- table(test$Occupancy, predictions) # confusion matrix
 cluster_report(cm, cap = "Support-Vector-Machine") # Quality measures of SVM
@@ -186,7 +186,6 @@ test_sample <- test_sample[2:7]
 test_sample <- test2[sample(nrow(test2), size = 2665, replace = FALSE), ]
 test_sample <- test_sample[2:7]
 
-
 #saves result
 net.results <- neuralnet::compute(netmodel, test_sample)
 ls(net.results)
@@ -201,7 +200,15 @@ colnames(cleanoutput) <- c("Temperature","Humidity","Light","CO2", "HumidityRati
 print(cleanoutput)
 
 actual_vs_predicted <-select(cleanoutput, "Occupancy","expected Occupancy")
-table(actual_vs_predicted)
+table1 <-table(actual_vs_predicted)
+#confusion matirx
+print(table)
+
+#overall accuracy
+print(sum(diag(table1))/sum(table1))
+
+#incorrect classification
+print(1-sum(diag(table1))/sum(table1))
 
 
 ## Naïve Bayes ------------------------------------------------------------
