@@ -18,9 +18,12 @@ training$Occupancy <- factor(training$Occupancy) # converting class label to fac
 library(rpart)
 library(rpart.plot)
 
+set.seed(44444444)
+control <- rpart.control(minsplit = 8, minbucket = 8/2, cp = 0.001) # for adjusting hyperparameters
 tree <- rpart(Occupancy ~ Temperature + Humidity + Light + CO2 + HumidityRatio,
                method = "class",
-               data = training)
+               data = training,
+              control = control)
 rpart.plot(tree)
 
 ## Support Vectors and Margin (SVM)----------------------------------------
