@@ -81,7 +81,7 @@ accuracy.test <- function(minsplit, training, test){
 
 # Control did not improve results. But maybe, we choose poorly. Let's try 128 different minsplit values.
 accuracy.arr <- c()
-for (i in 1:128) {
+for (i in 1:1001) {
   accuracy.arr <- c(accuracy.arr, accuracy.test(i, training, test))
 }
 accuracy.arr
