@@ -72,6 +72,18 @@ nnet_model <- train(Occupancy ~ Temperature + Humidity + Light + CO2 + HumidityR
                     preProcess=c("scale","center")
 )
 
+#another NNET method
+#training parameters
+train_params <- trainControl(method = "repeatedcv", number = 2, repeats=1)
+
+#train model
+nnet_model <- train(Occupancy ~ Temperature + Humidity + Light + CO2 + HumidityRatio,
+                    training,
+                    method = "nnet",
+                    trControl= train_params,
+                    preProcess=c("scale","center")
+)
+
 #Baseline Accuracy
 prop.table(table(training$Occupancy))
 
