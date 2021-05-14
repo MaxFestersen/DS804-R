@@ -21,7 +21,7 @@ training$date <- as.numeric(ymd_hms(training$date)) # Converting date to numeric
 test$date <- as.numeric(ymd_hms(test$date)) # Converting date to numeric
 
 # Choice of Algorithms ----------------------------------------------------
-pairs(training[-1], diag.panel = panel.boxplot)
+pairs(training, diag.panel = panel.boxplot)
 
 ## Decision Tree ----------------------------------------------------------
 set.seed(44444444)
@@ -47,14 +47,28 @@ cm <- table(test$Occupancy, predictions) # confusion matrix
 cluster_report(cm, cap = "Decision Tree") # Quality measures of Decision tree
 
 ## Support Vectors and Margin (SVM)----------------------------------------
-svmfit <- svm(Occupancy ~ ., data = training, kernel = "linear", cost = 10, scale = FALSE)
-print(svmfit)
+svmfit <- svm(Occupancy ~ .,
+              data = training,
+              type = "C-classification",
+              kernel = "radial",
+              cost = 10,
+              gamma = 0.1,
+              scale = TRUE)
+summary(svmfit)
+
+plot(svmfit, training, CO2 ~ HumidityRatio,
+     slice=list(Humidity=3, Light=4, date=5, Temperature = 6))
+
+predictions <- predict(svmfit, test, type = 'class') # predicting unseen test data
+cm <- table(test$Occupancy, predictions) # confusion matrix
+cluster_report(cm, cap = "Support-Vector-Machine") # Quality measures of SVM
+
 
 ## Neural Network ----------------------------------------------------------
 library(neuralnet)
 set.seed(12345689) # Men how, vi glemte 7, men det gør ikke noget, for vi har det sjovt.
 
-net <- neuralnet(Occupancy ~ Temperature + Humidity + Light + CO2 + HumidityRatio,
+net <- neuralnet(Occupancy ~ .,
                  data = training,
                  hidden = 2,
                  linear.output = FALSE, 
