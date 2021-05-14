@@ -10,6 +10,7 @@ library(neuralnet) # Neural Network
 library(lubridate)
 
 # Dataset -----------------------------------------------------------------
+# We have chosen the Occupancy dataset: http://archive.ics.uci.edu/ml/datasets/Occupancy+Detection+#
 
 test <- read.table("datatest.txt", sep = ",")
 test2 <- read.table("datatest2.txt", sep = ",")
@@ -62,7 +63,6 @@ plot(svmfit, training, CO2 ~ HumidityRatio,
 predictions <- predict(svmfit, test, type = 'class') # predicting unseen test data
 cm <- table(test$Occupancy, predictions) # confusion matrix
 cluster_report(cm, cap = "Support-Vector-Machine") # Quality measures of SVM
-
 
 ## Neural Network ----------------------------------------------------------
 library(neuralnet)
