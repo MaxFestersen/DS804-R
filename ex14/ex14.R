@@ -32,7 +32,7 @@ rpart.plot(tree) # A bit simple? Lets try with some control
 
 
 control <- rpart.control(minsplit = 128, minbucket = 128/2, cp = 0.001) # for adjusting hyperparameters
-tree <- rpart(Occupancy ~ Temperature + Humidity + Light + CO2 + HumidityRatio,
+tree <- rpart(Occupancy ~ Temperature + Humidity + Light + CO2 + HumidityRatio + date,
 # tree <- rpart(Occupancy ~ .,
                method = "class",
                data = training,
