@@ -65,9 +65,21 @@ cluster_report(cm.c, cap = "Decision Tree with control") # Quality measures of D
 # Control did not improve results.
 
 ## Support Vectors and Margin (SVM)----------------------------------------
-svmfit <- svm(Occupancy ~ ., data = training, kernel = "linear", cost = 10, scale = FALSE)
-print(svmfit)
+svmfit <- svm(Occupancy ~ .,
+              data = training,
+              type = "C-classification",
+              kernel = "radial",
+              cost = 10,
+              gamma = 0.1,
+              scale = TRUE)
+summary(svmfit)
+plot(svmfit, training, CO2 ~ HumidityRatio,
+     slice=list(Humidity=3, Light=4, date=5, Temperature = 6))
+predictions <- predict(svmfit, test, type = 'class') # predicting unseen test data
+cm <- table(test$Occupancy, predictions) # confusion matrix
+cluster_report(cm, cap = "Support-Vector-Machine") # Quality measures of SVM
 
+# 97 % accuracy
 
 ## Neural Network ----------------------------------------------------------
 library(neuralnet)
