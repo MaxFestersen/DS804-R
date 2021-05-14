@@ -167,36 +167,35 @@ netmodel <- neuralnet(Occupancy ~ Temperature + Humidity + Light + CO2 + Humidit
 plot(netmodel)
 
 
-#another NNET method
-#training parameters
-train_params <- trainControl(method = "repeatedcv", number = 2, repeats=1)
 
-#train model
-nnet_model <- train(Occupancy ~ Temperature + Humidity + Light + CO2 + HumidityRatio,
-                    training,
-                    method = "nnet",
-                    trControl= train_params,
-                    preProcess=c("scale","center")
-)
+# another method
+netmodel <- neuralnet(Occupancy ~ Temperature + Humidity + Light + CO2 + HumidityRatio,
+                      data = training,
+                      hidden = 2,)
+#plotting the netmodel
+print(netmodel)
+plot(netmodel)
 
-#Baseline Accuracy
-prop.table(table(training$Occupancy))
+#taking a test sample from the training data
+test_sample <- training[sample(nrow(training), size = 400, replace = FALSE), ]
+test_sample <- test_sample[2:7]
 
 
-# Predictions on the training set
-nnet_predictions_train <-predict(nnet_model, training)
+net.results <- compute(netmodel, test_sample)
+ls(net.results)
+print(net.results$net.result)
 
-# Confusion matrix on training data
-table(training$Occupancy, nnet_predictions_train)
-(278+125)/nrow(training)                    
+# display a better version of the results
+cleanoutput <- cbind(test_sample,sqrt(test_sample),
+                     as.data.frame(net.results$net.result))
+colnames(cleanoutput) <- c("Temperature","Humidity","Light","CO2", "HumidityRatio","Occupancy",
+                           "expected Temperature","expected Humidity","expected Light","expected CO2","expected HumidityRatio","expected Occupancy",
+                           "Neural Net Output")
+print(cleanoutput)
 
+actual_vs_predicted <-select(cleanoutput, "Occupancy","expected Occupancy")
+table(actual_vs_predicted)
 
-#Predictions on the test set
-nnet_predictions_test <-predict(nnet_model, test)
-
-# Confusion matrix on test set
-table(test$Occupancy, nnet_predictions_test)
-157/nrow(test) 
 
 ## Naïve Bayes ------------------------------------------------------------
 
