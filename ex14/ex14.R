@@ -14,7 +14,7 @@ library(caret)
 # Dataset -----------------------------------------------------------------
 formating <- function(x) {
   x$Occupancy <- factor(x$Occupancy) # Factor Occupancy
-  x$date <- as.numeric(ymd_hms(x$date)) # Change date from char to date, and then to numeric
+  x$date <- ymd_hms(x$date) # Change date from char to date
   return(x)
 }
 # We have chosen the Occupancy dataset: http://archive.ics.uci.edu/ml/datasets/Occupancy+Detection+#
