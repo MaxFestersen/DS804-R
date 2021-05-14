@@ -8,6 +8,8 @@ library(rpart.plot) # Visualizing Decision Tree
 library(e1071) # Support Vector Machine
 library(neuralnet) # Neural Network
 library(lubridate)
+library(nnet)
+library(caret)
 
 # Dataset -----------------------------------------------------------------
 formating <- function(x) {
@@ -27,7 +29,7 @@ training <- formating(training)
 
 
 # Choice of Algorithms ----------------------------------------------------
-pairs(training, diag.panel = panel.boxplot)
+pairs(training[-1], diag.panel = panel.boxplot)
 
 ## Decision Tree ----------------------------------------------------------
 set.seed(44444444)
@@ -54,6 +56,7 @@ tree.c <- rpart(Occupancy ~ .,
               control = control)
 rpart.plot(tree.c) # A bit better. Acctually the same now...
 
+
 # predictions and repport
 predictions.c <- predict(tree.c, test, type = 'class') # predicting unseen test data
 cm.c <- table(test$Occupancy, predictions.c) # confusion matrix
@@ -62,40 +65,56 @@ cluster_report(cm.c, cap = "Decision Tree with control") # Quality measures of D
 # Control did not improve results.
 
 ## Support Vectors and Margin (SVM)----------------------------------------
-svmfit <- svm(Occupancy ~ .,
-              data = training,
-              type = "C-classification",
-              kernel = "radial",
-              cost = 10,
-              gamma = 0.1,
-              scale = TRUE)
-summary(svmfit)
+svmfit <- svm(Occupancy ~ ., data = training, kernel = "linear", cost = 10, scale = FALSE)
+print(svmfit)
 
-plot(svmfit, training, CO2 ~ HumidityRatio,
-     slice=list(Humidity=3, Light=4, date=5, Temperature = 6))
-
-predictions <- predict(svmfit, test, type = 'class') # predicting unseen test data
-cm <- table(test$Occupancy, predictions) # confusion matrix
-cluster_report(cm, cap = "Support-Vector-Machine") # Quality measures of SVM
 
 ## Neural Network ----------------------------------------------------------
 library(neuralnet)
 set.seed(12345689) # Men how, vi glemte 7, men det gør ikke noget, for vi har det sjovt.
 
-net <- neuralnet(Occupancy ~ .,
+print(dim(training)); print(dim(test))
+
+netmodel <- neuralnet(Occupancy ~ Temperature + Humidity + Light + CO2 + HumidityRatio,
                  data = training,
                  hidden = 2,
                  linear.output = FALSE, 
                  err.fct = 'ce', 
                  likelihood = TRUE)
 
-
-plot(net)
-
+plot(netmodel)
 
 
+#another NNET method
+#training parameters
+train_params <- trainControl(method = "repeatedcv", number = 2, repeats=1)
+
+#train model
+nnet_model <- train(Occupancy ~ Temperature + Humidity + Light + CO2 + HumidityRatio,
+                    training,
+                    method = "nnet",
+                    trControl= train_params,
+                    preProcess=c("scale","center")
+)
+
+#Baseline Accuracy
+prop.table(table(training$Occupancy))
 
 
+# Predictions on the training set
+nnet_predictions_train <-predict(nnet_model, training)
+
+# Confusion matrix on training data
+table(training$Occupancy, nnet_predictions_train)
+(278+125)/nrow(training)                    
+
+
+#Predictions on the test set
+nnet_predictions_test <-predict(nnet_model, test)
+
+# Confusion matrix on test set
+table(test$Occupancy, nnet_predictions_test)
+157/nrow(test) 
 
 ## Naïve Bayes ------------------------------------------------------------
 
