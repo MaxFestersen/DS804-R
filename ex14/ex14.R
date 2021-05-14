@@ -178,13 +178,16 @@ netmodel <- neuralnet(Occupancy ~ Temperature + Humidity + Light + CO2 + Humidit
 print(netmodel)
 plot(netmodel)
 
+
+x <- mutate(training, date = as.numeric(date))
+
 #taking a test sample from the training data
-test_sample <- training[sample(nrow(training), size = 400, replace = FALSE), ]
-test_sample <- test_sample[2:7]
+test_sample <- x[sample(nrow(x), size = 400, replace = FALSE), ]
+test_sample <- test_sample[1:7]
 
 #taking a test sample from the test data
 test_sample <- test2[sample(nrow(test2), size = 2665, replace = FALSE), ]
-test_sample <- test_sample[2:7]
+test_sample <- test_sample[1:7]
 
 #saves result
 net.results <- neuralnet::compute(netmodel, test_sample)
@@ -194,15 +197,15 @@ print(net.results$net.result)
 # display a better version of the results
 cleanoutput <- cbind(test_sample,sqrt(test_sample),
                      as.data.frame(net.results$net.result))
-colnames(cleanoutput) <- c("Temperature","Humidity","Light","CO2", "HumidityRatio","Occupancy",
-                           "expected Temperature","expected Humidity","expected Light","expected CO2","expected HumidityRatio","expected Occupancy",
+colnames(cleanoutput) <- c("date","Temperature","Humidity","Light","CO2", "HumidityRatio","Occupancy",
+                           "expected date","expected Temperature","expected Humidity","expected Light","expected CO2","expected HumidityRatio","expected Occupancy",
                            "Neural Net Output")
 print(cleanoutput)
 
 actual_vs_predicted <-select(cleanoutput, "Occupancy","expected Occupancy")
 table1 <-table(actual_vs_predicted)
 #confusion matirx
-print(table)
+print(table1)
 
 #overall accuracy
 print(sum(diag(table1))/sum(table1))
