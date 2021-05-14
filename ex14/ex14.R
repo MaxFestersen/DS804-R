@@ -19,12 +19,18 @@ library(rpart)
 library(rpart.plot)
 
 set.seed(44444444)
-control <- rpart.control(minsplit = 8, minbucket = 8/2, cp = 0.001) # for adjusting hyperparameters
+tree <- rpart(Occupancy ~ Temperature + Humidity + Light + CO2 + HumidityRatio,
+              method = "class",
+              data = training)
+rpart.plot(tree) # A bit simple? Lets try with some control
+
+
+control <- rpart.control(minsplit = 128, minbucket = 128/2, cp = 0.001) # for adjusting hyperparameters
 tree <- rpart(Occupancy ~ Temperature + Humidity + Light + CO2 + HumidityRatio,
                method = "class",
                data = training,
               control = control)
-rpart.plot(tree)
+rpart.plot(tree) # A bit better.
 
 ## Support Vectors and Margin (SVM)----------------------------------------
 library(e1071)
