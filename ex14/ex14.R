@@ -431,7 +431,7 @@ set.seed(12345689) # Men how, vi glemte 7, men det gør ikke noget, for vi har d
 
 print(dim(training)); print(dim(test))
 
-netmodel <- neuralnet(Occupancy ~ weekdayNum+ Temperature + Humidity + Light + CO2 + HumidityRatio,
+netmodel <- neuralnet(Occupancy ~ weekdayNum+ Temperature + Humidity+ CO2+HumidityRatio,
                  data = training,
                  hidden = 2,
                  linear.output = FALSE, 
@@ -444,7 +444,7 @@ print(netmodel)
 plot(netmodel)
 test_sample <- test2[sample(nrow(test2), size = 8143, replace = FALSE), ]
 
-final_output=cbind (training, test_sample, 
+final_output=cbind (test_sample, training, 
                     as.data.frame(netmodel$net.result) )
 colnames(final_output) = c("Date","Temperature","Humidity","Light","CO2", "HumidityRatio","Occupancy", "time", "weekday","weekday/Num",
                            "expected date","expected Temperature","expected Humidity","expected Light","expected CO2","expected HumidityRatio","expected Occupancy", "expected time", "expected weekday","expected weekday/Num",
@@ -455,6 +455,9 @@ table1 <- table(actual_vs_predicted)
 print(table1)
 #overall accuracy for Occupancy
 print(sum(diag(table1))/sum(table1))
+
+0.6656024
+0.6651111
 
 #incorrect classification
 print(1-sum(diag(table1))/sum(table1))
@@ -494,14 +497,14 @@ test_sample <- test2.f
 test_sample <- test_sample[2:6]
 
 set.seed(120)  # Setting Seed
-classifier_cl <- naiveBayes(Occupancy ~ ., data = test2)
+classifier_cl <- naiveBayes(Occupancy ~., data = training)
 classifier_cl
 
 # Predicting on test data
-y_pred <- predict(classifier_cl, newdata = test)
+y_pred <- predict(classifier_cl, newdata = test2)
 
 # Confusion Matrix
-cm <- table(test$Occupancy, y_pred)
+cm <- table(test2$Occupancy, y_pred)
 cm
 
 # Model Evauation
