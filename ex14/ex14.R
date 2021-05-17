@@ -204,11 +204,38 @@ cluster_report(cm.c.f.776, cap = "Decision Tree without light and minsplit = 776
 
 pretty_print_string("Now C02 seems to be the best identifier, and can produce ~87% accuracy alone.")
 
-pretty_print_string("The results are always good. But it seems that one parameter is allways dominant. Which could hint at the parameters having no correlation, a too small test set to see futher splits or the remaing attributes just don't hold as much relevance.")
+pretty_print_string("The results are always good. But it seems that one attribute is allways dominant. Which could hint at the other paratmeters havinng less correlation or a too small test set to see futher splits")
 
 
-# New data (test 2) -------------------------------------------------------
+# > New data (test 2) -------------------------------------------------------
+pretty_print_string("To test prvious claim, lets try the same tests, on another test set. We try the same best paramters.")
 
+# >> Test2 base -----------------------------------------------------------
+predictions <- predict(tree, test2, type = 'class') # predicting unseen test data
+cm <- table(test2$Occupancy, predictions) # confusion matrix
+cluster_report(cm, cap = "Decision Tree") # Quality measures of Decision tree
+
+pretty_print_string("The accuracy is really high with ~99% (~97% before). It's somewhat better than before.")
+
+
+# >> Test 2 No light base -------------------------------------------------
+predictions.f <- predict(tree.f, test2.f, type = 'class') # predicting unseen test data
+cm.f <- table(test2$Occupancy, predictions.f) # confusion matrix
+cluster_report(cm.f, cap = "Decision Tree without light") # Quality measures of Decision tree
+
+pretty_print_string("The accuracy is better. ~79% accuracy. Beeting testset 1 at ~69% accuracy.")
+
+
+# >> Test 2 No light m=776 ------------------------------------------------
+predictions.c.f.776 <- predict(tree.c.f.776, test2.f, type = 'class') # predicting unseen test data
+cm.c.f.776 <- table(test2$Occupancy, predictions.c.f.776) # confusion matrix
+cluster_report(cm.c.f.776, cap = "Decision Tree without light and minsplit = 776") # Quality measures of Decision tree
+
+pretty_print_string("The accuracy is about the same as base on testset 2 (~79%). But not as good as the 89% testset 1 reached.")
+
+pretty_print_string("The results are about the same as before. It would seem the decision tree is well optimized for this kind of data now.")
+
+pretty_print_string("Light and C02 are the best parameters. Correlation matrix will be applied later.")
 
 
 ## Support Vectors and Margin (SVM)----------------------------------------
