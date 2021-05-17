@@ -27,26 +27,26 @@ training <- read.table("datatraining.txt", sep = ",")
 formating <- function(x) {
   x$Occupancy <- factor(x$Occupancy) # Factor Occupancy
   x <- x %>%
-    rowwise() %>% # Group by each row (to use functions on row level)
+    dplyr::rowwise() %>% # Group by each row (to use functions on row level)
     mutate(time = strsplit(date, " ")[[1]][2]) %>% # Split date, and use the time part
     mutate(date = strsplit(date, " ")[[1]][1]) %>% # Split date, and remove time part
-    ungroup() %>%  # Remove rowwise
+    ungroup()  # Remove rowwise
   x$date <- ymd(x$date) # Change date from char to time format
   x$time <- hms(x$time) # change time from char to time format
   x$weekday <- factor(weekdays(x$date))
   x <- rowwise(x) %>% 
     mutate(weekdayNum = as.numeric(ifelse(
-    weekday == "mandag",
+    weekday == "mandag" | weekday == "monday",
     1,
-    ifelse(weekday == "tirsdag",
+    ifelse(weekday == "tirsdag" | weekday == "tuesday",
            2,
-           ifelse(weekday == "onsdag",
+           ifelse(weekday == "onsdag" | weekday == "wednesday",
                   3,
-                  ifelse(weekday == "torsdag",
+                  ifelse(weekday == "torsdag" | weekday == "tuesday",
                          4,
-                         ifelse(weekday == "fredag",
+                         ifelse(weekday == "fredag" | weekday == "friday",
                                 5,
-                                ifelse(weekday == "lørdag",
+                                ifelse(weekday == "lørdag" | weekday == "saturday",
                                        6,
                                        7
   ))))))))
