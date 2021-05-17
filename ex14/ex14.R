@@ -122,13 +122,11 @@ remove.light <- function(x) {
   x <- select(x, -Light)
 }
 
-
-
-# >> No light - no control ---------------------------------
 test.f <- remove.light(test) # f as in filtered
 test2.f <- remove.light(test2)
 training.f <- remove.light(training)
 
+# >> No light - no control ---------------------------------
 # >>> Tree
 tree.f <- rpart(Occupancy ~ .,
               method = "class",
@@ -175,6 +173,7 @@ pretty_print_string("The result did improve, but only by a bit. It seems the min
 
 
 # >> No light control loop 2 -------------------------------------------
+accuracy.f.arr <- c()
 for (i in 1:1000) {
   accuracy.f.arr <- c(accuracy.f.arr, accuracy.test(i, training.f, test.f))
 }
@@ -182,26 +181,26 @@ for (i in 1:1000) {
 accuracy.f.arr
 which(max(accuracy.f.arr) == accuracy.f.arr)
 
-pretty_print_string("Minsplit between 776 and 1071 give better values, but many values between do not.")
+pretty_print_string("Minsplit between 626 and 921 give better values, but many values between do not.")
 
 
 
-# >>> No light m=776 --------------------------------------------------
-control.c.f.776 <- rpart.control(minsplit = 776, minbucket = 776/2, cp = 0.001) # for adjusting hyperparameters
+# >>> No light m=626 --------------------------------------------------
+control.c.f.626 <- rpart.control(minsplit = 626, minbucket = 626/2, cp = 0.001) # for adjusting hyperparameters
 # >>>> Tree
-tree.c.f.776 <- rpart(Occupancy ~ .,
+tree.c.f.626 <- rpart(Occupancy ~ .,
                 method = "class",
                 data = training.f,
-                control = control.c.f.776)
-rpart.plot(tree.c.f.776)
+                control = control.c.f.626)
+rpart.plot(tree.c.f.626)
 
 pretty_print_string("The model is very simple now, using only C02 attribute.")
 
 
 # >>>> predictions and repport
-predictions.c.f.776 <- predict(tree.c.f.776, test.f, type = 'class') # predicting unseen test data
-cm.c.f.776 <- table(test$Occupancy, predictions.c.f.776) # confusion matrix
-cluster_report(cm.c.f.776, cap = "Decision Tree without light and minsplit = 776") # Quality measures of Decision tree
+predictions.c.f.626 <- predict(tree.c.f.626, test.f, type = 'class') # predicting unseen test data
+cm.c.f.626 <- table(test$Occupancy, predictions.c.f.626) # confusion matrix
+cluster_report(cm.c.f.626, cap = "Decision Tree without light and minsplit = 626") # Quality measures of Decision tree
 
 pretty_print_string("Now C02 seems to be the best identifier, and can produce ~87% accuracy alone.")
 
@@ -227,16 +226,121 @@ cluster_report(cm.f, cap = "Decision Tree without light") # Quality measures of 
 pretty_print_string("The accuracy is better. ~79% accuracy. Beeting testset 1 at ~69% accuracy.")
 
 
-# >> Test 2 No light m=776 ------------------------------------------------
-predictions.c.f.776 <- predict(tree.c.f.776, test2.f, type = 'class') # predicting unseen test data
-cm.c.f.776 <- table(test2$Occupancy, predictions.c.f.776) # confusion matrix
-cluster_report(cm.c.f.776, cap = "Decision Tree without light and minsplit = 776") # Quality measures of Decision tree
+# >> Test 2 No light m=626 ------------------------------------------------
+predictions.c.f.626 <- predict(tree.c.f.626, test2.f, type = 'class') # predicting unseen test data
+cm.c.f.626 <- table(test2$Occupancy, predictions.c.f.626) # confusion matrix
+cluster_report(cm.c.f.626, cap = "Decision Tree without light and minsplit = 626") # Quality measures of Decision tree
 
 pretty_print_string("The accuracy is about the same as base on testset 2 (~79%). But not as good as the 89% testset 1 reached.")
 
 pretty_print_string("The results are about the same as before. It would seem the decision tree is well optimized for this kind of data now.")
 
 pretty_print_string("Light and C02 are the best parameters. Correlation matrix will be applied later.")
+
+
+# > No C02 ----------------------------------------------------------------
+# >> Formatting data - remove C02 ---------------------------------------
+remove.cO2 <- function(x) {
+  x <- select(x, -CO2)
+}
+
+test.f2 <- remove.cO2(test.f) # f as in filtered
+test2.f2 <- remove.cO2(test2.f)
+training.f2 <- remove.cO2(training.f)
+
+# >> No CO2 - no control ---------------------------------
+# >>> Tree
+tree.f2 <- rpart(Occupancy ~ .,
+                method = "class",
+                data = training.f2)
+rpart.plot(tree.f2)
+
+pretty_print_string("The tree looks complex now. Let's see the accuracy.")
+
+# >>> predictions and repport
+predictions.f2 <- predict(tree.f2, test.f2, type = 'class') # predicting unseen test data
+cm.f2 <- table(test$Occupancy, predictions.f2) # confusion matrix
+cluster_report(cm.f2, cap = "T1: Decision Tree without C02") # Quality measures of Decision tree
+
+predictions.f2.2 <- predict(tree.f2, test2.f2, type = 'class') # predicting unseen test data
+cm.f2.2 <- table(test2$Occupancy, predictions.f2.2) # confusion matrix
+cluster_report(cm.f2.2, cap = "T2: Decision Tree without C02") # Quality measures of Decision tree
+
+pretty_print_string("The accuracy is worse with ~64% accuracy on testset 1 and ~79% on testset 2.")
+
+
+# >> No CO2 control loop -----------------------------------------------
+accuracy.f.arr <- c()
+for (i in 1:150) {
+  accuracy.f.arr <- c(accuracy.f.arr, accuracy.test(i, training.f2, test.f2))
+}
+accuracy.f.arr
+which(max(accuracy.f.arr) == accuracy.f.arr) # best results in list
+
+pretty_print_string("Minsplit of 60-61 gives the best predictions in the set range.")
+
+
+# >>> No CO2 m=60 -----------------------------------------------------
+control.c.f2.60 <- rpart.control(minsplit = 60, minbucket = 60/2, cp = 0.001) # for adjusting hyperparameters
+# >>>> Tree
+tree.c.f2.60 <- rpart(Occupancy ~ .,
+                     method = "class",
+                     data = training.f2,
+                     control = control.c.f2.60)
+rpart.plot(tree.c.f2.60)
+
+pretty_print_string("The tree is more complex.")
+
+# >>>> predictions and repport
+predictions.c.f2.60 <- predict(tree.c.f2.60, test.f2, type = 'class') # predicting unseen test data
+cm.c.f2.60 <- table(test$Occupancy, predictions.c.f2.60) # confusion matrix
+cluster_report(cm.c.f2.60, cap = "T1: Decision Tree without C02 and minsplit = 60") # Quality measures of Decision tree
+
+predictions.c.f2.60.2 <- predict(tree.c.f2.60, test2.f2, type = 'class') # predicting unseen test data
+cm.c.f2.60.2 <- table(test2$Occupancy, predictions.c.f2.60.2) # confusion matrix
+cluster_report(cm.c.f2.60.2, cap = "T2: Decision Tree without C02 and minsplit = 60") # Quality measures of Decision tree
+
+pretty_print_string("The result did improve with control, to ~73% on testset 1 and ~79% on testset 2. It seems the minslpit results could improve at higher values. So let's try that.")
+
+
+# >> No CO2 control loop 2 -------------------------------------------
+accuracy.f.arr <- c()
+for (i in 1:1000) {
+  accuracy.f.arr <- c(accuracy.f.arr, accuracy.test(i, training.f, test.f))
+}
+
+accuracy.f.arr
+which(max(accuracy.f.arr) == accuracy.f.arr)
+
+pretty_print_string("Minsplit between 626 and 921 give better values. This is the same range as with no light only.")
+
+
+
+# >>> No CO2 m=626 --------------------------------------------------
+control.c.f2.626 <- rpart.control(minsplit = 626, minbucket = 626/2, cp = 0.001) # for adjusting hyperparameters
+# >>>> Tree
+tree.c.f2.626 <- rpart(Occupancy ~ .,
+                      method = "class",
+                      data = training.f2,
+                      control = control.c.f2.626)
+rpart.plot(tree.c.f2.626)
+
+pretty_print_string("The model is very simple now, using different attributes.")
+
+
+# >>>> predictions and repport
+predictions.c.f2.626 <- predict(tree.c.f2.626, test.f2, type = 'class') # predicting unseen test data
+cm.c.f2.626 <- table(test$Occupancy, predictions.c.f2.626) # confusion matrix
+cluster_report(cm.c.f2.626, cap = "T1: Decision Tree without CO2 and minsplit = 626") # Quality measures of Decision tree
+
+predictions.c.f2.626.2 <- predict(tree.c.f2.626, test2.f2, type = 'class') # predicting unseen test data
+cm.c.f2.626.2 <- table(test2$Occupancy, predictions.c.f2.626.2) # confusion matrix
+cluster_report(cm.c.f2.626.2, cap = "T2: Decision Tree without CO2 and minsplit = 626") # Quality measures of Decision tree
+
+
+pretty_print_string("Accuracy improved to ~85% on testset 1 and ~86% on testset 2.")
+
+pretty_print_string("Without light and c02, the most dominant attributes, a somewhat high accuracy can still be reached with the decision tree.")
 
 
 ## Support Vectors and Margin (SVM)----------------------------------------
