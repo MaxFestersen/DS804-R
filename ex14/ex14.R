@@ -433,24 +433,13 @@ set.seed(12345689) # Men how, vi glemte 7, men det gør ikke noget, for vi har d
 
 print(dim(training)); print(dim(test))
 
-
-netmodel <- neuralnet(Occupancy ~ Temperature + Humidity + Light + CO2 + HumidityRatio,
+netmodel <- neuralnet(Occupancy ~ weekdayNum+ Temperature + Humidity + Light + CO2 + HumidityRatio,
                  data = training,
                  hidden = 2,
                  linear.output = FALSE, 
                  err.fct = 'ce', 
                  likelihood = TRUE,
                  threshold=0.1,)
-
-plot(netmodel)
-
-
-
-# another method
-netmodel <- neuralnet(Occupancy ~ Temperature + Humidity + Light + CO2 + HumidityRatio, 
-                      data = training,
-                      hidden = 2,
-                      linear.output = FALSE)
 
 #plotting the netmodel
 print(netmodel)
@@ -459,8 +448,8 @@ test_sample <- test2[sample(nrow(test2), size = 8143, replace = FALSE), ]
 
 final_output=cbind (training, test_sample, 
                     as.data.frame(netmodel$net.result) )
-colnames(final_output) = c("Date","Temperature","Humidity","Light","CO2", "HumidityRatio","Occupancy", "time", "weekday",
-                           "expected date","expected Temperature","expected Humidity","expected Light","expected CO2","expected HumidityRatio","expected Occupancy", "expected time", "expected weekday",
+colnames(final_output) = c("Date","Temperature","Humidity","Light","CO2", "HumidityRatio","Occupancy", "time", "weekday","weekday/Num",
+                           "expected date","expected Temperature","expected Humidity","expected Light","expected CO2","expected HumidityRatio","expected Occupancy", "expected time", "expected weekday","expected weekday/Num",
                            "Neural Net Output")
 
 actual_vs_predicted <-select(final_output, "Occupancy","expected Occupancy")
@@ -495,7 +484,7 @@ classifier_cl
 y_pred <- predict(classifier_cl, newdata = test2)
 
 # Confusion Matrix
-cm <- table(test$Occupancy, y_pred)
+cm <- table(test2$Occupancy, y_pred)
 cm
 
 # Model Evauation
