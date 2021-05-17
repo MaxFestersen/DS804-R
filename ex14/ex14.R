@@ -30,10 +30,28 @@ formating <- function(x) {
     rowwise() %>% # Group by each row (to use functions on row level)
     mutate(time = strsplit(date, " ")[[1]][2]) %>% # Split date, and use the time part
     mutate(date = strsplit(date, " ")[[1]][1]) %>% # Split date, and remove time part
-    ungroup() # Remove rowwise
+    ungroup() %>%  # Remove rowwise
+    mutate(date = factor(date),
+           time = factor(time))
   x$date <- ymd(x$date) # Change date from char to time format
   x$time <- hms(x$time) # change time from char to time format
   x$weekday <- factor(weekdays(x$date))
+  x <- rowwise(x) %>% 
+    mutate(weekdayNum = as.numeric(ifelse(
+    weekday == "mandag",
+    1,
+    ifelse(weekday == "tirsdag",
+           2,
+           ifelse(weekday == "onsdag",
+                  3,
+                  ifelse(weekday == "torsdag",
+                         4,
+                         ifelse(weekday == "fredag",
+                                5,
+                                ifelse(weekday == "lørdag",
+                                       6,
+                                       7
+  ))))))))
   return(x)
 }
 
@@ -110,7 +128,6 @@ accuracy.arr
 max(accuracy.arr) # Best value
 
 pretty_print_string("The result can be matched but not improved.")
-
 
 
 # > Tree without light ----------------------------------------------------
