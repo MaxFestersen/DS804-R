@@ -63,13 +63,15 @@ tree.c <- rpart(Occupancy ~ .,
                method = "class",
                data = training,
               control = control)
-rpart.plot(tree.c) # A bit better. Acctually the same now...
+rpart.plot(tree.c) # A bit better Visually, but did the results improve?
 
 
 # predictions and repport
 predictions.c <- predict(tree.c, test, type = 'class') # predicting unseen test data
 cm.c <- table(test$Occupancy, predictions.c) # confusion matrix
 cluster_report(cm.c, cap = "Decision Tree with control") # Quality measures of Decision tree
+
+# Control did not improve results. But maybe, we choose poorly. Let's try some different minsplit values.
 
 accuracy.test <- function(minsplit, training, test){
   control <- rpart.control(minsplit = minsplit, minbucket = minsplit/2, cp = 0.001) # for adjusting hyperparameters
@@ -82,7 +84,6 @@ accuracy.test <- function(minsplit, training, test){
   return(sum(diag(cm)) / sum(cm))
 }
 
-# Control did not improve results. But maybe, we choose poorly. Let's try 128 different minsplit values.
 accuracy.arr <- c()
 for (i in 1:1001) {
   accuracy.arr <- c(accuracy.arr, accuracy.test(i, training, test))
