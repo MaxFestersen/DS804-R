@@ -312,19 +312,21 @@ set.seed(12345689) # Men how, vi glemte 7, men det gør ikke noget, for vi har d
 
 print(dim(training)); print(dim(test))
 
+
 netmodel <- neuralnet(Occupancy ~ Temperature + Humidity + Light + CO2 + HumidityRatio,
                  data = training,
                  hidden = 2,
                  linear.output = FALSE, 
                  err.fct = 'ce', 
-                 likelihood = TRUE)
+                 likelihood = TRUE,
+                 threshold=0.1,)
 
 plot(netmodel)
 
 
 
 # another method
-netmodel <- neuralnet(Occupancy ~ Temperature + Humidity + Light + CO2 + HumidityRatio,
+netmodel <- neuralnet(Occupancy ~ Temperature + Humidity + Light + CO2 + HumidityRatio, 
                       data = training,
                       hidden = 2,
                       linear.output = FALSE)
@@ -336,15 +338,25 @@ test_sample <- test2[sample(nrow(test2), size = 8143, replace = FALSE), ]
 
 final_output=cbind (training, test_sample, 
                     as.data.frame(netmodel$net.result) )
-colnames(final_output) = c("Date","Temperature","Humidity","Light","CO2", "HumidityRatio","Occupancy",
-                           "expected date","expected Temperature","expected Humidity","expected Light","expected CO2","expected HumidityRatio","expected Occupancy",
+colnames(final_output) = c("Date","Temperature","Humidity","Light","CO2", "HumidityRatio","Occupancy", "time", "weekday",
+                           "expected date","expected Temperature","expected Humidity","expected Light","expected CO2","expected HumidityRatio","expected Occupancy", "expected time", "expected weekday",
                            "Neural Net Output")
-print(final_output)
 
 actual_vs_predicted <-select(final_output, "Occupancy","expected Occupancy")
 table1 <- table(actual_vs_predicted)
 print(table1)
-#overall accuracy
+#overall accuracy for Occupancy
+print(sum(diag(table1))/sum(table1))
+
+#incorrect classification
+print(1-sum(diag(table1))/sum(table1))
+
+
+actual_vs_predicted <-select(final_output, "weekday","expected weekday")
+table1 <- table(actual_vs_predicted)
+print(table1)
+
+#overall accuracy for Occupancy
 print(sum(diag(table1))/sum(table1))
 
 #incorrect classification
@@ -359,7 +371,7 @@ classifier_cl <- naiveBayes(Occupancy ~ ., data = training)
 classifier_cl
 
 # Predicting on test data
-y_pred <- predict(classifier_cl, newdata = test)
+y_pred <- predict(classifier_cl, newdata = test2)
 
 # Confusion Matrix
 cm <- table(test$Occupancy, y_pred)
