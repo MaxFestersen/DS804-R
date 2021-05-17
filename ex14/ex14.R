@@ -205,10 +205,12 @@ svmfit <- svm(Occupancy ~ Temperature + Light + CO2,
 
 summary(svmfit)
 
+plot(svmfit, training, CO2 ~ Temperature,
+     slice=list(Light=3))
+
 predictions <- predict(svmfit, test, type = 'class') # predicting unseen test data
 cm <- table(test$Occupancy, predictions) # confusion matrix
 cluster_report(cm, cap = "Support-Vector-Machine") # Quality measures of SVM
-
 
 predictions <- predict(svmfit, test2, type = 'class') # predicting unseen test data
 cm <- table(test2$Occupancy, predictions) # confusion matrix
