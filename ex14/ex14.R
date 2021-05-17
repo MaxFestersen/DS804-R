@@ -11,6 +11,7 @@ library(lubridate)
 library(nnet)
 library(caret)
 library(tidyverse)
+library(caTools)
 
 # Dataset -----------------------------------------------------------------
 # We have chosen the Occupancy dataset: http://archive.ics.uci.edu/ml/datasets/Occupancy+Detection+#
