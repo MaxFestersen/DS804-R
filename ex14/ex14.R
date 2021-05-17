@@ -506,3 +506,7 @@ cm
 
 # Model Evauation
 confusionMatrix(cm)
+
+
+plot(y_pred)
+plot(cm)
