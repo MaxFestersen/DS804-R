@@ -65,13 +65,15 @@ tree.c <- rpart(Occupancy ~ .,
                method = "class",
                data = training,
               control = control)
-rpart.plot(tree.c) # A bit better. Acctually the same now...
+rpart.plot(tree.c) # A bit better Visually, but did the results improve?
 
 
 # predictions and repport
 predictions.c <- predict(tree.c, test, type = 'class') # predicting unseen test data
 cm.c <- table(test$Occupancy, predictions.c) # confusion matrix
 cluster_report(cm.c, cap = "Decision Tree with control") # Quality measures of Decision tree
+
+# Control did not improve results. But maybe, we choose poorly. Let's try some different minsplit values.
 
 accuracy.test <- function(minsplit, training, test){
   control <- rpart.control(minsplit = minsplit, minbucket = minsplit/2, cp = 0.001) # for adjusting hyperparameters
@@ -84,7 +86,6 @@ accuracy.test <- function(minsplit, training, test){
   return(sum(diag(cm)) / sum(cm))
 }
 
-# Control did not improve results. But maybe, we choose poorly. Let's try 128 different minsplit values.
 accuracy.arr <- c()
 for (i in 1:1001) {
   accuracy.arr <- c(accuracy.arr, accuracy.test(i, training, test))
@@ -117,15 +118,27 @@ cluster_report(cm.f, cap = "Decision Tree without light") # Quality measures of 
 
 # Now with control parameters
 accuracy.f.arr <- c()
-for (i in 1:128) {
+for (i in 1:150) {
   accuracy.f.arr <- c(accuracy.f.arr, accuracy.test(i, training.f, test.f))
 }
 accuracy.f.arr
-max(accuracy.f.arr)
-# huh. minsplit of 92-121 gives a better prediction.
+accuracy.f.arr <- round(accuracy.f.arr, 7)
+which(max(accuracy.f.arr) == accuracy.f.arr)
+# minsplit of 92-121 gives a better predictions
 
-# Without light and with control with minsplit = 92
-control.c.f <- rpart.control(minsplit = 92, minbucket = 92/2, cp = 0.001) # for adjusting hyperparameters
+# But what if we go even higher?
+for (i in 1:1000) {
+  accuracy.f.arr <- c(accuracy.f.arr, accuracy.test(i, training.f, test.f))
+}
+
+accuracy.f.arr
+accuracy.f.arr <- round(accuracy.f.arr, 7)
+which(max(accuracy.f.arr) == accuracy.f.arr)
+
+# Minsplit between 776 and 1071 give better values, but many values between do not.
+
+# Without light and with control with minsplit = 776
+control.c.f <- rpart.control(minsplit = 776, minbucket = 776/2, cp = 0.001) # for adjusting hyperparameters
 #tree <- rpart(Occupancy ~ Temperature + Humidity + Light + CO2 + HumidityRatio + date,
 tree.c.f <- rpart(Occupancy ~ .,
                 method = "class",
@@ -137,7 +150,7 @@ rpart.plot(tree.c.f) # A bit better. Acctually the same now...
 # predictions and repport
 predictions.c.f <- predict(tree.c.f, test.f, type = 'class') # predicting unseen test data
 cm.c.f <- table(test$Occupancy, predictions.c.f) # confusion matrix
-cluster_report(cm.c.f, cap = "Decision Tree without light and minsplit = 92") # Quality measures of Decision tree
+cluster_report(cm.c.f, cap = "Decision Tree without light and minsplit = 776") # Quality measures of Decision tree
 
 
 
@@ -226,7 +239,8 @@ plot(netmodel)
 # another method
 netmodel <- neuralnet(Occupancy ~ Temperature + Humidity + Light + CO2 + HumidityRatio,
                       data = training,
-                      hidden = 2,)
+                      hidden = 3,)
+
 #plotting the netmodel
 print(netmodel)
 plot(netmodel)
@@ -250,8 +264,8 @@ print(net.results$net.result)
 # display a better version of the results
 cleanoutput <- cbind(test_sample,sqrt(test_sample),
                      as.data.frame(net.results$net.result))
-colnames(cleanoutput) <- c("date","Temperature","Humidity","Light","CO2", "HumidityRatio","Occupancy",
-                           "expected date","expected Temperature","expected Humidity","expected Light","expected CO2","expected HumidityRatio","expected Occupancy",
+colnames(cleanoutput) <- c("Temperature","Humidity","Light","CO2", "HumidityRatio","Occupancy",
+                           "expected Temperature","expected Humidity","expected Light","expected CO2","expected HumidityRatio","expected Occupancy",
                            "Neural Net Output")
 print(cleanoutput)
 
