@@ -10,6 +10,8 @@ library(neuralnet) # Neural Network
 library(lubridate)
 library(nnet)
 library(caret)
+library(tidyverse)
+library(caTools)
 
 # Dataset -----------------------------------------------------------------
 # We have chosen the Occupancy dataset: http://archive.ics.uci.edu/ml/datasets/Occupancy+Detection+#
@@ -153,12 +155,15 @@ cluster_report(cm.c.f, cap = "Decision Tree without light and minsplit = 776") #
 
 
 ## Support Vectors and Margin (SVM)----------------------------------------
+training$time <- as.numeric(training$time)
+test$time <- as.numeric(test$time)
+
 svmfit <- svm(Occupancy ~ Temperature + Humidity + Light + CO2 + HumidityRatio + time,
               data = training,
               type = "C-classification",
               kernel = "radial",
-              cost = 10,
-              gamma = 0.1,
+              cost = 7,
+              gamma = 0.05,
               scale = TRUE)
 summary(svmfit)
 plot(svmfit, training, CO2 ~ HumidityRatio,
@@ -167,7 +172,18 @@ predictions <- predict(svmfit, test, type = 'class') # predicting unseen test da
 cm <- table(test$Occupancy, predictions) # confusion matrix
 cluster_report(cm, cap = "Support-Vector-Machine") # Quality measures of SVM
 
-# 97 % accuracy
+
+predictions <- predict(svmfit, test2, type = 'class') # predicting unseen test data
+cm <- table(test2$Occupancy, predictions) # confusion matrix
+cluster_report(cm, cap = "Support-Vector-Machine") # Quality measures of SVM
+
+
+# 96 % accuracy on test and 90% accuracy on test2
+cat(paste("Instead of using the variable date, we formatted it to be two variables date and time",
+          "of which we use the time variable, as it is most likely to be generalizable upon a new dataset",
+          "sampled at a different point in time.",
+          "The SVM classifier was optimized to perform with a 96% accuracy on test-set 1 and 90% accuracy",
+          "on test-set 2.", sep = "/n"))
 
 ## Neural Network ----------------------------------------------------------
 library(neuralnet)
@@ -189,7 +205,8 @@ plot(netmodel)
 # another method
 netmodel <- neuralnet(Occupancy ~ Temperature + Humidity + Light + CO2 + HumidityRatio,
                       data = training,
-                      hidden = 2,)
+                      hidden = 3,)
+
 #plotting the netmodel
 print(netmodel)
 plot(netmodel)
@@ -213,8 +230,8 @@ print(net.results$net.result)
 # display a better version of the results
 cleanoutput <- cbind(test_sample,sqrt(test_sample),
                      as.data.frame(net.results$net.result))
-colnames(cleanoutput) <- c("date","Temperature","Humidity","Light","CO2", "HumidityRatio","Occupancy",
-                           "expected date","expected Temperature","expected Humidity","expected Light","expected CO2","expected HumidityRatio","expected Occupancy",
+colnames(cleanoutput) <- c("Temperature","Humidity","Light","CO2", "HumidityRatio","Occupancy",
+                           "expected Temperature","expected Humidity","expected Light","expected CO2","expected HumidityRatio","expected Occupancy",
                            "Neural Net Output")
 print(cleanoutput)
 
@@ -232,3 +249,16 @@ print(1-sum(diag(table1))/sum(table1))
 
 ## Naïve Bayes ------------------------------------------------------------
 
+set.seed(120)  # Setting Seed
+classifier_cl <- naiveBayes(Occupancy ~ ., data = training)
+classifier_cl
+
+# Predicting on test data
+y_pred <- predict(classifier_cl, newdata = test)
+
+# Confusion Matrix
+cm <- table(test$Occupancy, y_pred)
+cm
+
+# Model Evauation
+confusionMatrix(cm)
