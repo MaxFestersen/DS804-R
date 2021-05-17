@@ -160,6 +160,11 @@ cm <- table(test$Occupancy, predictions) # confusion matrix
 cluster_report(cm, cap = "Support-Vector-Machine") # Quality measures of SVM
 
 
+predictions <- predict(svmfit, test2, type = 'class') # predicting unseen test data
+cm <- table(test2$Occupancy, predictions) # confusion matrix
+cluster_report(cm, cap = "Support-Vector-Machine") # Quality measures of SVM
+
+
 # 96 % accuracy on test and 90% accuracy on test2
 cat(paste("Instead of using the variable date, we formatted it to be two variables date and time",
           "of which we use the time variable, as it is most likely to be generalizable upon a new dataset",
