@@ -178,7 +178,8 @@ plot(netmodel)
 # another method
 netmodel <- neuralnet(Occupancy ~ Temperature + Humidity + Light + CO2 + HumidityRatio,
                       data = training,
-                      hidden = 2,)
+                      hidden = 3,)
+
 #plotting the netmodel
 print(netmodel)
 plot(netmodel)
@@ -202,8 +203,8 @@ print(net.results$net.result)
 # display a better version of the results
 cleanoutput <- cbind(test_sample,sqrt(test_sample),
                      as.data.frame(net.results$net.result))
-colnames(cleanoutput) <- c("date","Temperature","Humidity","Light","CO2", "HumidityRatio","Occupancy",
-                           "expected date","expected Temperature","expected Humidity","expected Light","expected CO2","expected HumidityRatio","expected Occupancy",
+colnames(cleanoutput) <- c("Temperature","Humidity","Light","CO2", "HumidityRatio","Occupancy",
+                           "expected Temperature","expected Humidity","expected Light","expected CO2","expected HumidityRatio","expected Occupancy",
                            "Neural Net Output")
 print(cleanoutput)
 
