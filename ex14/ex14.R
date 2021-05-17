@@ -23,8 +23,11 @@ training <- read.table("datatraining.txt", sep = ",")
 # Date might be an issue, as we will never test the results are based on a specific period
 formating <- function(x) {
   x$Occupancy <- factor(x$Occupancy) # Factor Occupancy
-  x <- mutate(x, time = strsplit(date, " ")[[1]][2])
-  x <- mutate(x, date = strsplit(date, " ")[[1]][1])
+  x <- x %>%
+    rowwise() %>% 
+    mutate(time = strsplit(date, " ")[[1]][2]) %>% 
+    mutate(date = strsplit(date, " ")[[1]][1]) %>% 
+    ungroup()
   x$date <- ymd(x$date) # Change date from char to date
   x$time <- hms(x$time)
   return(x)
