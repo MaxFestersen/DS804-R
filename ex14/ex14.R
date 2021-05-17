@@ -221,3 +221,16 @@ print(1-sum(diag(table1))/sum(table1))
 
 ## Naïve Bayes ------------------------------------------------------------
 
+set.seed(120)  # Setting Seed
+classifier_cl <- naiveBayes(Occupancy ~ ., data = training)
+classifier_cl
+
+# Predicting on test data
+y_pred <- predict(classifier_cl, newdata = test)
+
+# Confusion Matrix
+cm <- table(test$Occupancy, y_pred)
+cm
+
+# Model Evauation
+confusionMatrix(cm)
