@@ -24,12 +24,12 @@ training <- read.table("datatraining.txt", sep = ",")
 formating <- function(x) {
   x$Occupancy <- factor(x$Occupancy) # Factor Occupancy
   x <- x %>%
-    rowwise() %>% 
-    mutate(time = strsplit(date, " ")[[1]][2]) %>% 
-    mutate(date = strsplit(date, " ")[[1]][1]) %>% 
-    ungroup()
-  x$date <- ymd(x$date) # Change date from char to date
-  x$time <- hms(x$time)
+    rowwise() %>% # Group by each row (to use functions on row level)
+    mutate(time = strsplit(date, " ")[[1]][2]) %>% # Split date, and use the time part
+    mutate(date = strsplit(date, " ")[[1]][1]) %>% # Split date, and remove time part
+    ungroup() # Remove rowwise
+  x$date <- ymd(x$date) # Change date from char to time format
+  x$time <- hms(x$time) # change time from char to time format
   return(x)
 }
 
