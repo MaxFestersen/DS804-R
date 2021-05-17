@@ -152,9 +152,46 @@ svmfit <- svm(Occupancy ~ Temperature + Humidity + Light + CO2 + HumidityRatio +
               cost = 7,
               gamma = 0.05,
               scale = TRUE)
-summary(svmfit)
+
 plot(svmfit, training, CO2 ~ HumidityRatio,
      slice=list(Humidity=3, Light=4, time=5, Temperature = 6))
+
+predictions <- predict(svmfit, test, type = 'class') # predicting unseen test data
+cm <- table(test$Occupancy, predictions) # confusion matrix
+cluster_report(cm, cap = "Support-Vector-Machine") # Quality measures of SVM
+
+
+predictions <- predict(svmfit, test2, type = 'class') # predicting unseen test data
+cm <- table(test2$Occupancy, predictions) # confusion matrix
+cluster_report(cm, cap = "Support-Vector-Machine") # Quality measures of SVM
+
+# 96 % accuracy on test and 90% accuracy on test2
+cat(paste("Instead of using the variable date, we formatted it to be two variables date and time",
+          "of which we use the time variable, as it is most likely to be generalizable upon a new dataset",
+          "sampled at a different point in time.",
+          "The SVM classifier was optimized to perform with a 96% accuracy on test-set 1 and 90% accuracy",
+          "on test-set 2.", sep = "\n"))
+
+### Picking variables with a high correlation
+training_2 <- training
+training_2$Occupancy <- as.numeric(training_2$Occupancy)
+training_2$date <- as.numeric(training_2$date)
+
+cor(training_2)
+
+cat(paste("Light, CO2 and Temparature are all correlated with Occupancy",
+          "with a coefficient above 0.50. Therefore we choose these for a potentially better model.", sep = "\n"))
+
+svmfit <- svm(Occupancy ~ Temperature + Light + CO2,
+              data = training,
+              type = "C-classification",
+              kernel = "radial",
+              cost = 7,
+              gamma = 0.05,
+              scale = TRUE)
+
+summary(svmfit)
+
 predictions <- predict(svmfit, test, type = 'class') # predicting unseen test data
 cm <- table(test$Occupancy, predictions) # confusion matrix
 cluster_report(cm, cap = "Support-Vector-Machine") # Quality measures of SVM
@@ -166,11 +203,8 @@ cluster_report(cm, cap = "Support-Vector-Machine") # Quality measures of SVM
 
 
 # 96 % accuracy on test and 90% accuracy on test2
-cat(paste("Instead of using the variable date, we formatted it to be two variables date and time",
-          "of which we use the time variable, as it is most likely to be generalizable upon a new dataset",
-          "sampled at a different point in time.",
-          "The SVM classifier was optimized to perform with a 96% accuracy on test-set 1 and 90% accuracy",
-          "on test-set 2.", sep = "/n"))
+cat(paste("The accuracy was improved both on test-set 1 and 2, mostly when looking at test-set 2.",
+          "Choosing the variables that are most correlated with the response variable, helps build a better model", sep = "\n"))
 
 ## Neural Network ----------------------------------------------------------
 library(neuralnet)
