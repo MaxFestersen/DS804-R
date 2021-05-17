@@ -33,6 +33,7 @@ formating <- function(x) {
     ungroup() # Remove rowwise
   x$date <- ymd(x$date) # Change date from char to time format
   x$time <- hms(x$time) # change time from char to time format
+  x$weekday <- factor(weekdays(x$date))
   return(x)
 }
 
