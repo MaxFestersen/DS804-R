@@ -33,6 +33,7 @@ formating <- function(x) {
     ungroup() # Remove rowwise
   x$date <- ymd(x$date) # Change date from char to time format
   x$time <- hms(x$time) # change time from char to time format
+  x$weekday <- factor(weekdays(x$date))
   return(x)
 }
 
@@ -415,41 +416,24 @@ plot(netmodel)
 # another method
 netmodel <- neuralnet(Occupancy ~ Temperature + Humidity + Light + CO2 + HumidityRatio,
                       data = training,
-                      hidden = 3,)
+                      hidden = 2,
+                      linear.output = FALSE)
 
 #plotting the netmodel
 print(netmodel)
 plot(netmodel)
+test_sample <- test2[sample(nrow(test2), size = 8143, replace = FALSE), ]
 
-
-x <- mutate(training, date = as.numeric(date))
-
-#taking a test sample from the training data
-test_sample <- x[sample(nrow(x), size = 400, replace = FALSE), ]
-test_sample <- test_sample[1:7]
-
-#taking a test sample from the test data
-test_sample <- test2[sample(nrow(test2), size = 2665, replace = FALSE), ]
-test_sample <- test_sample[1:7]
-
-#saves result
-net.results <- neuralnet::compute(netmodel, test_sample)
-ls(net.results)
-print(net.results$net.result)
-
-# display a better version of the results
-cleanoutput <- cbind(test_sample,sqrt(test_sample),
-                     as.data.frame(net.results$net.result))
-colnames(cleanoutput) <- c("Temperature","Humidity","Light","CO2", "HumidityRatio","Occupancy",
-                           "expected Temperature","expected Humidity","expected Light","expected CO2","expected HumidityRatio","expected Occupancy",
+final_output=cbind (training, test_sample, 
+                    as.data.frame(netmodel$net.result) )
+colnames(final_output) = c("Date","Temperature","Humidity","Light","CO2", "HumidityRatio","Occupancy",
+                           "expected date","expected Temperature","expected Humidity","expected Light","expected CO2","expected HumidityRatio","expected Occupancy",
                            "Neural Net Output")
-print(cleanoutput)
+print(final_output)
 
-actual_vs_predicted <-select(cleanoutput, "Occupancy","expected Occupancy")
-table1 <-table(actual_vs_predicted)
-#confusion matirx
+actual_vs_predicted <-select(final_output, "Occupancy","expected Occupancy")
+table1 <- table(actual_vs_predicted)
 print(table1)
-
 #overall accuracy
 print(sum(diag(table1))/sum(table1))
 
@@ -457,10 +441,30 @@ print(sum(diag(table1))/sum(table1))
 print(1-sum(diag(table1))/sum(table1))
 
 
+
 ## Naïve Bayes ------------------------------------------------------------
 
 set.seed(120)  # Setting Seed
 classifier_cl <- naiveBayes(Occupancy ~ ., data = training)
+classifier_cl
+
+# Predicting on test data
+y_pred <- predict(classifier_cl, newdata = test)
+
+# Confusion Matrix
+cm <- table(test$Occupancy, y_pred)
+cm
+
+# Model Evauation
+confusionMatrix(cm)
+
+# Naïve Bayes witout light and date
+
+test_sample <- test2.f
+test_sample <- test_sample[2:6]
+
+set.seed(120)  # Setting Seed
+classifier_cl <- naiveBayes(Occupancy ~ ., data = test2)
 classifier_cl
 
 # Predicting on test data
