@@ -10,6 +10,8 @@ library(neuralnet) # Neural Network
 library(lubridate)
 library(nnet)
 library(caret)
+library(tidyverse)
+library(caTools)
 
 # Dataset -----------------------------------------------------------------
 # We have chosen the Occupancy dataset: http://archive.ics.uci.edu/ml/datasets/Occupancy+Detection+#
@@ -24,12 +26,12 @@ training <- read.table("datatraining.txt", sep = ",")
 formating <- function(x) {
   x$Occupancy <- factor(x$Occupancy) # Factor Occupancy
   x <- x %>%
-    rowwise() %>% 
-    mutate(time = strsplit(date, " ")[[1]][2]) %>% 
-    mutate(date = strsplit(date, " ")[[1]][1]) %>% 
-    ungroup()
-  x$date <- ymd(x$date) # Change date from char to date
-  x$time <- hms(x$time)
+    rowwise() %>% # Group by each row (to use functions on row level)
+    mutate(time = strsplit(date, " ")[[1]][2]) %>% # Split date, and use the time part
+    mutate(date = strsplit(date, " ")[[1]][1]) %>% # Split date, and remove time part
+    ungroup() # Remove rowwise
+  x$date <- ymd(x$date) # Change date from char to time format
+  x$time <- hms(x$time) # change time from char to time format
   return(x)
 }
 
@@ -228,3 +230,16 @@ print(1-sum(diag(table1))/sum(table1))
 
 ## Naïve Bayes ------------------------------------------------------------
 
+set.seed(120)  # Setting Seed
+classifier_cl <- naiveBayes(Occupancy ~ ., data = training)
+classifier_cl
+
+# Predicting on test data
+y_pred <- predict(classifier_cl, newdata = test)
+
+# Confusion Matrix
+cm <- table(test$Occupancy, y_pred)
+cm
+
+# Model Evauation
+confusionMatrix(cm)
