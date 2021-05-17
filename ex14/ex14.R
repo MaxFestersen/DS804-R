@@ -10,6 +10,7 @@ library(neuralnet) # Neural Network
 library(lubridate)
 library(nnet)
 library(caret)
+library(tidyverse)
 
 # Dataset -----------------------------------------------------------------
 # We have chosen the Occupancy dataset: http://archive.ics.uci.edu/ml/datasets/Occupancy+Detection+#
