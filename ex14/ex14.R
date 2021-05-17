@@ -7,10 +7,10 @@ library(rpart) # Decision Tree
 library(rpart.plot) # Visualizing Decision Tree
 library(e1071) # Support Vector Machine
 library(neuralnet) # Neural Network
-library(lubridate)
+library(lubridate) # Time and date manipulation
 library(nnet)
 library(caret)
-library(tidyverse)
+library(tidyverse) # Utility functions
 library(caTools)
 library(usefun) # Used for pretty print
 
