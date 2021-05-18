@@ -7,11 +7,11 @@ library(rpart) # Decision Tree
 library(rpart.plot) # Visualizing Decision Tree
 library(e1071) # Support Vector Machine
 library(neuralnet) # Neural Network
-library(lubridate)
-library(nnet)
-library(caret)
-library(tidyverse)
-library(caTools)
+#library(nnet) # Neural Network (for comparison)
+library(lubridate) # Date formatting
+library(tidyverse) # For formatting
+library(caret) # Confusion matrix
+# library(caTools) # For splitting samples (not used)
 library(usefun) # Used for pretty print
 
 # Dataset -----------------------------------------------------------------
@@ -362,7 +362,7 @@ pretty_print_string("Without light and c02, the most dominant attributes, a some
 training$time <- as.numeric(training$time)
 test$time <- as.numeric(test$time)
 
-svmfit <- svm(Occupancy ~ Temperature + Humidity + Light + CO2 + HumidityRatio + time,
+svmfit <- svm(Occupancy ~ Temperature + Humidity + Light + CO2 + HumidityRatio + time, # Note: Leaving out date, as it made results worse :-(
               data = training,
               type = "C-classification",
               kernel = "radial",
@@ -393,6 +393,8 @@ cat(paste("Instead of using the variable date, we formatted it to be two variabl
 training_2 <- training
 training_2$Occupancy <- as.numeric(training_2$Occupancy)
 training_2$date <- as.numeric(training_2$date)
+training_2 <- training_2 %>% 
+  select(-weekday)
 
 cor(training_2)
 
@@ -426,12 +428,11 @@ cat(paste("The accuracy was improved both on test-set 1 and 2, mostly when looki
           "Choosing the variables that are most correlated with the response variable, helps build a better model", sep = "\n"))
 
 ## Neural Network ----------------------------------------------------------
-library(neuralnet)
 set.seed(12345689) # Men how, vi glemte 7, men det gør ikke noget, for vi har det sjovt.
 
-print(dim(training)); print(dim(test))
+#print(dim(training)); print(dim(test))
 
-netmodel <- neuralnet(Occupancy ~ weekdayNum+ Temperature + Humidity+ CO2+HumidityRatio,
+netmodel <- neuralnet(Occupancy ~ weekdayNum+ Temperature + Humidity+ CO2+HumidityRatio, # No light, time (testing), no date or weekday (can't even)
                  data = training,
                  hidden = 2,
                  linear.output = FALSE, 
@@ -439,25 +440,26 @@ netmodel <- neuralnet(Occupancy ~ weekdayNum+ Temperature + Humidity+ CO2+Humidi
                  likelihood = TRUE,
                  threshold=0.1,)
 
-#plotting the netmodel
+# Plotting the netmodel
 print(netmodel)
 plot(netmodel)
-test_sample <- test2[sample(nrow(test2), size = 8143, replace = FALSE), ]
+# Prediction?
+test_sample <- test2[sample(nrow(test2), size = 8143, replace = FALSE), ] # Might be a wrong method
 
-final_output=cbind (test_sample, training, 
+final_output <- cbind (test_sample, training, 
                     as.data.frame(netmodel$net.result) )
 colnames(final_output) = c("Date","Temperature","Humidity","Light","CO2", "HumidityRatio","Occupancy", "time", "weekday","weekday/Num",
                            "expected date","expected Temperature","expected Humidity","expected Light","expected CO2","expected HumidityRatio","expected Occupancy", "expected time", "expected weekday","expected weekday/Num",
                            "Neural Net Output")
 
-actual_vs_predicted <-select(final_output, "Occupancy","expected Occupancy")
+actual_vs_predicted <- select(final_output, "Occupancy","expected Occupancy")
 table1 <- table(actual_vs_predicted)
 print(table1)
 #overall accuracy for Occupancy
 print(sum(diag(table1))/sum(table1))
 
-0.6656024
-0.6651111
+# 0.6656024
+# 0.6651111
 
 #incorrect classification
 print(1-sum(diag(table1))/sum(table1))
