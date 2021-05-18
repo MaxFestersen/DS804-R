@@ -446,7 +446,7 @@ cat(paste(
 training$time <- as.numeric(training$time)
 test$time <- as.numeric(test$time)
 
-svmfit <- svm(Occupancy ~ Temperature + Humidity + Light + CO2 + HumidityRatio + time, # Note: Leaving out date, as it made results worse :-(
+svmfit <- svm(Occupancy ~ Temperature + Humidity + Light + CO2 + HumidityRatio + time + weekdayNum, # Note: Leaving out date, as it made results worse :-(
               data = training,
               type = "C-classification",
               kernel = "radial",
@@ -466,7 +466,7 @@ predictions <- predict(svmfit, test2, type = 'class') # predicting unseen test d
 cm <- table(test2$Occupancy, predictions) # confusion matrix
 cluster_report(cm, cap = "Support-Vector-Machine") # Quality measures of SVM
 
-# 96 % accuracy on test and 90% accuracy on test2
+# 96.6 % accuracy on test and 95.9% accuracy on test2
 cat(paste("Instead of using the variable date, we formatted it to be two variables date and time",
           "of which we use the time variable, as it is most likely to be generalizable upon a new dataset",
           "sampled at a different point in time.",
@@ -483,7 +483,7 @@ cor(training_2)
 cat(paste("Light, CO2 and Temparature are all correlated with Occupancy",
           "with a coefficient above 0.50. Therefore we choose these for a potentially better model.", sep = "\n"))
 
-svmfit <- svm(Occupancy ~ Temperature + Light + CO2,
+svmfit <- svm(Occupancy ~ Temperature + Light + CO2 + HumidityRatio,
               data = training,
               type = "C-classification",
               kernel = "radial",
@@ -505,7 +505,7 @@ cm <- table(test2$Occupancy, predictions) # confusion matrix
 cluster_report(cm, cap = "Support-Vector-Machine") # Quality measures of SVM
 
 
-# 96 % accuracy on test and 90% accuracy on test2
+# 97 % accuracy on test and 95.6% accuracy on test2
 cat(paste("The accuracy was improved both on test-set 1 and 2, mostly when looking at test-set 2.",
           "Choosing the variables that are most correlated with the response variable, helps build a better model", sep = "\n"))
 
