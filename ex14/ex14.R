@@ -446,6 +446,8 @@ cat(paste(
 set.seed(156)
 training$time <- as.numeric(training$time)
 test$time <- as.numeric(test$time)
+test2$time <- as.numeric(test2$time)
+test3$time <- as.numeric(test3$time)
 
 svmfit <- svm(Occupancy ~ Temperature + Humidity + Light + CO2 + HumidityRatio + time + weekdayNum, # Note: Leaving out date, as it made results worse :-(
               data = training,
@@ -466,6 +468,11 @@ cluster_report(cm, cap = "Support-Vector-Machine test_set 1") # Quality measures
 predictions <- predict(svmfit, test2, type = 'class') # predicting unseen test data
 cm <- table(test2$Occupancy, predictions) # confusion matrix
 cluster_report(cm, cap = "Support-Vector-Machine test_set 2") # Quality measures of SVM
+
+predictions <- predict(svmfit, test3, type = 'class') # predicting unseen test data
+cm <- table(test3$Occupancy, predictions) # confusion matrix
+cluster_report(cm, cap = "Support-Vector-Machine test_set 3") # Quality measures of SVM
+
 
 # 97 % accuracy on test and 94.9% accuracy on test2
 cat(paste("Instead of using the variable date, we formatted it to be two variables date and time",
@@ -505,6 +512,9 @@ predictions <- predict(svmfit, test2, type = 'class') # predicting unseen test d
 cm <- table(test2$Occupancy, predictions) # confusion matrix
 cluster_report(cm, cap = "Support-Vector-Machine test_set 2") # Quality measures of SVM
 
+predictions <- predict(svmfit, test3, type = 'class') # predicting unseen test data
+cm <- table(test3$Occupancy, predictions) # confusion matrix
+cluster_report(cm, cap = "Support-Vector-Machine test_set 3") # Quality measures of SVM
 
 # 97 % accuracy on test and 95.6% accuracy on test2
 cat(paste("The accuracy was improved both on test-set 1 and 2, mostly when looking at test-set 2.",
@@ -525,6 +535,10 @@ norm_test2 <- scale(select(test2[2:10], -c(Occupancy, weekday))) %>%
   as.data.frame()
 norm_test2$Occupancy <- test2$Occupancy
 
+norm_test3 <- scale(select(test3[2:10], -c(Occupancy, weekday))) %>% 
+  as.data.frame()
+norm_test3$Occupancy <- test3$Occupancy
+
 # First try with all variables
 set.seed(12345689)
 nn <- neuralnet((Occupancy == "1") + (Occupancy == "0") ~ weekdayNum + Light + time + Temperature + Humidity + CO2 + HumidityRatio,
@@ -542,13 +556,18 @@ plot(nn) # plotting neural network
 pred <- predict(nn, norm_test, type = "class") # making predictions with nn
 cm <- table(norm_test$Occupancy, apply(pred, 1, which.max)) # confusion matrix
 cm # 85.7% Accuracy
-cluster_report(cm, cap = "Neural Network") # computing quality measures
-
+cluster_report(cm, cap = "Neural Network test_set 1") # computing quality measures
 
 pred <- predict(nn, norm_test2, type = "class") # making predictions with nn
 cm <- table(norm_test2$Occupancy, apply(pred, 1, which.max)) # confusion matrix
 cm # 89.9% accuracy
-cluster_report(cm, cap = "Neural Network") # computing quality measures
+cluster_report(cm, cap = "Neural Network test_set 2") # computing quality measures
+
+pred <- predict(nn, norm_test3, type = "class") # making predictions with nn
+cm <- table(norm_test3$Occupancy, apply(pred, 1, which.max)) # confusion matrix
+cm # 91.4% accuracy
+cluster_report(cm, cap = "Neural Network test_set 3") # computing quality measures
+
 
 cat(paste("Using all numeric variables for training the Neural Network, the process is long",
           "however, accuracy of the model is pretty good with 85.7% on test-set 1 and 89.9% on test-set 2.", sep = "\n"))
@@ -577,12 +596,17 @@ plot(nn) # plotting neural network
 pred <- predict(nn, norm_test, type = "class") # predicting with nn
 cm <- table(norm_test$Occupancy, apply(pred, 1, which.max)) # confusion matrix
 cm # ~96% accuracy
-cluster_report(cm, cap = "Neural Network") # computing quality measures
+cluster_report(cm, cap = "Neural Network test_set 1") # computing quality measures
 
 pred <- predict(nn, norm_test2, type = "class") # making predictions with nn
 cm <- table(norm_test2$Occupancy, apply(pred, 1, which.max)) # confusion matrix
 cm # 90.9% accuracy
-cluster_report(cm, cap = "Neural Network") # computing quality measures
+cluster_report(cm, cap = "Neural Network test_set 2") # computing quality measures
+
+pred <- predict(nn, norm_test3, type = "class") # making predictions with nn
+cm <- table(norm_test3$Occupancy, apply(pred, 1, which.max)) # confusion matrix
+cm # 92.5% accuracy
+cluster_report(cm, cap = "Neural Network test_set 3") # computing quality measures
 
 #creating readable matrix
 ordered_table <- cm[1:2, 2:1]
