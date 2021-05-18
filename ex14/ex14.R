@@ -7,20 +7,11 @@ library(rpart) # Decision Tree
 library(rpart.plot) # Visualizing Decision Tree
 library(e1071) # Support Vector Machine
 library(neuralnet) # Neural Network
-<<<<<<< HEAD
 library(lubridate) # Time and date manipulation
-library(nnet)
-library(caret)
-library(tidyverse) # Utility functions
-library(caTools)
-=======
-#library(nnet) # Neural Network (for comparison)
-library(lubridate) # Date formatting
-library(tidyverse) # For formatting
+library(tidyverse) # Utility functions - like formatting
+#library(nnet) # Neural Network (for comparison) - no longer used
 library(caret) # Confusion matrix
 # library(caTools) # For splitting samples (not used)
->>>>>>> f78bfc2d091b7ef51af40fb428a5eb387d0a21ec
-library(usefun) # Used for pretty print
 
 # Dataset -----------------------------------------------------------------
 # We have chosen the Occupancy dataset: http://archive.ics.uci.edu/ml/datasets/Occupancy+Detection+#
