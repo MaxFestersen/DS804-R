@@ -578,3 +578,40 @@ confusionMatrix(cm)
 
 plot(y_pred)
 plot(cm)
+
+
+## KNN
+
+library(class)
+library(gmodels)
+
+#Setup Data
+
+normalize <- function(x) {return ((x - min(x)) / (max(x) - min(x))) }
+test_norm <- as.data.frame(lapply(test[2:6], normalize))
+training_norm <- as.data.frame(lapply(training[2:6], normalize))
+
+train_labels <- training[, 7, drop = TRUE]
+test_labels <- test[, 7, drop = TRUE]
+
+as.data.frame(lapply(test[2:6], normalize))
+
+
+# Knn with K = Squareroot of Observations.
+sqrt(10808)
+
+knn_test_pred <- knn(train = training_norm, test = test_norm, cl = train_labels, k =  104)
+
+
+CrossTable(x = test_labels, y = knn_test_pred,prop.chisq=FALSE)
+
+
+#Accuracy: TN+TP/Population
+
+cat(paste("Accuracy of K = 104: ", (((1625+868)/2665)*100) ))
+      
+#Error rate
+cat(paste("Error Rate of Knn = 104: ", mean(test_labels != knn_test_pred) ))
+
+
+
