@@ -12,6 +12,7 @@ library(tidyverse) # Utility functions - like formatting
 #library(nnet) # Neural Network (for comparison) - no longer used
 library(caret) # Confusion matrix
 # library(caTools) # For splitting samples (not used)
+library(FSelector) # For information gain
 
 # Dataset -----------------------------------------------------------------
 # We have chosen the Occupancy dataset: http://archive.ics.uci.edu/ml/datasets/Occupancy+Detection+#
@@ -60,8 +61,13 @@ training <- formating(training)
 test3 <- merge(x = test, y = test2, by = colnames(test), all = TRUE)
 
 
+
 # Choice of Algorithms ----------------------------------------------------
 pairs(training[-1], diag.panel = panel.boxplot)
+
+# Information gain --------------------------------------------------------
+ig.weights <- information.gain(Occupancy ~ ., as.data.frame(training))
+ig.weights
 
 
 ## Decision Tree ----------------------------------------------------------
@@ -187,6 +193,17 @@ cm.c <- table(test3$Occupancy, predictions.c) # confusion matrix
 cluster_report(cm.c, cap = "T3: Decision Tree with control") # Quality measures of Decision tree
 
 print("As expected, the results are the same.")
+
+
+# > With information gain weights -----------------------------------------
+# It does not work for some reason. The format of weights should be a list, and lengths match.
+# >> Tree
+# tree.c.ig <- rpart(Occupancy ~ .,
+#                     method = "class",
+#                     data = training[2:7],
+#                     weights = ig.weights$attr_importance[2:6])
+# rpart.plot(tree.c.ig)
+
 
 # > Tree without light ----------------------------------------------------
 cat(paste(
