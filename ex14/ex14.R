@@ -471,13 +471,13 @@ svmfit <- svm(Occupancy ~ Temperature + Humidity + Light + CO2 + HumidityRatio +
               gamma = 0.05,
               scale = TRUE)
 
+summary(svmfit)
 plot(svmfit, training, CO2 ~ HumidityRatio,
      slice=list(Humidity=3, Light=4, time=5, Temperature = 6))
 
 predictions <- predict(svmfit, test, type = 'class') # predicting unseen test data
 cm <- table(test$Occupancy, predictions) # confusion matrix
 cluster_report(cm, cap = "Support-Vector-Machine test_set 1") # Quality measures of SVM
-
 
 predictions <- predict(svmfit, test2, type = 'class') # predicting unseen test data
 cm <- table(test2$Occupancy, predictions) # confusion matrix
@@ -505,7 +505,7 @@ cor(training_2)
 cat(paste("Light, CO2 and Temparature are all correlated with Occupancy",
           "with a coefficient above 0.50. Therefore we choose these for a potentially better model.", sep = "\n"))
 
-svmfit <- svm(Occupancy ~ Temperature + Light + CO2 + HumidityRatio,
+svmfit <- svm(Occupancy ~ Temperature + Light + CO2,
               data = training,
               type = "C-classification",
               kernel = "radial",
@@ -595,7 +595,7 @@ ordered_table
 
 # Second try with less variables
 set.seed(12345689)
-nn <- neuralnet((Occupancy == "1") + (Occupancy == "0") ~ Light + time + Temperature + Humidity + CO2,
+nn <- neuralnet((Occupancy == "1") + (Occupancy == "0") ~ Light + Temperature + CO2,
                 data = norm_train,
                 hidden = 2,
                 lifesign = 'full',
@@ -765,12 +765,12 @@ confusionMatrix(cm)
 plot(y_pred)
 plot(cm)
 
-# KNN
+# KNN ========================================================================
 
 library(class)
 library(gmodels)
 
-#Setup Data
+# Setup Data
 
 normalize <- function(x) {return ((x - min(x)) / (max(x) - min(x))) }
 test_norm <- as.data.frame(lapply(test[2:6], normalize))
@@ -780,14 +780,16 @@ train_labels <- as.factor(training[, 7, drop = TRUE])
 test_labels <- as.factor(test[, 7, drop = TRUE])
 
 as.data.frame(lapply(test[2:6], normalize))
+as.data.frame(lapply(test2[2:6], normalize))
 
+# =====
 
-# Knn with K = Squareroot of Observations.
-sqrt(10808)
+# Knn using K = Squareroot of Observations on Test 1.
 
-knn104_pred <- knn(train = training_norm, test = test_norm, cl = train_labels, k =  104, use.all = TRUE)
+# =====
+
+knn104_pred <- knn(train = training_norm, test = test_norm, cl = train_labels, k =  sqrt( (nrow(training)) + (nrow(test)) ), use.all = TRUE)
 100 * sum(test_labels==knn104_pred)/NROW(test_labels)
-
 
 CrossTable(x = test_labels, y = knn104_pred,prop.chisq=FALSE)
 
@@ -797,10 +799,14 @@ cat(paste("Error Rate of Knn = 104: ", mean(test_labels != knn104_pred) ))
 # Confusion Matrix
 confusionMatrix(knn104_pred, test_labels) 
 
-# Batch Testing with K values 
+# =====
 
-i=2
-k.optm=2
+# Batch Testing with K values (Test 1)
+
+# =====
+
+i=1
+k.optm=1
 for (i in 1:120){
   knn.mod <- knn(train = training_norm, test = test_norm, cl = train_labels, k =  i)
   k.optm[i] <- 100* sum(test_labels==knn.mod)/NROW(test_labels)
@@ -809,7 +815,34 @@ for (i in 1:120){
 }
 
 plot(k.optm, type="b", xlab="K-Value", ylab="Accuracy level")
-# abline(h=max(k.optm)) Fuhget about it.
+
+#=====
+
+# Cross validation
+
+# =====
+
+trControl <- trainControl(method  = "cv",
+                          number  = 10)
+
+cross_fit <- train(training_norm, train_labels,
+                   method     = "knn",
+                   tuneGrid   = expand.grid(k = 1:30),
+                   trControl  = trControl,
+                   metric     = "Accuracy",
+                   data       = training_norm)
+
+confusionMatrix(cross_fit)
+#Cross validation best K as a plot
+plot(cross_fit)
+#Cross validation best K
+cross_fit
+#plot of ROC(repeated Cross-validation)
+plot(cross_fit, print.thres = 0.5, type="S")
+
+
+
+
 
 
 
