@@ -369,7 +369,7 @@ pretty_print_string("Accuracy improved to ~80% on testset 1 and ~89% on testset 
 pretty_print_string("Without light and c02, the most dominant attributes, a somewhat high accuracy can still be reached with the decision tree.")
 
 
-## Support Vectors and Margin (SVM)----------------------------------------
+## Support Vector Machine (SVM)----------------------------------------
 training$time <- as.numeric(training$time)
 test$time <- as.numeric(test$time)
 
@@ -401,11 +401,9 @@ cat(paste("Instead of using the variable date, we formatted it to be two variabl
           "on test-set 2.", sep = "\n"))
 
 ### Picking variables with a high correlation
-training_2 <- training
+training_2 <- training[-9]
 training_2$Occupancy <- as.numeric(training_2$Occupancy)
 training_2$date <- as.numeric(training_2$date)
-training_2 <- training_2 %>% 
-  select(-weekday)
 
 cor(training_2)
 
@@ -449,8 +447,7 @@ norm_test <- scale(select(test[2:10], -c(Occupancy, weekday))) %>%
   as.data.frame()
 norm_test$Occupancy <- test$Occupancy
 
-# First try with 
-
+# First try with all variables
 set.seed(12345689)
 nn <- neuralnet((Occupancy == "1") + (Occupancy == "0") ~ weekdayNum + Light + time + Temperature + Humidity + CO2 + HumidityRatio,
                 data = norm_train,
@@ -466,7 +463,8 @@ nn <- neuralnet((Occupancy == "1") + (Occupancy == "0") ~ weekdayNum + Light + t
 plot(nn) # plotting neural network
 pred <- predict(nn, norm_test, type = "class") # making predictions with nn
 cm <- table(norm_test$Occupancy, apply(pred, 1, which.max)) # confusion matrix
-cluster_report(cm) # computing quality measures
+cm
+cluster_report(cm, cap = "Neural Network") # computing quality measures
 
 # Second try with less variables
 set.seed(12345689)
@@ -484,7 +482,8 @@ nn <- neuralnet((Occupancy == "1") + (Occupancy == "0") ~ Light + time + Tempera
 plot(nn) # plotting neural network
 pred <- predict(nn, norm_test, type = "class") # predicting with nn
 cm <- table(norm_test$Occupancy, apply(pred, 1, which.max)) # confusion matrix
-cluster_report(cm) # computing quality measures
+cm
+cluster_report(cm, cap = "Neural Network") # computing quality measures
 
 
 
