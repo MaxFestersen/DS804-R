@@ -457,13 +457,13 @@ svmfit <- svm(Occupancy ~ Temperature + Humidity + Light + CO2 + HumidityRatio +
               gamma = 0.05,
               scale = TRUE)
 
+summary(svmfit)
 plot(svmfit, training, CO2 ~ HumidityRatio,
      slice=list(Humidity=3, Light=4, time=5, Temperature = 6))
 
 predictions <- predict(svmfit, test, type = 'class') # predicting unseen test data
 cm <- table(test$Occupancy, predictions) # confusion matrix
 cluster_report(cm, cap = "Support-Vector-Machine test_set 1") # Quality measures of SVM
-
 
 predictions <- predict(svmfit, test2, type = 'class') # predicting unseen test data
 cm <- table(test2$Occupancy, predictions) # confusion matrix
@@ -491,7 +491,7 @@ cor(training_2)
 cat(paste("Light, CO2 and Temparature are all correlated with Occupancy",
           "with a coefficient above 0.50. Therefore we choose these for a potentially better model.", sep = "\n"))
 
-svmfit <- svm(Occupancy ~ Temperature + Light + CO2 + HumidityRatio,
+svmfit <- svm(Occupancy ~ Temperature + Light + CO2,
               data = training,
               type = "C-classification",
               kernel = "radial",
@@ -581,7 +581,7 @@ ordered_table
 
 # Second try with less variables
 set.seed(12345689)
-nn <- neuralnet((Occupancy == "1") + (Occupancy == "0") ~ Light + time + Temperature + Humidity + CO2,
+nn <- neuralnet((Occupancy == "1") + (Occupancy == "0") ~ Light + Temperature + CO2,
                 data = norm_train,
                 hidden = 2,
                 lifesign = 'full',
