@@ -711,11 +711,11 @@ cat(paste("Error Rate of Knn = 104: ", mean(test_labels != knn104_pred) ))
 # Confusion Matrix
 confusionMatrix(knn104_pred, test_labels) 
 
-# Batch Testing with K values
+# Batch Testing with K values 
 
-i=1
-k.optm=1
-for (i in 1:250){
+i=2
+k.optm=2
+for (i in 1:120){
   knn.mod <- knn(train = training_norm, test = test_norm, cl = train_labels, k =  i)
   k.optm[i] <- 100* sum(test_labels==knn.mod)/NROW(test_labels)
   k=i
@@ -723,6 +723,8 @@ for (i in 1:250){
 }
 
 plot(k.optm, type="b", xlab="K-Value", ylab="Accuracy level")
+# abline(h=max(k.optm)) Fuhget about it.
+
 
 
 
