@@ -550,6 +550,13 @@ cm <- table(norm_test2$Occupancy, apply(pred, 1, which.max)) # confusion matrix
 cm # 89.9% accuracy
 cluster_report(cm, cap = "Neural Network") # computing quality measures
 
+#creating readable matrix
+ordered_table <- cm[1:2, 2:1]
+ordered_table <- rbind(as.numeric(names(ordered_table)), ordered_table)
+rownames(ordered_table) <- c("Predicted Occupancy","Predicted NO Occupancy")
+colnames(ordered_table) <- c("True Occupancy","True NO Occupancy")
+ordered_table
+
 # Second try with less variables
 set.seed(12345689)
 nn <- neuralnet((Occupancy == "1") + (Occupancy == "0") ~ Light + time + Temperature + Humidity + CO2,
@@ -574,6 +581,12 @@ cm <- table(norm_test2$Occupancy, apply(pred, 1, which.max)) # confusion matrix
 cm # 90.9% accuracy
 cluster_report(cm, cap = "Neural Network") # computing quality measures
 
+#creating readable matrix
+ordered_table <- cm[1:2, 2:1]
+ordered_table <- rbind(as.numeric(names(ordered_table)), ordered_table)
+rownames(ordered_table) <- c("Predicted Occupancy","Predicted NO Occupancy")
+colnames(ordered_table) <- c("True Occupancy","True NO Occupancy")
+ordered_table
 
 library(neuralnet)
 set.seed(12345689) # Men how, vi glemte 7, men det gør ikke noget, for vi har det sjovt.
