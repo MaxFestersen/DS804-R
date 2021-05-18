@@ -679,8 +679,7 @@ confusionMatrix(cm)
 plot(y_pred)
 plot(cm)
 
-
-## KNN
+# KNN
 
 library(class)
 library(gmodels)
@@ -691,8 +690,8 @@ normalize <- function(x) {return ((x - min(x)) / (max(x) - min(x))) }
 test_norm <- as.data.frame(lapply(test[2:6], normalize))
 training_norm <- as.data.frame(lapply(training[2:6], normalize))
 
-train_labels <- training[, 7, drop = TRUE]
-test_labels <- test[, 7, drop = TRUE]
+train_labels <- as.factor(training[, 7, drop = TRUE])
+test_labels <- as.factor(test[, 7, drop = TRUE])
 
 as.data.frame(lapply(test[2:6], normalize))
 
@@ -700,18 +699,30 @@ as.data.frame(lapply(test[2:6], normalize))
 # Knn with K = Squareroot of Observations.
 sqrt(10808)
 
-knn_test_pred <- knn(train = training_norm, test = test_norm, cl = train_labels, k =  104)
+knn104_pred <- knn(train = training_norm, test = test_norm, cl = train_labels, k =  104, use.all = TRUE)
+100 * sum(test_labels==knn104_pred)/NROW(test_labels)
 
 
-CrossTable(x = test_labels, y = knn_test_pred,prop.chisq=FALSE)
+CrossTable(x = test_labels, y = knn104_pred,prop.chisq=FALSE)
 
+# Error rate
+cat(paste("Error Rate of Knn = 104: ", mean(test_labels != knn104_pred) ))
 
-#Accuracy: TN+TP/Population
+# Confusion Matrix
+confusionMatrix(knn104_pred, test_labels) 
 
-cat(paste("Accuracy of K = 104: ", (((1625+868)/2665)*100) ))
-      
-#Error rate
-cat(paste("Error Rate of Knn = 104: ", mean(test_labels != knn_test_pred) ))
+# Batch Testing with K values
+
+i=1
+k.optm=1
+for (i in 1:250){
+  knn.mod <- knn(train = training_norm, test = test_norm, cl = train_labels, k =  i)
+  k.optm[i] <- 100* sum(test_labels==knn.mod)/NROW(test_labels)
+  k=i
+  cat(k, '=',k.optm[i],'\n')
+}
+
+plot(k.optm, type="b", xlab="K-Value", ylab="Accuracy level")
 
 
 
