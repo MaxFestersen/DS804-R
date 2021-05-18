@@ -7,11 +7,19 @@ library(rpart) # Decision Tree
 library(rpart.plot) # Visualizing Decision Tree
 library(e1071) # Support Vector Machine
 library(neuralnet) # Neural Network
+<<<<<<< HEAD
+library(lubridate) # Time and date manipulation
+library(nnet)
+library(caret)
+library(tidyverse) # Utility functions
+library(caTools)
+=======
 #library(nnet) # Neural Network (for comparison)
 library(lubridate) # Date formatting
 library(tidyverse) # For formatting
 library(caret) # Confusion matrix
 # library(caTools) # For splitting samples (not used)
+>>>>>>> f78bfc2d091b7ef51af40fb428a5eb387d0a21ec
 library(usefun) # Used for pretty print
 
 # Dataset -----------------------------------------------------------------
@@ -36,17 +44,17 @@ formating <- function(x) {
   x$weekday <- factor(weekdays(x$date))
   x <- rowwise(x) %>% 
     mutate(weekdayNum = as.numeric(ifelse(
-    weekday == "mandag" | weekday == "monday",
+    weekday == "mandag" | weekday == "Monday",
     1,
-    ifelse(weekday == "tirsdag" | weekday == "tuesday",
+    ifelse(weekday == "tirsdag" | weekday == "Tuesday",
            2,
-           ifelse(weekday == "onsdag" | weekday == "wednesday",
+           ifelse(weekday == "onsdag" | weekday == "Wednesday",
                   3,
-                  ifelse(weekday == "torsdag" | weekday == "tuesday",
+                  ifelse(weekday == "torsdag" | weekday == "Tuesday",
                          4,
-                         ifelse(weekday == "fredag" | weekday == "friday",
+                         ifelse(weekday == "fredag" | weekday == "Friday",
                                 5,
-                                ifelse(weekday == "lørdag" | weekday == "saturday",
+                                ifelse(weekday == "lørdag" | weekday == "Saturday",
                                        6,
                                        7
   ))))))))
@@ -513,9 +521,60 @@ cat(paste("The accuracy was improved both on test-set 1 and 2, mostly when looki
           "Choosing the variables that are most correlated with the response variable, helps build a better model", sep = "\n"))
 
 ## Neural Network ----------------------------------------------------------
+
+# Normalizing training and test set
+norm_train <- scale(select(training[2:10], -c(Occupancy, weekday))) %>% 
+  as.data.frame()
+norm_train$Occupancy <- training$Occupancy
+
+norm_test <- scale(select(test[2:10], -c(Occupancy, weekday))) %>% 
+  as.data.frame()
+norm_test$Occupancy <- test$Occupancy
+
+# First try with 
+
+set.seed(12345689)
+nn <- neuralnet((Occupancy == "1") + (Occupancy == "0") ~ weekdayNum + Light + time + Temperature + Humidity + CO2 + HumidityRatio,
+                data = norm_train,
+                hidden = 2,
+                lifesign = 'full',
+                lifesign.step = 100,
+                stepmax = 50000,
+                linear.output = FALSE,
+                algorithm = 'rprop-',
+                err.fct = 'ce',
+                likelihood = TRUE,
+                threshold = 0.02) # 85% Accuracy
+plot(nn) # plotting neural network
+pred <- predict(nn, norm_test, type = "class") # making predictions with nn
+cm <- table(norm_test$Occupancy, apply(pred, 1, which.max)) # confusion matrix
+cluster_report(cm) # computing quality measures
+
+# Second try with less variables
+set.seed(12345689)
+nn <- neuralnet((Occupancy == "1") + (Occupancy == "0") ~ Light + time + Temperature + Humidity + CO2,
+                data = norm_train,
+                hidden = 2,
+                lifesign = 'full',
+                lifesign.step = 100,
+                stepmax = 50000,
+                linear.output = FALSE,
+                algorithm = 'rprop-',
+                err.fct = 'ce',
+                likelihood = TRUE,
+                threshold = 0.01) # ~96% accuracy
+plot(nn) # plotting neural network
+pred <- predict(nn, norm_test, type = "class") # predicting with nn
+cm <- table(norm_test$Occupancy, apply(pred, 1, which.max)) # confusion matrix
+cluster_report(cm) # computing quality measures
+
+
+
+library(neuralnet)
 set.seed(12345689) # Men how, vi glemte 7, men det gør ikke noget, for vi har det sjovt.
 
 #print(dim(training)); print(dim(test))
+
 
 netmodel <- neuralnet(Occupancy ~ weekdayNum+ Temperature + Humidity+ CO2+HumidityRatio, # No light, time (testing), no date or weekday (can't even)
                  data = training,
@@ -523,7 +582,9 @@ netmodel <- neuralnet(Occupancy ~ weekdayNum+ Temperature + Humidity+ CO2+Humidi
                  linear.output = FALSE, 
                  err.fct = 'ce', 
                  likelihood = TRUE,
-                 threshold=0.1,)
+                 threshold=0.1)
+
+
 
 # Plotting the netmodel
 print(netmodel)
@@ -599,3 +660,40 @@ confusionMatrix(cm)
 
 plot(y_pred)
 plot(cm)
+
+
+## KNN
+
+library(class)
+library(gmodels)
+
+#Setup Data
+
+normalize <- function(x) {return ((x - min(x)) / (max(x) - min(x))) }
+test_norm <- as.data.frame(lapply(test[2:6], normalize))
+training_norm <- as.data.frame(lapply(training[2:6], normalize))
+
+train_labels <- training[, 7, drop = TRUE]
+test_labels <- test[, 7, drop = TRUE]
+
+as.data.frame(lapply(test[2:6], normalize))
+
+
+# Knn with K = Squareroot of Observations.
+sqrt(10808)
+
+knn_test_pred <- knn(train = training_norm, test = test_norm, cl = train_labels, k =  104)
+
+
+CrossTable(x = test_labels, y = knn_test_pred,prop.chisq=FALSE)
+
+
+#Accuracy: TN+TP/Population
+
+cat(paste("Accuracy of K = 104: ", (((1625+868)/2665)*100) ))
+      
+#Error rate
+cat(paste("Error Rate of Knn = 104: ", mean(test_labels != knn_test_pred) ))
+
+
+
