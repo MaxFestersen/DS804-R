@@ -439,11 +439,14 @@ cat(paste(
 ))
 
 
-## Support Vectors and Margin (SVM)----------------------------------------
+## Support Vector Machine (SVM)----------------------------------------
+set.seed(156)
 training$time <- as.numeric(training$time)
 test$time <- as.numeric(test$time)
+test2$time <- as.numeric(test2$time)
+test3$time <- as.numeric(test3$time)
 
-svmfit <- svm(Occupancy ~ Temperature + Humidity + Light + CO2 + HumidityRatio + time, # Note: Leaving out date, as it made results worse :-(
+svmfit <- svm(Occupancy ~ Temperature + Humidity + Light + CO2 + HumidityRatio + time + weekdayNum, # Note: Leaving out date, as it made results worse :-(
               data = training,
               type = "C-classification",
               kernel = "radial",
@@ -456,14 +459,19 @@ plot(svmfit, training, CO2 ~ HumidityRatio,
 
 predictions <- predict(svmfit, test, type = 'class') # predicting unseen test data
 cm <- table(test$Occupancy, predictions) # confusion matrix
-cluster_report(cm, cap = "Support-Vector-Machine") # Quality measures of SVM
+cluster_report(cm, cap = "Support-Vector-Machine test_set 1") # Quality measures of SVM
 
 
 predictions <- predict(svmfit, test2, type = 'class') # predicting unseen test data
 cm <- table(test2$Occupancy, predictions) # confusion matrix
-cluster_report(cm, cap = "Support-Vector-Machine") # Quality measures of SVM
+cluster_report(cm, cap = "Support-Vector-Machine test_set 2") # Quality measures of SVM
 
-# 96 % accuracy on test and 90% accuracy on test2
+predictions <- predict(svmfit, test3, type = 'class') # predicting unseen test data
+cm <- table(test3$Occupancy, predictions) # confusion matrix
+cluster_report(cm, cap = "Support-Vector-Machine test_set 3") # Quality measures of SVM
+
+
+# 97 % accuracy on test and 94.9% accuracy on test2
 cat(paste("Instead of using the variable date, we formatted it to be two variables date and time",
           "of which we use the time variable, as it is most likely to be generalizable upon a new dataset",
           "sampled at a different point in time.",
@@ -471,18 +479,16 @@ cat(paste("Instead of using the variable date, we formatted it to be two variabl
           "on test-set 2.", sep = "\n"))
 
 ### Picking variables with a high correlation
-training_2 <- training
+training_2 <- training[-9]
 training_2$Occupancy <- as.numeric(training_2$Occupancy)
 training_2$date <- as.numeric(training_2$date)
-training_2 <- training_2 %>% 
-  select(-weekday)
 
 cor(training_2)
 
 cat(paste("Light, CO2 and Temparature are all correlated with Occupancy",
           "with a coefficient above 0.50. Therefore we choose these for a potentially better model.", sep = "\n"))
 
-svmfit <- svm(Occupancy ~ Temperature + Light + CO2,
+svmfit <- svm(Occupancy ~ Temperature + Light + CO2 + HumidityRatio,
               data = training,
               type = "C-classification",
               kernel = "radial",
@@ -492,19 +498,22 @@ svmfit <- svm(Occupancy ~ Temperature + Light + CO2,
 
 summary(svmfit)
 
-plot(svmfit, training, CO2 ~ Temperature,
-     slice=list(Light=3))
+plot(svmfit, training, Light ~ CO2,
+     slice=list(Temperature=3, HumidityRatio=4))
 
 predictions <- predict(svmfit, test, type = 'class') # predicting unseen test data
 cm <- table(test$Occupancy, predictions) # confusion matrix
-cluster_report(cm, cap = "Support-Vector-Machine") # Quality measures of SVM
+cluster_report(cm, cap = "Support-Vector-Machine test_set 1") # Quality measures of SVM
 
 predictions <- predict(svmfit, test2, type = 'class') # predicting unseen test data
 cm <- table(test2$Occupancy, predictions) # confusion matrix
-cluster_report(cm, cap = "Support-Vector-Machine") # Quality measures of SVM
+cluster_report(cm, cap = "Support-Vector-Machine test_set 2") # Quality measures of SVM
 
+predictions <- predict(svmfit, test3, type = 'class') # predicting unseen test data
+cm <- table(test3$Occupancy, predictions) # confusion matrix
+cluster_report(cm, cap = "Support-Vector-Machine test_set 3") # Quality measures of SVM
 
-# 96 % accuracy on test and 90% accuracy on test2
+# 97 % accuracy on test and 95.6% accuracy on test2
 cat(paste("The accuracy was improved both on test-set 1 and 2, mostly when looking at test-set 2.",
           "Choosing the variables that are most correlated with the response variable, helps build a better model", sep = "\n"))
 
@@ -519,8 +528,15 @@ norm_test <- scale(select(test[2:10], -c(Occupancy, weekday))) %>%
   as.data.frame()
 norm_test$Occupancy <- test$Occupancy
 
-# First try with 
+norm_test2 <- scale(select(test2[2:10], -c(Occupancy, weekday))) %>% 
+  as.data.frame()
+norm_test2$Occupancy <- test2$Occupancy
 
+norm_test3 <- scale(select(test3[2:10], -c(Occupancy, weekday))) %>% 
+  as.data.frame()
+norm_test3$Occupancy <- test3$Occupancy
+
+# First try with all variables
 set.seed(12345689)
 nn <- neuralnet((Occupancy == "1") + (Occupancy == "0") ~ weekdayNum + Light + time + Temperature + Humidity + CO2 + HumidityRatio,
                 data = norm_train,
@@ -532,11 +548,33 @@ nn <- neuralnet((Occupancy == "1") + (Occupancy == "0") ~ weekdayNum + Light + t
                 algorithm = 'rprop-',
                 err.fct = 'ce',
                 likelihood = TRUE,
-                threshold = 0.02) # 85% Accuracy
+                threshold = 0.02) 
 plot(nn) # plotting neural network
 pred <- predict(nn, norm_test, type = "class") # making predictions with nn
 cm <- table(norm_test$Occupancy, apply(pred, 1, which.max)) # confusion matrix
-cluster_report(cm) # computing quality measures
+cm # 85.7% Accuracy
+cluster_report(cm, cap = "Neural Network test_set 1") # computing quality measures
+
+pred <- predict(nn, norm_test2, type = "class") # making predictions with nn
+cm <- table(norm_test2$Occupancy, apply(pred, 1, which.max)) # confusion matrix
+cm # 89.9% accuracy
+cluster_report(cm, cap = "Neural Network test_set 2") # computing quality measures
+
+pred <- predict(nn, norm_test3, type = "class") # making predictions with nn
+cm <- table(norm_test3$Occupancy, apply(pred, 1, which.max)) # confusion matrix
+cm # 91.4% accuracy
+cluster_report(cm, cap = "Neural Network test_set 3") # computing quality measures
+
+
+cat(paste("Using all numeric variables for training the Neural Network, the process is long",
+          "however, accuracy of the model is pretty good with 85.7% on test-set 1 and 89.9% on test-set 2.", sep = "\n"))
+
+#creating readable matrix
+ordered_table <- cm[1:2, 2:1]
+ordered_table <- rbind(as.numeric(names(ordered_table)), ordered_table)
+rownames(ordered_table) <- c("Predicted Occupancy","Predicted NO Occupancy")
+colnames(ordered_table) <- c("True Occupancy","True NO Occupancy")
+ordered_table
 
 # Second try with less variables
 set.seed(12345689)
@@ -550,12 +588,33 @@ nn <- neuralnet((Occupancy == "1") + (Occupancy == "0") ~ Light + time + Tempera
                 algorithm = 'rprop-',
                 err.fct = 'ce',
                 likelihood = TRUE,
-                threshold = 0.01) # ~96% accuracy
+                threshold = 0.01) 
 plot(nn) # plotting neural network
 pred <- predict(nn, norm_test, type = "class") # predicting with nn
 cm <- table(norm_test$Occupancy, apply(pred, 1, which.max)) # confusion matrix
-cluster_report(cm) # computing quality measures
+cm # ~96% accuracy
+cluster_report(cm, cap = "Neural Network test_set 1") # computing quality measures
 
+pred <- predict(nn, norm_test2, type = "class") # making predictions with nn
+cm <- table(norm_test2$Occupancy, apply(pred, 1, which.max)) # confusion matrix
+cm # 90.9% accuracy
+cluster_report(cm, cap = "Neural Network test_set 2") # computing quality measures
+
+pred <- predict(nn, norm_test3, type = "class") # making predictions with nn
+cm <- table(norm_test3$Occupancy, apply(pred, 1, which.max)) # confusion matrix
+cm # 92.5% accuracy
+cluster_report(cm, cap = "Neural Network test_set 3") # computing quality measures
+
+#creating readable matrix
+ordered_table <- cm[1:2, 2:1]
+ordered_table <- rbind(as.numeric(names(ordered_table)), ordered_table)
+rownames(ordered_table) <- c("Predicted Occupancy","Predicted NO Occupancy")
+colnames(ordered_table) <- c("True Occupancy","True NO Occupancy")
+ordered_table
+
+cat(paste("Using only some of the variables for training the Neural Network, as we also did with SVM",
+          "the training processed was shortened and a lower min.threshold could be reached within stepmax.",
+          "The accuracy of the model also improved good with ~96% on test-set 1 and 90.9% on test-set 2.", sep = "\n"))
 
 
 library(neuralnet)
@@ -618,16 +677,56 @@ classifier_cl <- naiveBayes(Occupancy ~ ., data = training)
 classifier_cl
 
 # Predicting on test data
-y_pred <- predict(classifier_cl, newdata = test2)
+pred_test <- predict(classifier_cl, newdata = test)
 
-# Confusion Matrix
-cm <- table(test2$Occupancy, y_pred)
-cm
+# Predicting on test2 data
+pred_test2 <- predict(classifier_cl, newdata = test2)
 
+# Predicting on test3 data
+pred_test3 <- predict(classifier_cl, newdata = test3)
+
+# Confusion Matrix test
+cm <- table(test$Occupancy, pred_test)
+
+#creating readable matrix
+ordered_table <- rbind(as.numeric(names(cm)), cm)
+rownames(ordered_table) <- c("Predicted Occupancy","Predicted NO Occupancy")
+colnames(ordered_table) <- c("Actual Occupancy","Actual NO Occupancy")
+ordered_table
+
+cluster_report(cm, cap = "Naïve Bayes")
 # Model Evauation
-confusionMatrix(cm)
+confusionMatrix(cm) # 0.9775% accuracy
 
-# Naïve Bayes witout light and date
+
+# Confusion Matrix test2
+cm <- table(test2$Occupancy, pred_test2)
+#creating readable matrix
+ordered_table <- rbind(as.numeric(names(cm)), cm)
+rownames(ordered_table) <- c("Predicted Occupancy","Predicted NO Occupancy")
+colnames(ordered_table) <- c("Actual Occupancy","Actual NO Occupancy")
+ordered_table
+
+cluster_report(cm, cap = "Naïve Bayes")
+# Model Evauation
+confusionMatrix(cm) # 0.9892 % accuracy
+
+# Confusion Matrix test3
+cm <- table(test3$Occupancy, pred_test3)
+
+cm <- table(test2$Occupancy, pred_test2)
+#creating readable matrix
+ordered_table <- rbind(as.numeric(names(cm)), cm)
+rownames(ordered_table) <- c("Predicted Occupancy","Predicted NO Occupancy")
+colnames(ordered_table) <- c("Actual Occupancy","Actual NO Occupancy")
+ordered_table
+
+cluster_report(cm, cap = "Naïve Bayes")
+# Model Evauation
+confusionMatrix(cm) # 0.9867% accuracy
+
+
+# Naïve Bayes without light and date
 
 test_sample <- test2.f
 test_sample <- test_sample[2:6]
@@ -649,8 +748,7 @@ confusionMatrix(cm)
 plot(y_pred)
 plot(cm)
 
-
-## KNN
+# KNN
 
 library(class)
 library(gmodels)
@@ -661,8 +759,8 @@ normalize <- function(x) {return ((x - min(x)) / (max(x) - min(x))) }
 test_norm <- as.data.frame(lapply(test[2:6], normalize))
 training_norm <- as.data.frame(lapply(training[2:6], normalize))
 
-train_labels <- training[, 7, drop = TRUE]
-test_labels <- test[, 7, drop = TRUE]
+train_labels <- as.factor(training[, 7, drop = TRUE])
+test_labels <- as.factor(test[, 7, drop = TRUE])
 
 as.data.frame(lapply(test[2:6], normalize))
 
@@ -670,18 +768,32 @@ as.data.frame(lapply(test[2:6], normalize))
 # Knn with K = Squareroot of Observations.
 sqrt(10808)
 
-knn_test_pred <- knn(train = training_norm, test = test_norm, cl = train_labels, k =  104)
+knn104_pred <- knn(train = training_norm, test = test_norm, cl = train_labels, k =  104, use.all = TRUE)
+100 * sum(test_labels==knn104_pred)/NROW(test_labels)
 
 
-CrossTable(x = test_labels, y = knn_test_pred,prop.chisq=FALSE)
+CrossTable(x = test_labels, y = knn104_pred,prop.chisq=FALSE)
 
+# Error rate
+cat(paste("Error Rate of Knn = 104: ", mean(test_labels != knn104_pred) ))
 
-#Accuracy: TN+TP/Population
+# Confusion Matrix
+confusionMatrix(knn104_pred, test_labels) 
 
-cat(paste("Accuracy of K = 104: ", (((1625+868)/2665)*100) ))
-      
-#Error rate
-cat(paste("Error Rate of Knn = 104: ", mean(test_labels != knn_test_pred) ))
+# Batch Testing with K values 
+
+i=2
+k.optm=2
+for (i in 1:120){
+  knn.mod <- knn(train = training_norm, test = test_norm, cl = train_labels, k =  i)
+  k.optm[i] <- 100* sum(test_labels==knn.mod)/NROW(test_labels)
+  k=i
+  cat(k, '=',k.optm[i],'\n')
+}
+
+plot(k.optm, type="b", xlab="K-Value", ylab="Accuracy level")
+# abline(h=max(k.optm)) Fuhget about it.
+
 
 
 
