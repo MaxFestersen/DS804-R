@@ -648,14 +648,36 @@ classifier_cl <- naiveBayes(Occupancy ~ ., data = training)
 classifier_cl
 
 # Predicting on test data
-y_pred <- predict(classifier_cl, newdata = test2)
+pred_test <- predict(classifier_cl, newdata = test)
 
-# Confusion Matrix
-cm <- table(test2$Occupancy, y_pred)
+# Predicting on test2 data
+pred_test2 <- predict(classifier_cl, newdata = test2)
+
+# Predicting on test3 data
+pred_test3 <- predict(classifier_cl, newdata = test3)
+
+# Confusion Matrix test
+cm <- table(test$Occupancy, pred_test)
 cm
-
+cluster_report(cm, cap = "Naïve Bayes")
 # Model Evauation
-confusionMatrix(cm)
+confusionMatrix(cm) # 0.9775% accuracy
+
+
+# Confusion Matrix test2
+cm <- table(test2$Occupancy, pred_test2)
+cm
+cluster_report(cm, cap = "Naïve Bayes")
+# Model Evauation
+confusionMatrix(cm) # 0.9892 % accuracy
+
+# Confusion Matrix test3
+cm <- table(test3$Occupancy, pred_test3)
+cm
+cluster_report(cm, cap = "Naïve Bayes")
+# Model Evauation
+confusionMatrix(cm) # 0.9867% accuracy
+
 
 # Naïve Bayes without light and date
 
