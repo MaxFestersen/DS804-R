@@ -751,12 +751,12 @@ confusionMatrix(cm)
 plot(y_pred)
 plot(cm)
 
-# KNN
+# KNN ========================================================================
 
 library(class)
 library(gmodels)
 
-#Setup Data
+# Setup Data
 
 normalize <- function(x) {return ((x - min(x)) / (max(x) - min(x))) }
 test_norm <- as.data.frame(lapply(test[2:6], normalize))
@@ -766,14 +766,16 @@ train_labels <- as.factor(training[, 7, drop = TRUE])
 test_labels <- as.factor(test[, 7, drop = TRUE])
 
 as.data.frame(lapply(test[2:6], normalize))
+as.data.frame(lapply(test2[2:6], normalize))
 
+# =====
 
-# Knn with K = Squareroot of Observations.
-sqrt(10808)
+# Knn using K = Squareroot of Observations on Test 1.
 
-knn104_pred <- knn(train = training_norm, test = test_norm, cl = train_labels, k =  104, use.all = TRUE)
+# =====
+
+knn104_pred <- knn(train = training_norm, test = test_norm, cl = train_labels, k =  sqrt( (nrow(training)) + (nrow(test)) ), use.all = TRUE)
 100 * sum(test_labels==knn104_pred)/NROW(test_labels)
-
 
 CrossTable(x = test_labels, y = knn104_pred,prop.chisq=FALSE)
 
@@ -783,10 +785,14 @@ cat(paste("Error Rate of Knn = 104: ", mean(test_labels != knn104_pred) ))
 # Confusion Matrix
 confusionMatrix(knn104_pred, test_labels) 
 
-# Batch Testing with K values 
+# =====
 
-i=2
-k.optm=2
+# Batch Testing with K values (Test 1)
+
+# =====
+
+i=1
+k.optm=1
 for (i in 1:120){
   knn.mod <- knn(train = training_norm, test = test_norm, cl = train_labels, k =  i)
   k.optm[i] <- 100* sum(test_labels==knn.mod)/NROW(test_labels)
@@ -795,7 +801,34 @@ for (i in 1:120){
 }
 
 plot(k.optm, type="b", xlab="K-Value", ylab="Accuracy level")
-# abline(h=max(k.optm)) Fuhget about it.
+
+#=====
+
+# Cross validation
+
+# =====
+
+trControl <- trainControl(method  = "cv",
+                          number  = 10)
+
+cross_fit <- train(training_norm, train_labels,
+                   method     = "knn",
+                   tuneGrid   = expand.grid(k = 1:30),
+                   trControl  = trControl,
+                   metric     = "Accuracy",
+                   data       = training_norm)
+
+confusionMatrix(cross_fit)
+#Cross validation best K as a plot
+plot(cross_fit)
+#Cross validation best K
+cross_fit
+#plot of ROC(repeated Cross-validation)
+plot(cross_fit, print.thres = 0.5, type="S")
+
+
+
+
 
 
 
