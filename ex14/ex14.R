@@ -12,8 +12,16 @@ library(tidyverse) # Utility functions - like formatting
 #library(nnet) # Neural Network (for comparison) - no longer used
 library(caret) # Confusion matrix
 # library(caTools) # For splitting samples (not used)
+<<<<<<< Updated upstream
 library(FSelector) # For information gain
 
+=======
+library(ggplot) #Knn Plotting 
+library(class) #Knn
+library(gmodels) #More Knn Matrix (Not really that much better than the usual one.)
+library(plyr) # For a function in plotting Knn
+library(gridExtra) # For some plotting goodness
+>>>>>>> Stashed changes
 # Dataset -----------------------------------------------------------------
 # We have chosen the Occupancy dataset: http://archive.ics.uci.edu/ml/datasets/Occupancy+Detection+#
 
@@ -807,8 +815,11 @@ ggplot2::ggplot(g)+ theme(text = element_text(size=20),
 # KNN ========================================================================
 
 
+<<<<<<< Updated upstream
 library(class)
 library(gmodels)
+=======
+>>>>>>> Stashed changes
 
 # Setup Data
 
@@ -839,9 +850,44 @@ cat(paste("Error Rate of Knn = 104: ", mean(test_labels != knn104_pred) ))
 # Confusion Matrix
 confusionMatrix(knn104_pred, test_labels) 
 
+
+plot.df = data.frame(test_norm, predicted = knn104_pred, truth = as.factor(test$Occupancy)) # Create a dataframe to simplify charting
+
+plot.df1 = data.frame(x = plot.df$Humidity, 
+                      y = plot.df$Light, 
+                      predicted = plot.df$predicted,
+                      truth = as.factor(test$Occupancy)) # First use Convex hull to determine boundary points of each cluster
+
+find_hull = function(df) df[chull(df$x, df$y), ]
+boundary = ddply(plot.df1, .variables = "predicted", .fun = find_hull)
+
+ggplot(plot.df, aes(Humidity, Light, color = predicted, shape = truth)) + 
+  geom_point(size = 5)
+
+# Plot predication and truth as Heatmap (Only the Occupied part)
+
+knn.plot.heatmap.pred = data.frame(test_norm, predicted = as.numeric(levels(knn104_pred))[knn104_pred])
+knn.plot.heatmap.pred <- knn.plot.heatmap.pred[apply(knn.plot.heatmap.pred, 1, function(row) all(row !=0 )), ] #Remove Occupancy = 0
+
+
+knn.plot.heatmap.truth = data.frame(test_norm, truth = test$Occupancy) #Remove Occupancy = 0
+knn.plot.heatmap.truth <- knn.plot.heatmap.truth[apply(knn.plot.heatmap.truth, 1, function(row) all(row !=0 )), ]
+
+
+knn.heat.pred <- ggplot(knn.plot.heatmap.pred, aes(Humidity, Light)) + xlim(0,1) + ylim(0,1) +
+  geom_density_2d_filled(contour_var = "count") + facet_wrap(vars(predicted)) + theme(legend.position = "none")
+
+knn.heat.truth <- ggplot(knn.plot.heatmap.truth, aes(Humidity, Light))  + xlim(0,1) + ylim(0,1) + 
+  geom_density_2d_filled(contour_var = "count") + facet_wrap(vars(truth)) + theme(legend.position = "none")
+
+grid.arrange(knn.heat.pred, knn.heat.truth, nrow=2)
+
+
 # =====
 
 # Batch Testing with K values (Test 1)
+
+# Not sure this is really good for much.
 
 # =====
 
