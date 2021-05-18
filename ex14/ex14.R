@@ -36,17 +36,17 @@ formating <- function(x) {
   x$weekday <- factor(weekdays(x$date))
   x <- rowwise(x) %>% 
     mutate(weekdayNum = as.numeric(ifelse(
-    weekday == "mandag" | weekday == "monday",
+    weekday == "mandag" | weekday == "Monday",
     1,
-    ifelse(weekday == "tirsdag" | weekday == "tuesday",
+    ifelse(weekday == "tirsdag" | weekday == "Tuesday",
            2,
-           ifelse(weekday == "onsdag" | weekday == "wednesday",
+           ifelse(weekday == "onsdag" | weekday == "Wednesday",
                   3,
-                  ifelse(weekday == "torsdag" | weekday == "tuesday",
+                  ifelse(weekday == "torsdag" | weekday == "Tuesday",
                          4,
-                         ifelse(weekday == "fredag" | weekday == "friday",
+                         ifelse(weekday == "fredag" | weekday == "Friday",
                                 5,
-                                ifelse(weekday == "lørdag" | weekday == "saturday",
+                                ifelse(weekday == "lørdag" | weekday == "Saturday",
                                        6,
                                        7
   ))))))))
@@ -426,23 +426,75 @@ cat(paste("The accuracy was improved both on test-set 1 and 2, mostly when looki
           "Choosing the variables that are most correlated with the response variable, helps build a better model", sep = "\n"))
 
 ## Neural Network ----------------------------------------------------------
+
+# Normalizing training and test set
+norm_train <- scale(select(training[2:10], -c(Occupancy, weekday))) %>% 
+  as.data.frame()
+norm_train$Occupancy <- training$Occupancy
+
+norm_test <- scale(select(test[2:10], -c(Occupancy, weekday))) %>% 
+  as.data.frame()
+norm_test$Occupancy <- test$Occupancy
+
+# First try with 
+
+set.seed(12345689)
+nn <- neuralnet((Occupancy == "1") + (Occupancy == "0") ~ weekdayNum + Light + time + Temperature + Humidity + CO2 + HumidityRatio,
+                data = norm_train,
+                hidden = 2,
+                lifesign = 'full',
+                lifesign.step = 100,
+                stepmax = 50000,
+                linear.output = FALSE,
+                algorithm = 'rprop-',
+                err.fct = 'ce',
+                likelihood = TRUE,
+                threshold = 0.02) # 85% Accuracy
+plot(nn) # plotting neural network
+pred <- predict(nn, norm_test, type = "class") # making predictions with nn
+cm <- table(norm_test$Occupancy, apply(pred, 1, which.max)) # confusion matrix
+cluster_report(cm) # computing quality measures
+
+# Second try with less variables
+set.seed(12345689)
+nn <- neuralnet((Occupancy == "1") + (Occupancy == "0") ~ Light + time + Temperature + Humidity + CO2,
+                data = norm_train,
+                hidden = 2,
+                lifesign = 'full',
+                lifesign.step = 100,
+                stepmax = 50000,
+                linear.output = FALSE,
+                algorithm = 'rprop-',
+                err.fct = 'ce',
+                likelihood = TRUE,
+                threshold = 0.01) # ~96% accuracy
+plot(nn) # plotting neural network
+pred <- predict(nn, norm_test, type = "class") # predicting with nn
+cm <- table(norm_test$Occupancy, apply(pred, 1, which.max)) # confusion matrix
+cluster_report(cm) # computing quality measures
+
+
+
 library(neuralnet)
 set.seed(12345689) # Men how, vi glemte 7, men det gør ikke noget, for vi har det sjovt.
 
 print(dim(training)); print(dim(test))
 
-netmodel <- neuralnet(Occupancy ~ weekdayNum+ Temperature + Humidity+ CO2+HumidityRatio,
+netmodel <- neuralnet(Occupancy ~ weekdayNum + Temperature + Humidity + CO2 + HumidityRatio,
                  data = training,
                  hidden = 2,
                  linear.output = FALSE, 
                  err.fct = 'ce', 
                  likelihood = TRUE,
-                 threshold=0.1,)
+                 threshold=0.1)
+
+
 
 #plotting the netmodel
 print(netmodel)
 plot(netmodel)
 test_sample <- test2[sample(nrow(test2), size = 8143, replace = FALSE), ]
+
 
 final_output=cbind (test_sample, training, 
                     as.data.frame(netmodel$net.result) )
