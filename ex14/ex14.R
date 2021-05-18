@@ -57,6 +57,9 @@ test <- formating(test)
 test2 <- formating(test2)
 training <- formating(training)
 
+# Create combined testset
+test3 <- merge(x = test, y = test2, by = colnames(test), all = TRUE)
+
 
 # Choice of Algorithms ----------------------------------------------------
 pairs(training[-1], diag.panel = panel.boxplot)
