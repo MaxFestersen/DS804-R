@@ -142,6 +142,7 @@ remove.light <- function(x) {
 
 test.f <- remove.light(test) # f as in filtered
 test2.f <- remove.light(test2)
+test3.f <- remove.light(test3)
 training.f <- remove.light(training)
 
 # >> No light - no control ---------------------------------
@@ -225,7 +226,7 @@ pretty_print_string("Now C02 seems to be the best identifier, and can produce ~8
 pretty_print_string("The results are always good. But it seems that one attribute is allways dominant. Which could hint at the other paratmeters havinng less correlation or a too small test set to see futher splits")
 
 
-# > New data (test 2) -------------------------------------------------------
+# > test 2 ----------------------------------------------------------------
 pretty_print_string("To test prvious claim, lets try the same tests, on another test set. We try the same best paramters.")
 
 # >> Test2 base -----------------------------------------------------------
@@ -239,7 +240,7 @@ pretty_print_string("The accuracy is really high with ~99% (~97% before). It's s
 # >> Test 2 No light base -------------------------------------------------
 predictions.f <- predict(tree.f, test2.f, type = 'class') # predicting unseen test data
 cm.f <- table(test2$Occupancy, predictions.f) # confusion matrix
-cluster_report(cm.f, cap = "Decision Tree without light") # Quality measures of Decision tree
+cluster_report(cm.f, cap = "T2: Decision Tree without light") # Quality measures of Decision tree
 
 pretty_print_string("The accuracy is better. ~79% accuracy. Beeting testset 1 at ~69% accuracy.")
 
@@ -255,6 +256,43 @@ pretty_print_string("The results are about the same as before. It would seem the
 
 pretty_print_string("Light and C02 are the best parameters. Correlation matrix will be applied later.")
 
+# > test 3 ---------------------------------------------------------------
+pretty_print_string("To test prvious claim, lets try the same tests, on another test set. We try the same best paramters.")
+
+# >> Test3 base -----------------------------------------------------------
+predictions <- predict(tree, test3, type = 'class') # predicting unseen test data
+cm <- table(test3$Occupancy, predictions) # confusion matrix
+cluster_report(cm, cap = "Decision Tree") # Quality measures of Decision tree
+
+pretty_print_string("The accuracy is really high with ~99% with testset 3. Testset 2 also had ~99%, and testset 1 had ~97%.")
+
+
+# >> Test 3 No light base -------------------------------------------------
+predictions.f <- predict(tree.f, test3.f, type = 'class') # predicting unseen test data
+cm.f <- table(test3$Occupancy, predictions.f) # confusion matrix
+cluster_report(cm.f, cap = "T3: Decision Tree without light") # Quality measures of Decision tree
+
+cat(paste(
+  "Testset 3 reached accuracy of ~76%",
+  "Worse than testset 2 at  ~79%.",
+  "Better than testset 1 at ~75%",
+  sep = "\n"
+))
+
+# >> Test 3 No light m=626 ------------------------------------------------
+predictions.c.f.626 <- predict(tree.c.f.626, test3.f, type = 'class') # predicting unseen test data
+cm.c.f.626 <- table(test3$Occupancy, predictions.c.f.626) # confusion matrix
+cluster_report(cm.c.f.626, cap = "T3: Decision Tree without light and minsplit = 626") # Quality measures of Decision tree
+
+cat(paste(
+  "Testset 3 reached accuracy of ~78%",
+  "Worse than testset 2 at  ~79%.",
+  "Worse than testset 1 at ~89%",
+  "The results are not segnifically different from the test without control parameters.",
+  "This might mean that the the test was overfitted to testset 1.",
+  sep = "\n"
+))
+
 
 # > No C02 ----------------------------------------------------------------
 # >> Formatting data - remove C02 ---------------------------------------
@@ -264,6 +302,7 @@ remove.cO2 <- function(x) {
 
 test.f2 <- remove.cO2(test.f) # f as in filtered
 test2.f2 <- remove.cO2(test2.f)
+test3.f2 <- remove.cO2(test3.f)
 training.f2 <- remove.cO2(training.f)
 
 # >> No CO2 - no control ---------------------------------
@@ -276,16 +315,31 @@ rpart.plot(tree.f2)
 pretty_print_string("The tree looks complex now. Let's see the accuracy.")
 
 # >>> predictions and repport
+# >>>> Test 1
 predictions.f2 <- predict(tree.f2, test.f2, type = 'class') # predicting unseen test data
 cm.f2 <- table(test$Occupancy, predictions.f2) # confusion matrix
 cluster_report(cm.f2, cap = "T1: Decision Tree without C02") # Quality measures of Decision tree
 
+
+# >>>> Test 2
 predictions.f2.2 <- predict(tree.f2, test2.f2, type = 'class') # predicting unseen test data
 cm.f2.2 <- table(test2$Occupancy, predictions.f2.2) # confusion matrix
 cluster_report(cm.f2.2, cap = "T2: Decision Tree without C02") # Quality measures of Decision tree
 
+# >>>> Test 3
+predictions.f3.2 <- predict(tree.f2, test3.f2, type = 'class') # predicting unseen test data
+cm.f3.2 <- table(test3$Occupancy, predictions.f3.2) # confusion matrix
+cluster_report(cm.f3.2, cap = "T2: Decision Tree without C02") # Quality measures of Decision tree
+
 pretty_print_string("The accuracy is worse with ~64% accuracy on testset 1 and ~79% on testset 2.")
 
+cat(paste(
+  "Test 1 has ~63% accuracy without C02 and light, and no control parameters.",
+  "Test 2 has ~79% accuracy without C02 and light, and no control parameters.",
+  "Test 3 has ~76% accuracy without C02 and light, and no control parameters.",
+  "Overall, the accuracy is allright.",
+  sep = "\n"
+))
 
 # >> No CO2 control loop -----------------------------------------------
 accuracy.f.arr <- c()
@@ -311,16 +365,32 @@ rpart.plot(tree.c.f2.60)
 pretty_print_string("The tree is more complex.")
 
 # >>>> predictions and repport
+# >>>>> Test 1
 predictions.c.f2.60 <- predict(tree.c.f2.60, test.f2, type = 'class') # predicting unseen test data
 cm.c.f2.60 <- table(test$Occupancy, predictions.c.f2.60) # confusion matrix
 cluster_report(cm.c.f2.60, cap = "T1: Decision Tree without C02 and minsplit = 60") # Quality measures of Decision tree
 
+# >>>>> Test 2
 predictions.c.f2.60.2 <- predict(tree.c.f2.60, test2.f2, type = 'class') # predicting unseen test data
 cm.c.f2.60.2 <- table(test2$Occupancy, predictions.c.f2.60.2) # confusion matrix
 cluster_report(cm.c.f2.60.2, cap = "T2: Decision Tree without C02 and minsplit = 60") # Quality measures of Decision tree
 
-pretty_print_string("The result did improve with control, to ~64% on testset 1 and ~79% on testset 2. It seems the minslpit results could improve at higher values. So let's try that.")
+# >>>>> Test 3
+predictions.c.f2.60.3 <- predict(tree.c.f2.60, test3.f2, type = 'class') # predicting unseen test data
+cm.c.f2.60.3 <- table(test3$Occupancy, predictions.c.f2.60.3) # confusion matrix
+cluster_report(cm.c.f2.60.3, cap = "T3: Decision Tree without C02 and minsplit = 60") # Quality measures of Decision tree
 
+pretty_print_string("The result did improve with control, to ~64% on testset 1 and ~79% on testset 2. ")
+
+cat(paste(
+  "Test 1 has ~64% accuracy without C02 and light, and minsplit of 60.",
+  "Test 2 has ~79% accuracy without C02 and light, and minsplit of 60.",
+  "Test 3 has ~76% accuracy without C02 and light, and minsplit of 60.",
+  "Overall, the accuracy is barely changed compared to C02 being left in. Accually,",
+  "Test 1 improved, and the others stayed the same.",
+  "It seems the minslpit results could improve at higher values. So let's try that.",
+  sep = "\n"
+))
 
 # >> No CO2 control loop 2 -------------------------------------------
 accuracy.f.arr <- c()
@@ -347,18 +417,30 @@ pretty_print_string("The model is very simple now, using different attributes.")
 
 
 # >>>> predictions and repport
+# >>>>> Test 1
 predictions.c.f2.724 <- predict(tree.c.f2.724, test.f2, type = 'class') # predicting unseen test data
 cm.c.f2.724 <- table(test$Occupancy, predictions.c.f2.724) # confusion matrix
 cluster_report(cm.c.f2.724, cap = "T1: Decision Tree without CO2 and minsplit = 724") # Quality measures of Decision tree
 
+# >>>>> Test 2
 predictions.c.f2.724.2 <- predict(tree.c.f2.724, test2.f2, type = 'class') # predicting unseen test data
 cm.c.f2.724.2 <- table(test2$Occupancy, predictions.c.f2.724.2) # confusion matrix
 cluster_report(cm.c.f2.724.2, cap = "T2: Decision Tree without CO2 and minsplit = 724") # Quality measures of Decision tree
 
+# >>>>> Test 3
+predictions.c.f2.724.3 <- predict(tree.c.f2.724, test3.f2, type = 'class') # predicting unseen test data
+cm.c.f2.724.3 <- table(test3$Occupancy, predictions.c.f2.724.3) # confusion matrix
+cluster_report(cm.c.f2.724.3, cap = "T3: Decision Tree without CO2 and minsplit = 724") # Quality measures of Decision tree
 
-pretty_print_string("Accuracy improved to ~80% on testset 1 and ~89% on testset 2.")
-
-pretty_print_string("Without light and c02, the most dominant attributes, a somewhat high accuracy can still be reached with the decision tree.")
+cat(paste(
+  "Test 1 has ~80% accuracy without C02 and light, and minsplit of 724.",
+  "Test 2 has ~87% accuracy without C02 and light, and minsplit of 724.",
+  "Test 3 has ~87% accuracy without C02 and light, and minsplit of 724.",
+  "The results improved with a higher minsplit (compared to base and minsplit of 60).",
+  "Without light and c02, the most dominant attributes,",
+  "a somewhat high accuracy can still be reached with the decision tree.",
+  sep = "\n"
+))
 
 
 ## Support Vectors and Margin (SVM)----------------------------------------
