@@ -765,7 +765,7 @@ confusionMatrix(cm)
 plot(y_pred)
 plot(cm)
 
-<<<<<<< HEAD
+
 
 
 # Naïve Bayes caret with 10 fold CV
@@ -803,9 +803,9 @@ ggplot2::ggplot(g,aes( color="blue", size=4, alpha=0.6))
 ggplot2::ggplot(g)+ theme(text = element_text(size=20),
                          axis.text.x = element_text(angle=90, hjust=1))
 
-=======
+
 # KNN ========================================================================
->>>>>>> 45ca3bf5f35e96f65b07ce9c82cfb79cace4d22e
+
 
 library(class)
 library(gmodels)
