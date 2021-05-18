@@ -460,12 +460,12 @@ plot(svmfit, training, CO2 ~ HumidityRatio,
 
 predictions <- predict(svmfit, test, type = 'class') # predicting unseen test data
 cm <- table(test$Occupancy, predictions) # confusion matrix
-cluster_report(cm, cap = "Support-Vector-Machine") # Quality measures of SVM
+cluster_report(cm, cap = "Support-Vector-Machine test_set 1") # Quality measures of SVM
 
 
 predictions <- predict(svmfit, test2, type = 'class') # predicting unseen test data
 cm <- table(test2$Occupancy, predictions) # confusion matrix
-cluster_report(cm, cap = "Support-Vector-Machine") # Quality measures of SVM
+cluster_report(cm, cap = "Support-Vector-Machine test_set 2") # Quality measures of SVM
 
 # 97 % accuracy on test and 94.9% accuracy on test2
 cat(paste("Instead of using the variable date, we formatted it to be two variables date and time",
@@ -499,11 +499,11 @@ plot(svmfit, training, Light ~ CO2,
 
 predictions <- predict(svmfit, test, type = 'class') # predicting unseen test data
 cm <- table(test$Occupancy, predictions) # confusion matrix
-cluster_report(cm, cap = "Support-Vector-Machine") # Quality measures of SVM
+cluster_report(cm, cap = "Support-Vector-Machine test_set 1") # Quality measures of SVM
 
 predictions <- predict(svmfit, test2, type = 'class') # predicting unseen test data
 cm <- table(test2$Occupancy, predictions) # confusion matrix
-cluster_report(cm, cap = "Support-Vector-Machine") # Quality measures of SVM
+cluster_report(cm, cap = "Support-Vector-Machine test_set 2") # Quality measures of SVM
 
 
 # 97 % accuracy on test and 95.6% accuracy on test2
@@ -550,6 +550,10 @@ cm <- table(norm_test2$Occupancy, apply(pred, 1, which.max)) # confusion matrix
 cm # 89.9% accuracy
 cluster_report(cm, cap = "Neural Network") # computing quality measures
 
+cat(paste("Using all numeric variables for training the Neural Network, the process is long",
+          "however, accuracy of the model is pretty good with 85.7% on test-set 1 and 89.9% on test-set 2.", sep = "\n"))
+
+
 # Second try with less variables
 set.seed(12345689)
 nn <- neuralnet((Occupancy == "1") + (Occupancy == "0") ~ Light + time + Temperature + Humidity + CO2,
@@ -573,6 +577,11 @@ pred <- predict(nn, norm_test2, type = "class") # making predictions with nn
 cm <- table(norm_test2$Occupancy, apply(pred, 1, which.max)) # confusion matrix
 cm # 90.9% accuracy
 cluster_report(cm, cap = "Neural Network") # computing quality measures
+
+
+cat(paste("Using only some of the variables for training the Neural Network, as we also did with SVM",
+          "the training processed was shortened and a lower min.threshold could be reached within stepmax.",
+          "The accuracy of the model also improved good with ~96% on test-set 1 and 90.9% on test-set 2.", sep = "\n"))
 
 
 library(neuralnet)
