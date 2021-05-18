@@ -657,7 +657,7 @@ cm
 # Model Evauation
 confusionMatrix(cm)
 
-# Naïve Bayes witout light and date
+# Naïve Bayes without light and date
 
 test_sample <- test2.f
 test_sample <- test_sample[2:6]
