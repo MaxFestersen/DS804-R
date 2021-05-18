@@ -443,6 +443,7 @@ cat(paste(
 
 
 ## Support Vector Machine (SVM)----------------------------------------
+set.seed(156)
 training$time <- as.numeric(training$time)
 test$time <- as.numeric(test$time)
 
@@ -466,7 +467,7 @@ predictions <- predict(svmfit, test2, type = 'class') # predicting unseen test d
 cm <- table(test2$Occupancy, predictions) # confusion matrix
 cluster_report(cm, cap = "Support-Vector-Machine") # Quality measures of SVM
 
-# 96.6 % accuracy on test and 95.9% accuracy on test2
+# 97 % accuracy on test and 94.9% accuracy on test2
 cat(paste("Instead of using the variable date, we formatted it to be two variables date and time",
           "of which we use the time variable, as it is most likely to be generalizable upon a new dataset",
           "sampled at a different point in time.",
