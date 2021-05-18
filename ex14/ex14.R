@@ -850,6 +850,7 @@ cat(paste("Error Rate of Knn = 104: ", mean(test_labels != knn104_pred) ))
 # Confusion Matrix
 confusionMatrix(knn104_pred, test_labels) 
 
+# Plot it with Light and Humidity because those are important.
 
 plot.df = data.frame(test_norm, predicted = knn104_pred, truth = as.factor(test$Occupancy)) # Create a dataframe to simplify charting
 
