@@ -658,7 +658,13 @@ pred_test3 <- predict(classifier_cl, newdata = test3)
 
 # Confusion Matrix test
 cm <- table(test$Occupancy, pred_test)
-cm
+
+#creating readable matrix
+ordered_table <- rbind(as.numeric(names(cm)), cm)
+rownames(ordered_table) <- c("Predicted Occupancy","Predicted NO Occupancy")
+colnames(ordered_table) <- c("Actual Occupancy","Actual NO Occupancy")
+ordered_table
+
 cluster_report(cm, cap = "Naïve Bayes")
 # Model Evauation
 confusionMatrix(cm) # 0.9775% accuracy
@@ -666,14 +672,26 @@ confusionMatrix(cm) # 0.9775% accuracy
 
 # Confusion Matrix test2
 cm <- table(test2$Occupancy, pred_test2)
-cm
+#creating readable matrix
+ordered_table <- rbind(as.numeric(names(cm)), cm)
+rownames(ordered_table) <- c("Predicted Occupancy","Predicted NO Occupancy")
+colnames(ordered_table) <- c("Actual Occupancy","Actual NO Occupancy")
+ordered_table
+
 cluster_report(cm, cap = "Naïve Bayes")
 # Model Evauation
 confusionMatrix(cm) # 0.9892 % accuracy
 
 # Confusion Matrix test3
 cm <- table(test3$Occupancy, pred_test3)
-cm
+
+cm <- table(test2$Occupancy, pred_test2)
+#creating readable matrix
+ordered_table <- rbind(as.numeric(names(cm)), cm)
+rownames(ordered_table) <- c("Predicted Occupancy","Predicted NO Occupancy")
+colnames(ordered_table) <- c("Actual Occupancy","Actual NO Occupancy")
+ordered_table
+
 cluster_report(cm, cap = "Naïve Bayes")
 # Model Evauation
 confusionMatrix(cm) # 0.9867% accuracy
