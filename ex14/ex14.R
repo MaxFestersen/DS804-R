@@ -12,6 +12,7 @@ library(tidyverse) # Utility functions - like formatting
 #library(nnet) # Neural Network (for comparison) - no longer used
 library(caret) # Confusion matrix
 # library(caTools) # For splitting samples (not used)
+library(FSelector) # For information gain
 
 # Dataset -----------------------------------------------------------------
 # We have chosen the Occupancy dataset: http://archive.ics.uci.edu/ml/datasets/Occupancy+Detection+#
@@ -60,8 +61,13 @@ training <- formating(training)
 test3 <- merge(x = test, y = test2, by = colnames(test), all = TRUE)
 
 
+
 # Choice of Algorithms ----------------------------------------------------
 pairs(training[-1], diag.panel = panel.boxplot)
+
+# Information gain --------------------------------------------------------
+ig.weights <- information.gain(Occupancy ~ ., as.data.frame(training))
+ig.weights
 
 
 ## Decision Tree ----------------------------------------------------------
@@ -187,6 +193,17 @@ cm.c <- table(test3$Occupancy, predictions.c) # confusion matrix
 cluster_report(cm.c, cap = "T3: Decision Tree with control") # Quality measures of Decision tree
 
 print("As expected, the results are the same.")
+
+
+# > With information gain weights -----------------------------------------
+# It does not work for some reason. The format of weights should be a list, and lengths match.
+# >> Tree
+# tree.c.ig <- rpart(Occupancy ~ .,
+#                     method = "class",
+#                     data = training[2:7],
+#                     weights = ig.weights$attr_importance[2:6])
+# rpart.plot(tree.c.ig)
+
 
 # > Tree without light ----------------------------------------------------
 cat(paste(
@@ -748,6 +765,7 @@ confusionMatrix(cm)
 plot(y_pred)
 plot(cm)
 
+<<<<<<< HEAD
 
 
 # Naïve Bayes caret with 10 fold CV
@@ -785,11 +803,14 @@ ggplot2::ggplot(g,aes( color="blue", size=4, alpha=0.6))
 ggplot2::ggplot(g)+ theme(text = element_text(size=20),
                          axis.text.x = element_text(angle=90, hjust=1))
 
+=======
+# KNN ========================================================================
+>>>>>>> 45ca3bf5f35e96f65b07ce9c82cfb79cace4d22e
 
 library(class)
 library(gmodels)
 
-#Setup Data
+# Setup Data
 
 normalize <- function(x) {return ((x - min(x)) / (max(x) - min(x))) }
 test_norm <- as.data.frame(lapply(test[2:6], normalize))
@@ -799,14 +820,16 @@ train_labels <- as.factor(training[, 7, drop = TRUE])
 test_labels <- as.factor(test[, 7, drop = TRUE])
 
 as.data.frame(lapply(test[2:6], normalize))
+as.data.frame(lapply(test2[2:6], normalize))
 
+# =====
 
-# Knn with K = Squareroot of Observations.
-sqrt(10808)
+# Knn using K = Squareroot of Observations on Test 1.
 
-knn104_pred <- knn(train = training_norm, test = test_norm, cl = train_labels, k =  104, use.all = TRUE)
+# =====
+
+knn104_pred <- knn(train = training_norm, test = test_norm, cl = train_labels, k =  sqrt( (nrow(training)) + (nrow(test)) ), use.all = TRUE)
 100 * sum(test_labels==knn104_pred)/NROW(test_labels)
-
 
 CrossTable(x = test_labels, y = knn104_pred,prop.chisq=FALSE)
 
@@ -816,10 +839,14 @@ cat(paste("Error Rate of Knn = 104: ", mean(test_labels != knn104_pred) ))
 # Confusion Matrix
 confusionMatrix(knn104_pred, test_labels) 
 
-# Batch Testing with K values 
+# =====
 
-i=2
-k.optm=2
+# Batch Testing with K values (Test 1)
+
+# =====
+
+i=1
+k.optm=1
 for (i in 1:120){
   knn.mod <- knn(train = training_norm, test = test_norm, cl = train_labels, k =  i)
   k.optm[i] <- 100* sum(test_labels==knn.mod)/NROW(test_labels)
@@ -828,7 +855,34 @@ for (i in 1:120){
 }
 
 plot(k.optm, type="b", xlab="K-Value", ylab="Accuracy level")
-# abline(h=max(k.optm)) Fuhget about it.
+
+#=====
+
+# Cross validation
+
+# =====
+
+trControl <- trainControl(method  = "cv",
+                          number  = 10)
+
+cross_fit <- train(training_norm, train_labels,
+                   method     = "knn",
+                   tuneGrid   = expand.grid(k = 1:30),
+                   trControl  = trControl,
+                   metric     = "Accuracy",
+                   data       = training_norm)
+
+confusionMatrix(cross_fit)
+#Cross validation best K as a plot
+plot(cross_fit)
+#Cross validation best K
+cross_fit
+#plot of ROC(repeated Cross-validation)
+plot(cross_fit, print.thres = 0.5, type="S")
+
+
+
+
 
 
 
