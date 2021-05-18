@@ -461,7 +461,7 @@ print(sum(diag(table1))/sum(table1))
 # 0.6656024
 # 0.6651111
 
-#incorrect classification
+# incorrect classification
 print(1-sum(diag(table1))/sum(table1))
 
 
@@ -478,8 +478,8 @@ print(1-sum(diag(table1))/sum(table1))
 
 
 ## Naïve Bayes ------------------------------------------------------------
-
 set.seed(120)  # Setting Seed
+
 classifier_cl <- naiveBayes(Occupancy ~ ., data = training)
 classifier_cl
 
@@ -498,15 +498,14 @@ confusionMatrix(cm)
 test_sample <- test2.f
 test_sample <- test_sample[2:6]
 
-set.seed(120)  # Setting Seed
 classifier_cl <- naiveBayes(Occupancy ~., data = training)
 classifier_cl
 
 # Predicting on test data
-y_pred <- predict(classifier_cl, newdata = test2)
+y_pred <- predict(classifier_cl, newdata = test_sample)
 
 # Confusion Matrix
-cm <- table(test2$Occupancy, y_pred)
+cm <- table(test_sample$Occupancy, y_pred)
 cm
 
 # Model Evauation
