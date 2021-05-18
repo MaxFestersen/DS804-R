@@ -748,7 +748,43 @@ confusionMatrix(cm)
 plot(y_pred)
 plot(cm)
 
-# KNN
+
+
+# Naïve Bayes caret with 10 fold CV
+x = training[,-7]
+y = training$Occupancy
+
+x = training[,-7]
+y = training$Occupancy
+
+
+model = train(x,y,trControl=trainControl(method='cv',number=10))
+predict(model$finalModel,x)
+table(predict(model$finalModel,x),y)
+
+training %>%
+  filter(Occupancy == "0") %>%
+  select_if(is.numeric) %>%
+  cor() %>%
+  corrplot::corrplot()
+
+P<-training %>% 
+  select(Temperature,Humidity,Light,CO2, HumidityRatio,Occupancy, time, weekday) %>% 
+  gather(metric, value) %>% 
+  ggplot(aes(value, fill = metric)) + 
+  geom_density(show.legend = FALSE) + 
+  facet_wrap(~ metric, scales = "free")
+
+
+#importance font
+g<-varImp(model)
+plot(g)
+
+#plot with bigger font
+ggplot2::ggplot(g,aes( color="blue", size=4, alpha=0.6))
+ggplot2::ggplot(g)+ theme(text = element_text(size=20),
+                         axis.text.x = element_text(angle=90, hjust=1))
+
 
 library(class)
 library(gmodels)
