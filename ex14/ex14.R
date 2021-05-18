@@ -494,8 +494,8 @@ svmfit <- svm(Occupancy ~ Temperature + Light + CO2 + HumidityRatio,
 
 summary(svmfit)
 
-plot(svmfit, training, CO2 ~ Temperature,
-     slice=list(Light=3))
+plot(svmfit, training, Light ~ CO2,
+     slice=list(Temperature=3, HumidityRatio=4))
 
 predictions <- predict(svmfit, test, type = 'class') # predicting unseen test data
 cm <- table(test$Occupancy, predictions) # confusion matrix
@@ -521,6 +521,10 @@ norm_test <- scale(select(test[2:10], -c(Occupancy, weekday))) %>%
   as.data.frame()
 norm_test$Occupancy <- test$Occupancy
 
+norm_test2 <- scale(select(test2[2:10], -c(Occupancy, weekday))) %>% 
+  as.data.frame()
+norm_test2$Occupancy <- test2$Occupancy
+
 # First try with all variables
 set.seed(12345689)
 nn <- neuralnet((Occupancy == "1") + (Occupancy == "0") ~ weekdayNum + Light + time + Temperature + Humidity + CO2 + HumidityRatio,
@@ -533,11 +537,17 @@ nn <- neuralnet((Occupancy == "1") + (Occupancy == "0") ~ weekdayNum + Light + t
                 algorithm = 'rprop-',
                 err.fct = 'ce',
                 likelihood = TRUE,
-                threshold = 0.02) # 85% Accuracy
+                threshold = 0.02) 
 plot(nn) # plotting neural network
 pred <- predict(nn, norm_test, type = "class") # making predictions with nn
 cm <- table(norm_test$Occupancy, apply(pred, 1, which.max)) # confusion matrix
-cm
+cm # 85.7% Accuracy
+cluster_report(cm, cap = "Neural Network") # computing quality measures
+
+
+pred <- predict(nn, norm_test2, type = "class") # making predictions with nn
+cm <- table(norm_test2$Occupancy, apply(pred, 1, which.max)) # confusion matrix
+cm # 89.9% accuracy
 cluster_report(cm, cap = "Neural Network") # computing quality measures
 
 # Second try with less variables
@@ -552,13 +562,17 @@ nn <- neuralnet((Occupancy == "1") + (Occupancy == "0") ~ Light + time + Tempera
                 algorithm = 'rprop-',
                 err.fct = 'ce',
                 likelihood = TRUE,
-                threshold = 0.01) # ~96% accuracy
+                threshold = 0.01) 
 plot(nn) # plotting neural network
 pred <- predict(nn, norm_test, type = "class") # predicting with nn
 cm <- table(norm_test$Occupancy, apply(pred, 1, which.max)) # confusion matrix
-cm
+cm # ~96% accuracy
 cluster_report(cm, cap = "Neural Network") # computing quality measures
 
+pred <- predict(nn, norm_test2, type = "class") # making predictions with nn
+cm <- table(norm_test2$Occupancy, apply(pred, 1, which.max)) # confusion matrix
+cm # 90.9% accuracy
+cluster_report(cm, cap = "Neural Network") # computing quality measures
 
 
 library(neuralnet)
