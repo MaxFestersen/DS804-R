@@ -780,16 +780,53 @@ plot(cm)
 x = training[,-7]
 y = training$Occupancy
 
-x = training[,-7]
-y = training$Occupancy
+x = test[,-7]
+y = test$Occupancy
 
 
-model = train(x,y,trControl=trainControl(method='cv',number=10))
-predict(model$finalModel,x)
-table(predict(model$finalModel,x),y)
+model_pca = train(x,y,trControl=trainControl(method='cv',number=10,preProc = "pca"))
+model_scale = train(x,y,trControl=trainControl(method='cv',number=10,preProc = "scale"))
+model_center = train(x,y,trControl=trainControl(method='cv',number=10,preProc = "center"))
+model_Boxcox = train(x,y,trControl=trainControl(method='cv',number=10,preProc = "BoxCox"))
+
+
+cm <- predict(model$finalModel,x) #predict on training data
+table(predict(model$finalModel,x),y) #table of training data
+
+
+pred <- predict(nb.m2, newdata = test) #predict on test data
+confusionMatrix(pred, test$Attrition) #table of test data
+
+confusionMatrix(model) #entries are percentual average cell counts across resamples
+
+plot(model)
+
+search_grid <- expand.grid(
+  usekernel = c(TRUE, FALSE),
+  fL = 0:5,
+  adjust = seq(0, 5, by = 1)
+)
+
+# train model
+nb.m2 <- train(
+  x = x,
+  y = y,
+  method = "nb",
+  trControl = trainControl,
+  preProc = "pca"
+)
+
+# top 5 modesl
+nb.m2$results %>% 
+  top_n(5, wt = Accuracy) %>%
+  arrange(desc(Accuracy))
+
+
+
+
 
 training %>%
-  filter(Occupancy == "0") %>%
+  filter(Occupancy == "1") %>%
   select_if(is.numeric) %>%
   cor() %>%
   corrplot::corrplot()
