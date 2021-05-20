@@ -840,7 +840,9 @@ as.data.frame(lapply(test2[2:6], normalize))
 # =====
 
 knn104_pred <- knn(train = training_norm, test = test_norm, cl = train_labels, k =  sqrt( (nrow(training)) + (nrow(test)) ), use.all = TRUE)
-100 * sum(test_labels==knn104_pred)/NROW(test_labels)
+
+#Precision
+#100 * sum(test_labels==knn104_pred)/NROW(test_labels)
 
 CrossTable(x = test_labels, y = knn104_pred,prop.chisq=FALSE)
 
@@ -863,25 +865,25 @@ find_hull = function(df) df[chull(df$x, df$y), ]
 boundary = ddply(plot.df1, .variables = "predicted", .fun = find_hull)
 
 ggplot(plot.df, aes(Humidity, Light, color = predicted, shape = truth)) + 
-  geom_point(size = 5)
+  geom_point(size = 4, alpha = 0.3)
 
 # Plot predication and truth as Heatmap (Only the Occupied part)
 
-knn.plot.heatmap.pred = data.frame(test_norm, predicted = as.numeric(levels(knn104_pred))[knn104_pred])
-knn.plot.heatmap.pred <- knn.plot.heatmap.pred[apply(knn.plot.heatmap.pred, 1, function(row) all(row !=0 )), ] #Remove Occupancy = 0
-
-
-knn.plot.heatmap.truth = data.frame(test_norm, truth = test$Occupancy) #Remove Occupancy = 0
-knn.plot.heatmap.truth <- knn.plot.heatmap.truth[apply(knn.plot.heatmap.truth, 1, function(row) all(row !=0 )), ]
-
-
-knn.heat.pred <- ggplot(knn.plot.heatmap.pred, aes(Humidity, Light)) + xlim(0,1) + ylim(0,1) +
-  geom_density_2d_filled(contour_var = "count") + facet_wrap(vars(predicted)) + theme(legend.position = "none")
-
-knn.heat.truth <- ggplot(knn.plot.heatmap.truth, aes(Humidity, Light))  + xlim(0,1) + ylim(0,1) + 
-  geom_density_2d_filled(contour_var = "count") + facet_wrap(vars(truth)) + theme(legend.position = "none")
-
-grid.arrange(knn.heat.pred, knn.heat.truth, nrow=2)
+# knn.plot.heatmap.pred = data.frame(test_norm, predicted = as.numeric(levels(knn104_pred))[knn104_pred])
+# knn.plot.heatmap.pred <- knn.plot.heatmap.pred[apply(knn.plot.heatmap.pred, 1, function(row) all(row !=0 )), ] #Remove Occupancy = 0
+# 
+# 
+# knn.plot.heatmap.truth = data.frame(test_norm, truth = test$Occupancy) #Remove Occupancy = 0
+# knn.plot.heatmap.truth <- knn.plot.heatmap.truth[apply(knn.plot.heatmap.truth, 1, function(row) all(row !=0 )), ]
+# 
+# 
+# knn.heat.pred <- ggplot(knn.plot.heatmap.pred, aes(Humidity, Light)) + xlim(0,1) + ylim(0,1) +
+#   geom_density_2d_filled(contour_var = "count") + facet_wrap(vars(predicted)) + theme(legend.position = "none")
+# 
+# knn.heat.truth <- ggplot(knn.plot.heatmap.truth, aes(Humidity, Light))  + xlim(0,1) + ylim(0,1) + 
+#   geom_density_2d_filled(contour_var = "count") + facet_wrap(vars(truth)) + theme(legend.position = "none")
+# 
+# grid.arrange(knn.heat.pred, knn.heat.truth, nrow=2)
 
 
 # =====
@@ -914,23 +916,37 @@ trControl <- trainControl(method  = "cv",
 
 cross_fit <- train(training_norm, train_labels,
                    method     = "knn",
-                   tuneGrid   = expand.grid(k = 1:30),
+                   tuneGrid   = expand.grid(k = 1:50),
                    trControl  = trControl,
                    metric     = "Accuracy",
-                   data       = training_norm)
+)
 
+cross_fit
 confusionMatrix(cross_fit)
 #Cross validation best K as a plot
 plot(cross_fit)
-#Cross validation best K
-cross_fit
 #plot of ROC(repeated Cross-validation)
 plot(cross_fit, print.thres = 0.5, type="S")
 
+#Knn with K = 3
 
+knn3_pred <- knn(train = training_norm, test = test_norm, cl = train_labels, k =  3, use.all = TRUE)
 
+# Confusion Matrix
+confusionMatrix(knn3_pred, test_labels) 
 
+plot.df = data.frame(test_norm, predicted = knn3_pred, truth = as.factor(test$Occupancy)) # Create a dataframe to simplify charting
 
+plot.df1 = data.frame(x = plot.df$Humidity, 
+                      y = plot.df$Light, 
+                      predicted = plot.df$predicted,
+                      truth = as.factor(test$Occupancy)) # First use Convex hull to determine boundary points of each cluster
+
+find_hull = function(df) df[chull(df$x, df$y), ]
+boundary = ddply(plot.df1, .variables = "predicted", .fun = find_hull)
+
+ggplot(plot.df, aes(Humidity, Light, color = predicted, shape = truth)) + 
+  geom_point(size = 4, alpha = 0.3)
 
 
 
