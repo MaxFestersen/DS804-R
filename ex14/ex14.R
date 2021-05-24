@@ -893,30 +893,11 @@ training %>%
   corrplot::corrplot()
 
 training %>%
-  filter(Occupancy == "1") %>%
+  filter(Occupancy == "0") %>%
   select_if(is.numeric) %>%
   cor() %>%
   corrplot::corrplot()
 
-
-P<-training %>% 
-  select(Temperature,Humidity,Light,CO2, HumidityRatio,Occupancy, time, weekday) %>% 
-  gather(metric, value) %>% 
-  ggplot(aes(value, fill = metric)) + 
-  geom_density(show.legend = FALSE) + 
-  facet_wrap(~ metric, scales = "free")
-plot(P)
-
-str(training)
-pairs.panels(training[-7])
-
-model <- naive_bayes(Occupancy ~ ., data = training )
-#desnity plots
-plot(model)
-x<- factor(training)
-p <- predict(model, training, type = 'prob')
-p
-print(model)
 
 # KNN ========================================================================
 
