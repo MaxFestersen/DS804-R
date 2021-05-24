@@ -1,0 +1,51 @@
+Noter til ds804
+	Præsenter datasættet grundigt
+		Hvad er formålet?
+		Hvad inderholder kolonerne?
+			Hvad vil vi måle, og hilke resultater kan vi nå frem ti (hjemme/ikke hjemme)
+		Hvad er omfanget?
+			Hvor mange rækker?
+				Hvilke udfordringer og fordele har det med sig?
+		Hvad belv det oprindeligt brugt til?
+		HVorfor er det delt i 3?
+			Hvad er procentfordelingen (80/20, 70/30)?
+			Hvorfor bruger vi det?
+				Hvad fik vi ud af at samle det?
+					Er det bedst at have et større testset?
+		Noter hvad vi prøver at undersøge
+	Skriv udfordringer med datasettet
+	Beskriv hvad vi formaterer og hvorfor, og hvilke betydninger det kan have for analysen
+	Beskriv datasplits
+		Hvad fik vi ud af det?
+		Hvorfor var nogle splits bedre end andre?
+	ROC kurve for at visualisere resultater (Naïve Bayes, Knn,
+	Confusion Matrix for hver model
+	knn
+		Prøv flere k med knn
+	Decision tree
+		Beskriv hvorfor vi kun justerer minsplits, og hvorfor det ikke er nødvendigt at justere minleaf og andre parametre.
+	SVC
+		Hvilken algorithme bruges?
+		Er det den bedte metode?
+	Beskriv hvilken score er bedst (VIRKELIGT VIGTIGT) - er datasættet balanceret eller ubalanceret (imbalanced) - accuracy er et dårligt mål når det er ubalanceret
+		accuracy
+		f1
+		mathew
+		recall
+		sensitivit
+		spcificity
+	Beskriv hyperparametre grundigt
+	Beskriv hvad vi kan bruge vores resultater til, og hvilke udfordringer vi kan støde på
+		Tests er fra en metode.
+		Det er muligt at især lys er påvirket af årstid.
+		Det er mulgit at C02 er påvirket af tid
+		Med andre ord, så er vores bedste paramtetre muligt de ikke passer
+		Testsetet er begrænset af testgruppen, og er ikke nødvendigvis representativ for grupper i andre tidszoner eller kulturer
+		Parametre som om en dør er låst, postkassen tom, vinduer åbne, bil hjemme, havde måske været praktiske parametre vi ikke har adgang til.
+	Vis head af data så man kan se et eksempel på hvad der er i
+	Det er muligt vi skal prune data?
+		For at undgå overfitting
+	Diskuter stabilitet af modellerne?
+		Hvor meget resultaterne varier på baggrund af små justeringer i data og parametre ændrer på resultaterne
+	PCA?
+	Beskriv valg af weight - især hvis der er ublance
