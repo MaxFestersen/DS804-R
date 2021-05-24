@@ -832,11 +832,32 @@ colnames(ordered_table) <- c("Actual Occupancy","Actual NO Occupancy")
 ordered_table
 
 #ROC
-#as vector
-realvec <- as.numeric(test2$Occupancy)
-predvec <- as.numeric(predict(classifier_cl, newdata = test2))
+#test 1 as vector
+realvec <- as.numeric(test$Occupancy)
+predvec <- as.numeric(predict(classifier_cl, newdata = test))
 
+#test 2 as vector
+realvec2 <- as.numeric(test2$Occupancy)
+predvec2 <- as.numeric(predict(classifier_cl, newdata = test2))
+
+#test 3 as vector
+realvec3 <- as.numeric(test3$Occupancy)
+predvec3 <- as.numeric(predict(classifier_cl, newdata = test3))
+
+#test.f as vector
+realvec.f <- as.numeric(test.f$Occupancy)
+predvec.f <- as.numeric(predict(classifier_cl.f, newdata = test.f))
+
+#test.f2 as vector
+realvec.f2 <- as.numeric(test.f2$Occupancy)
+predvec.f2 <- as.numeric(predict(classifier_cl.f2, newdata = test.f2))
+
+# MMC SCORES
 mcc(predvec, realvec)
+mcc(predvec2, realvec2)
+mcc(predvec3, realvec3)
+mcc(predvec.f, realvec.f)
+mcc(predvec.f2, realvec.f2)
 
 
 library(ROCR)
