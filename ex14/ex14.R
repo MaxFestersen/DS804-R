@@ -16,7 +16,7 @@ library(caret) # Confusion matrix
 library(FSelector) # For information gain
 
 =======
-library(ggplot) #Knn Plotting 
+  library(ggplot) #Knn Plotting 
 library(class) #Knn
 library(gmodels) #More Knn Matrix (Not really that much better than the usual one.)
 library(plyr) # For a function in plotting Knn
@@ -44,20 +44,20 @@ formating <- function(x) {
   x$weekday <- factor(weekdays(x$date))
   x <- rowwise(x) %>% 
     mutate(weekdayNum = as.numeric(ifelse(
-    weekday == "mandag" | weekday == "Monday",
-    1,
-    ifelse(weekday == "tirsdag" | weekday == "Tuesday",
-           2,
-           ifelse(weekday == "onsdag" | weekday == "Wednesday",
-                  3,
-                  ifelse(weekday == "torsdag" | weekday == "Tuesday",
-                         4,
-                         ifelse(weekday == "fredag" | weekday == "Friday",
-                                5,
-                                ifelse(weekday == "lørdag" | weekday == "Saturday",
-                                       6,
-                                       7
-  ))))))))
+      weekday == "mandag" | weekday == "Monday",
+      1,
+      ifelse(weekday == "tirsdag" | weekday == "Tuesday",
+             2,
+             ifelse(weekday == "onsdag" | weekday == "Wednesday",
+                    3,
+                    ifelse(weekday == "torsdag" | weekday == "Tuesday",
+                           4,
+                           ifelse(weekday == "fredag" | weekday == "Friday",
+                                  5,
+                                  ifelse(weekday == "lørdag" | weekday == "Saturday",
+                                         6,
+                                         7
+                                  ))))))))
   return(x)
 }
 
@@ -124,9 +124,9 @@ control <- rpart.control(minsplit = 32, minbucket = 32/2, cp = 0.001) # for adju
 
 # >> Tree
 tree.c <- rpart(Occupancy ~ .,
-               method = "class",
-               data = training,
-              control = control)
+                method = "class",
+                data = training,
+                control = control)
 rpart.plot(tree.c)
 
 print("The tree looks a bit better Visually, but did the results improve?")
@@ -177,9 +177,9 @@ control <- rpart.control(minsplit = 136, minbucket = 136/2, cp = 0.001) # for ad
 
 # >> Tree
 tree.c.136 <- rpart(Occupancy ~ .,
-                method = "class",
-                data = training,
-                control = control)
+                    method = "class",
+                    data = training,
+                    control = control)
 rpart.plot(tree.c.136)
 
 print("The tree is the same as the one reached without control parameters.")
@@ -234,8 +234,8 @@ training.f <- remove.light(training)
 # >> No light - no control ------------------------------------------------
 # >>> Tree
 tree.f <- rpart(Occupancy ~ .,
-              method = "class",
-              data = training.f)
+                method = "class",
+                data = training.f)
 rpart.plot(tree.f)
 
 print("The tree looks a bit more complex now. Let's see the accuracy.")
@@ -280,9 +280,9 @@ print("Minsplit of 92-121 gives the best predictions in the set range.")
 control.c.f.92 <- rpart.control(minsplit = 92, minbucket = 92/2, cp = 0.001) # for adjusting hyperparameters
 # >>>> Tree
 tree.c.f.92 <- rpart(Occupancy ~ .,
-                  method = "class",
-                  data = training.f,
-                  control = control.c.f.92)
+                     method = "class",
+                     data = training.f,
+                     control = control.c.f.92)
 rpart.plot(tree.c.f.92)
 
 print("The tree is also somewhat more complex.")
@@ -316,9 +316,9 @@ control.c.f.626 <- rpart.control(minsplit = 626, minbucket = 626/2, cp = 0.001) 
 
 # >>>> Tree
 tree.c.f.626 <- rpart(Occupancy ~ .,
-                method = "class",
-                data = training.f,
-                control = control.c.f.626)
+                      method = "class",
+                      data = training.f,
+                      control = control.c.f.626)
 rpart.plot(tree.c.f.626)
 
 print("The model is very simple now, using only C02 attribute.")
@@ -370,8 +370,8 @@ training.f2 <- remove.cO2(training.f)
 # >> No CO2 - no control ---------------------------------
 # >>> Tree
 tree.f2 <- rpart(Occupancy ~ .,
-                method = "class",
-                data = training.f2)
+                 method = "class",
+                 data = training.f2)
 rpart.plot(tree.f2)
 
 print("The tree looks complex now. Let's see the accuracy.")
@@ -428,9 +428,9 @@ print("Minsplit between 724 and 1323 give better values.")
 control.c.f2.724 <- rpart.control(minsplit = 724, minbucket = 724/2, cp = 0.001) # for adjusting hyperparameters
 # >>>> Tree
 tree.c.f2.724 <- rpart(Occupancy ~ .,
-                      method = "class",
-                      data = training.f2,
-                      control = control.c.f2.724)
+                       method = "class",
+                       data = training.f2,
+                       control = control.c.f2.724)
 rpart.plot(tree.c.f2.724)
 
 print("The model is very simple now, using different attributes.")
@@ -649,12 +649,12 @@ set.seed(12345689) # Men how, vi glemte 7, men det gør ikke noget, for vi har d
 
 
 netmodel <- neuralnet(Occupancy ~ weekdayNum+ Temperature + Humidity+ CO2+HumidityRatio, # No light, time (testing), no date or weekday (can't even)
-                 data = training,
-                 hidden = 2,
-                 linear.output = FALSE, 
-                 err.fct = 'ce', 
-                 likelihood = TRUE,
-                 threshold=0.1)
+                      data = training,
+                      hidden = 2,
+                      linear.output = FALSE, 
+                      err.fct = 'ce', 
+                      likelihood = TRUE,
+                      threshold=0.1)
 
 
 
@@ -665,7 +665,7 @@ plot(netmodel)
 test_sample <- test2[sample(nrow(test2), size = 8143, replace = FALSE), ] # Might be a wrong method
 
 final_output <- cbind (test_sample, training, 
-                    as.data.frame(netmodel$net.result) )
+                       as.data.frame(netmodel$net.result) )
 colnames(final_output) = c("Date","Temperature","Humidity","Light","CO2", "HumidityRatio","Occupancy", "time", "weekday","weekday/Num",
                            "expected date","expected Temperature","expected Humidity","expected Light","expected CO2","expected HumidityRatio","expected Occupancy", "expected time", "expected weekday","expected weekday/Num",
                            "Neural Net Output")
@@ -780,19 +780,73 @@ plot(cm)
 x = training[,-7]
 y = training$Occupancy
 
-x = training[,-7]
-y = training$Occupancy
+x1 = test[,-7]
+y2 = test$Occupancy
+
+naive_bayes_via_caret <- train(Occupancy ~ ., 
+                               data = training, 
+                               method = "naive_bayes", 
+                               usepoisson = TRUE)
+
+naive_bayes_via_caret
+confusionMatrix(naive_bayes_via_caret)
 
 
-model = train(x,y,trControl=trainControl(method='cv',number=10))
-predict(model$finalModel,x)
-table(predict(model$finalModel,x),y)
+# Build the model
+set.seed(123)
+model <- caret::train(Occupancy ~., data = training, method = "nb", 
+               trControl = trainControl("cv", number = 10))
+# Make predictions
+predicted.classes <- model %>% predict(test)
+# Model n accuracy
+mean(predicted.classes == test$Occupancy)
+
+
+model_pca = train(x,y,trControl=trainControl(method='cv',number=10,preProc = "pca"))
+model_scale = train(x,y,trControl=trainControl(method='cv',number=10,preProc = "scale"))
+model_center = train(x,y,trControl=trainControl(method='cv',number=10,preProc = "center"))
+model_Boxcox = train(x,y,trControl=trainControl(method='cv',number=10,preProc = "BoxCox"))
+
+
+cm <- predict(model_pca$finalModel,x) #predict on training data
+table(predict(model_pca$finalModel,x),y) #table of training data
+
+
+pred <- predict(model_pca, newdata = y1) #predict on test data
+confusionMatrix(pred, test$Occupancy) #table of test data
+
+confusionMatrix(model) #entries are percentual average cell counts across resamples
+
+plot(model)
+
+search_grid <- expand.grid(
+  usekernel = c(TRUE, FALSE),
+  fL = 0:5,
+  adjust = seq(0, 5, by = 1)
+)
+
+# train model
+nb.m2 <- train(
+  x = x,
+  y = y,
+  method = "nb",
+  trControl = trainControl,
+  preProc = "pca"
+)
+
 
 training %>%
-  filter(Occupancy == "0") %>%
+  filter(Occupancy == "1") %>%
   select_if(is.numeric) %>%
   cor() %>%
   corrplot::corrplot()
+
+training %>%
+  filter(Occupancy == "1") %>%
+  select_if(is.numeric) %>%
+  cor() %>%
+  corrplot::corrplot()
+
 
 P<-training %>% 
   select(Temperature,Humidity,Light,CO2, HumidityRatio,Occupancy, time, weekday) %>% 
@@ -800,26 +854,25 @@ P<-training %>%
   ggplot(aes(value, fill = metric)) + 
   geom_density(show.legend = FALSE) + 
   facet_wrap(~ metric, scales = "free")
+plot(P)
 
+str(training)
+pairs.panels(training[-7])
 
-#importance font
-g<-varImp(model)
-plot(g)
-
-#plot with bigger font
-ggplot2::ggplot(g,aes( color="blue", size=4, alpha=0.6))
-ggplot2::ggplot(g)+ theme(text = element_text(size=20),
-                         axis.text.x = element_text(angle=90, hjust=1))
-
+model <- naive_bayes(Occupancy ~ ., data = training )
+#desnity plots
+plot(model)
+x<- factor(training)
+p <- predict(model, training, type = 'prob')
+p
+print(model)
 
 # KNN ========================================================================
 
 
-<<<<<<< Updated upstream
 library(class)
 library(gmodels)
-=======
->>>>>>> Stashed changes
+
 
 # Setup Data
 
@@ -840,7 +893,9 @@ as.data.frame(lapply(test2[2:6], normalize))
 # =====
 
 knn104_pred <- knn(train = training_norm, test = test_norm, cl = train_labels, k =  sqrt( (nrow(training)) + (nrow(test)) ), use.all = TRUE)
-100 * sum(test_labels==knn104_pred)/NROW(test_labels)
+
+#Precision
+#100 * sum(test_labels==knn104_pred)/NROW(test_labels)
 
 CrossTable(x = test_labels, y = knn104_pred,prop.chisq=FALSE)
 
@@ -863,25 +918,25 @@ find_hull = function(df) df[chull(df$x, df$y), ]
 boundary = ddply(plot.df1, .variables = "predicted", .fun = find_hull)
 
 ggplot(plot.df, aes(Humidity, Light, color = predicted, shape = truth)) + 
-  geom_point(size = 5)
+  geom_point(size = 4, alpha = 0.3)
 
 # Plot predication and truth as Heatmap (Only the Occupied part)
 
-knn.plot.heatmap.pred = data.frame(test_norm, predicted = as.numeric(levels(knn104_pred))[knn104_pred])
-knn.plot.heatmap.pred <- knn.plot.heatmap.pred[apply(knn.plot.heatmap.pred, 1, function(row) all(row !=0 )), ] #Remove Occupancy = 0
-
-
-knn.plot.heatmap.truth = data.frame(test_norm, truth = test$Occupancy) #Remove Occupancy = 0
-knn.plot.heatmap.truth <- knn.plot.heatmap.truth[apply(knn.plot.heatmap.truth, 1, function(row) all(row !=0 )), ]
-
-
-knn.heat.pred <- ggplot(knn.plot.heatmap.pred, aes(Humidity, Light)) + xlim(0,1) + ylim(0,1) +
-  geom_density_2d_filled(contour_var = "count") + facet_wrap(vars(predicted)) + theme(legend.position = "none")
-
-knn.heat.truth <- ggplot(knn.plot.heatmap.truth, aes(Humidity, Light))  + xlim(0,1) + ylim(0,1) + 
-  geom_density_2d_filled(contour_var = "count") + facet_wrap(vars(truth)) + theme(legend.position = "none")
-
-grid.arrange(knn.heat.pred, knn.heat.truth, nrow=2)
+# knn.plot.heatmap.pred = data.frame(test_norm, predicted = as.numeric(levels(knn104_pred))[knn104_pred])
+# knn.plot.heatmap.pred <- knn.plot.heatmap.pred[apply(knn.plot.heatmap.pred, 1, function(row) all(row !=0 )), ] #Remove Occupancy = 0
+# 
+# 
+# knn.plot.heatmap.truth = data.frame(test_norm, truth = test$Occupancy) #Remove Occupancy = 0
+# knn.plot.heatmap.truth <- knn.plot.heatmap.truth[apply(knn.plot.heatmap.truth, 1, function(row) all(row !=0 )), ]
+# 
+# 
+# knn.heat.pred <- ggplot(knn.plot.heatmap.pred, aes(Humidity, Light)) + xlim(0,1) + ylim(0,1) +
+#   geom_density_2d_filled(contour_var = "count") + facet_wrap(vars(predicted)) + theme(legend.position = "none")
+# 
+# knn.heat.truth <- ggplot(knn.plot.heatmap.truth, aes(Humidity, Light))  + xlim(0,1) + ylim(0,1) + 
+#   geom_density_2d_filled(contour_var = "count") + facet_wrap(vars(truth)) + theme(legend.position = "none")
+# 
+# grid.arrange(knn.heat.pred, knn.heat.truth, nrow=2)
 
 
 # =====
@@ -914,23 +969,37 @@ trControl <- trainControl(method  = "cv",
 
 cross_fit <- train(training_norm, train_labels,
                    method     = "knn",
-                   tuneGrid   = expand.grid(k = 1:30),
+                   tuneGrid   = expand.grid(k = 1:50),
                    trControl  = trControl,
                    metric     = "Accuracy",
-                   data       = training_norm)
+)
 
+cross_fit
 confusionMatrix(cross_fit)
 #Cross validation best K as a plot
 plot(cross_fit)
-#Cross validation best K
-cross_fit
 #plot of ROC(repeated Cross-validation)
 plot(cross_fit, print.thres = 0.5, type="S")
 
+#Knn with K = 3
 
+knn3_pred <- knn(train = training_norm, test = test_norm, cl = train_labels, k =  3, use.all = TRUE)
 
+# Confusion Matrix
+confusionMatrix(knn3_pred, test_labels) 
 
+plot.df = data.frame(test_norm, predicted = knn3_pred, truth = as.factor(test$Occupancy)) # Create a dataframe to simplify charting
 
+plot.df1 = data.frame(x = plot.df$Humidity, 
+                      y = plot.df$Light, 
+                      predicted = plot.df$predicted,
+                      truth = as.factor(test$Occupancy)) # First use Convex hull to determine boundary points of each cluster
+
+find_hull = function(df) df[chull(df$x, df$y), ]
+boundary = ddply(plot.df1, .variables = "predicted", .fun = find_hull)
+
+ggplot(plot.df, aes(Humidity, Light, color = predicted, shape = truth)) + 
+  geom_point(size = 4, alpha = 0.3)
 
 
 
