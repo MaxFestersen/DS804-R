@@ -796,8 +796,6 @@ confusionMatrix(cm) # 0.9892 % accuracy
 
 # Confusion Matrix test3
 cm <- table(test3$Occupancy, pred_test3)
-
-cm <- table(test2$Occupancy, pred_test2)
 #creating readable matrix
 ordered_table <- rbind(as.numeric(names(cm)), cm)
 rownames(ordered_table) <- c("Predicted Occupancy","Predicted NO Occupancy")
@@ -808,6 +806,49 @@ cluster_report(cm, cap = "Naïve Bayes")
 # Model Evauation
 confusionMatrix(cm) # 0.9867% accuracy
 
+# Confusion Matrix test.f
+cm <- table(test.f$Occupancy, pred_test.f)
+#creating readable matrix
+ordered_table <- rbind(as.numeric(names(cm)), cm)
+rownames(ordered_table) <- c("Predicted Occupancy","Predicted NO Occupancy")
+colnames(ordered_table) <- c("Actual Occupancy","Actual NO Occupancy")
+ordered_table
+
+#ROC
+#as vector
+realvec <- as.numeric(test2$Occupancy)
+predvec <- as.numeric(predict(classifier_cl, newdata = test2))
+
+mcc(predvec, realvec)
+
+
+library(ROCR)
+pr <- ROCR::prediction(predvec, realvec)
+
+
+pred<-ROCR::prediction(predvec, labels=realvec)
+
+#ROC curve explained
+curve(log(x), from=0, to=100, xlab="False Positive Rate", ylab="True Positive Rate", main="ROC curve", col="green", lwd=3, axes=F)
+Axis(side=1, at=c(0, 20, 40, 60, 80, 100), labels = c("0%", "20%", "40%", "60%", "80%", "100%"))
+Axis(side=2, at=0:5, labels = c("0%", "20%", "40%", "60%", "80%", "100%"))
+segments(0, 0, 110, 5, lty=2, lwd=3)
+segments(0, 0, 0, 4.7, lty=2, lwd=3, col="blue")
+segments(0, 4.7, 107, 4.7, lty=2, lwd=3, col="blue")
+text(20, 4, col="blue", labels = "Perfect Classifier")
+text(40, 3, col="green", labels = "Test Classifier")
+text(70, 2, col="black", labels= "Classifier with no predictive value")
+
+
+roc<-performance(pred, measure="tpr", x.measure="fpr")
+plot(roc, main="ROC curve for Occupancy(test2)", col="blue", lwd=3)
+segments(0, 0, 1, 1, lty=2)
+roc_auc<-performance(pred, measure="auc")
+str(roc_auc)
+roc_auc@y.values
+
+prf <- performance(pr, "tpr", "fpr")
+plot(prf)
 
 
 plot(model)
