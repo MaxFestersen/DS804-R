@@ -20,6 +20,7 @@ library(plyr) # For a function in plotting Knn
 library(gridExtra) # For some plotting goodness
 library(class)
 library(gmodels)
+library(mltools)
 # Dataset -----------------------------------------------------------------
 # We have chosen the Occupancy dataset: http://archive.ics.uci.edu/ml/datasets/Occupancy+Detection+#
 
@@ -929,105 +930,53 @@ test_labels <- as.factor(test[, 7, drop = TRUE])
 
 # ====================================================================#
 #                                                                     #
-# Knn using K = Squareroot of Observations on Test.f (no light)       #
+# test.f (no light)                                                   #
 #                                                                     #
 # ====================================================================#
 
-knn104_pred <- knn(train = training_norm.f, test = test_norm.f, cl = train_labels, k =  sqrt( (nrow(training)) + (nrow(test)) ), use.all = TRUE)
-
-CrossTable(x = test_labels, y = knn104_pred,prop.chisq=FALSE)
-
-# Error rate
-cat(paste("Error Rate of Knn = 104: ", mean(test_labels != knn104_pred) ))
-
-# Confusion Matrix
-confusionMatrix(knn104_pred, test_labels) 
-
-# Plot it with Light and Humidity because those are important.
-
-knn.plot1 = data.frame(test_norm.f, predicted = knn104_pred, truth = as.factor(test$Occupancy)) # Create a dataframe to simplify charting
-
-knn.plot1.1 = data.frame(x = knn.plot1$Temperature, 
-                      y = knn.plot1$HumidityRatio, 
-                      predicted = knn.plot1$predicted,
-                      truth = as.factor(test$Occupancy)) # First use Convex hull to determine boundary points of each cluster
-
-find_hull = function(df) df[chull(df$x, df$y), ]
-boundary = ddply(knn.plot1.1, .variables = "predicted", .fun = find_hull)
-
-#plot1
-
-ggplot(knn.plot1, aes(HumidityRatio, Temperature, color = predicted, shape = truth)) + 
-  geom_point(size = 4, alpha = 0.3)
-
-# MCC
-
-# Setup Vectors
-#plot1.mcc.pred <- as.data.frame(lapply(test.f[2:5], normalize))
-
-#Result
-mcc(preds =knn104_pred, actuals = train_labels)
-
-# =====
-
-# Batch Testing with K values (Test 1)
-
-# Not sure this is really good for much.
-
-# =====
-
-i=1
-k.optm=1
-for (i in 1:120){
-  knn.mod <- knn(train = training_norm, test = test_norm, cl = train_labels, k =  i)
-  k.optm[i] <- 100* sum(test_labels==knn.mod)/NROW(test_labels)
-  k=i
-  cat(k, '=',k.optm[i],'\n')
-}
-
-plot(k.optm, type="b", xlab="K-Value", ylab="Accuracy level")
-
-#=====
-
-# Cross validation
-
-# =====
+# Cross validation with Kappa
 
 trControl <- trainControl(method  = "cv",
                           number  = 10)
 
-cross_fit <- train(training_norm, train_labels,
+cross_fit <- train(training_norm.f, train_labels,
                    method     = "knn",
-                   tuneGrid   = expand.grid(k = 1:50),
+                   tuneGrid   = expand.grid(k = 2:50),
                    trControl  = trControl,
-                   metric     = "Accuracy",
+                   metric     = "Kappa"
 )
 
 cross_fit
+
 confusionMatrix(cross_fit)
-#Cross validation best K as a plot
+
 plot(cross_fit)
-#plot of ROC(repeated Cross-validation)
-plot(cross_fit, print.thres = 0.5, type="S")
 
-#Knn with K = 3
+# result = K should be 6
 
-knn3_pred <- knn(train = training_norm, test = test_norm, cl = train_labels, k =  3, use.all = TRUE)
+knn.f_pred <- knn(train = training_norm.f, test = test_norm.f, cl = train_labels, k =  6, use.all = TRUE)
+
+CrossTable(x = test_labels, y = knn.f_pred,prop.chisq=FALSE)
+
+# Error rate
+mean(test_labels != knn.f_pred)
 
 # Confusion Matrix
-confusionMatrix(knn3_pred, test_labels) 
+confusionMatrix(knn.f_pred, test_labels) 
 
-plot.df = data.frame(test_norm, predicted = knn3_pred, truth = as.factor(test$Occupancy)) # Create a dataframe to simplify charting
+#MCC
+mcc(preds = knn104_pred, actuals = test_labels)
 
-plot.df1 = data.frame(x = plot.df$Humidity, 
-                      y = plot.df$Light, 
-                      predicted = plot.df$predicted,
-                      truth = as.factor(test$Occupancy)) # First use Convex hull to determine boundary points of each cluster
+# Plot it with Light and Humidity because those are important.
 
-find_hull = function(df) df[chull(df$x, df$y), ]
-boundary = ddply(plot.df1, .variables = "predicted", .fun = find_hull)
+knn.plot1 = data.frame(test_norm.f, predicted = knn.f_pred, truth = as.factor(test$Occupancy)) # Create a dataframe to simplify charting
 
-ggplot(plot.df, aes(Humidity, Light, color = predicted, shape = truth)) + 
+knn.plot1.1 = data.frame(x = knn.plot1$Temperature, 
+                         y = knn.plot1$HumidityRatio, 
+                         predicted = knn.plot1$predicted,
+                         truth = as.factor(test$Occupancy))
+
+ggplot(knn.plot1, aes(HumidityRatio, Temperature, color = predicted, shape = truth)) + 
   geom_point(size = 4, alpha = 0.3)
 
 
