@@ -63,8 +63,13 @@ training <- formating(training)
 
 # Create combined testset
 test3 <- merge(x = test, y = test2, by = colnames(test), all = TRUE)
-
-
+Total <- merge(x = test3, y = training, by = colnames(test), all = TRUE)
+rows <- nrow(Total)
+home <- sum(as.numeric(Total$Occupancy)-1)
+out <- nrow(Total) - sum(as.numeric(Total$Occupancy)-1)
+dataDistribution <- c(rows, home, out)
+names(dataDistribution) <- c("All", "1", "0")
+barplot(dataDistribution, main="Occupancy for all data", ylab="Datapoints")
 
 # Choice of Algorithms ----------------------------------------------------
 pairs(training[-1], diag.panel = panel.boxplot)
