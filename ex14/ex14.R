@@ -860,14 +860,6 @@ mcc(predvec.f, realvec.f)
 mcc(predvec.f2, realvec.f2)
 
 
-library(ROCR)
-#pr <- ROCR::prediction(predvec, realvec)
-
-
-pred<-ROCR::prediction(predvec, labels=realvec)
-
-pred<-ROCR::prediction(predvec.f2, labels=realvec.f2)
-
 #ROC curve explained
 curve(log(x), from=0, to=100, xlab="False Positive Rate", ylab="True Positive Rate", main="ROC curve", col="green", lwd=3, axes=F)
 Axis(side=1, at=c(0, 20, 40, 60, 80, 100), labels = c("0%", "20%", "40%", "60%", "80%", "100%"))
@@ -878,6 +870,11 @@ segments(0, 4.7, 107, 4.7, lty=2, lwd=3, col="blue")
 text(20, 4, col="blue", labels = "Perfect Classifier")
 text(40, 3, col="green", labels = "Test Classifier")
 text(70, 2, col="black", labels= "Classifier with no predictive value")
+
+
+pred<-ROCR::prediction(predvec, labels=realvec)
+
+pred<-ROCR::prediction(predvec.f2, labels=realvec.f2)
 
 
 roc<-performance(pred, measure="tpr", x.measure="fpr")
