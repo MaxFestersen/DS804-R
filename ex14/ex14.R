@@ -749,8 +749,11 @@ print(1-sum(diag(table1))/sum(table1))
 ## Naïve Bayes ------------------------------------------------------------
 set.seed(120)  # Setting Seed
 
+#classifier on training data
 classifier_cl <- naiveBayes(Occupancy ~ ., data = training)
-classifier_cl
+
+#classifier on training data no light
+classifier_cl <- naiveBayes(Occupancy ~ ., data = training.f)
 
 # Predicting on test data
 pred_test <- predict(classifier_cl, newdata = test)
@@ -760,6 +763,10 @@ pred_test2 <- predict(classifier_cl, newdata = test2)
 
 # Predicting on test3 data
 pred_test3 <- predict(classifier_cl, newdata = test3)
+
+# Predicting on test.f data
+pred_test.f <- predict(classifier_cl, newdata = test.f)
+
 
 # Confusion Matrix test
 cm <- table(test$Occupancy, pred_test)
