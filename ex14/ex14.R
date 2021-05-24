@@ -753,7 +753,10 @@ set.seed(120)  # Setting Seed
 classifier_cl <- naiveBayes(Occupancy ~ ., data = training)
 
 #classifier on training data no light
-classifier_cl <- naiveBayes(Occupancy ~ ., data = training.f)
+classifier_cl.f <- naiveBayes(Occupancy ~ ., data = training.f)
+
+#classifier on training data no light and no CO2
+classifier_cl.f <- naiveBayes(Occupancy ~ ., data = training.f1)
 
 # Predicting on test data
 pred_test <- predict(classifier_cl, newdata = test)
@@ -765,8 +768,10 @@ pred_test2 <- predict(classifier_cl, newdata = test2)
 pred_test3 <- predict(classifier_cl, newdata = test3)
 
 # Predicting on test.f data
-pred_test.f <- predict(classifier_cl, newdata = test.f)
+pred_test.f <- predict(classifier_cl.f, newdata = test.f)
 
+# Predicting on test.f1 data
+pred_test.f <- predict(classifier_cl.f1, newdata = test.f1)
 
 # Confusion Matrix test
 cm <- table(test$Occupancy, pred_test)
