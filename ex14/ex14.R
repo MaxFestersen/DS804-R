@@ -12,12 +12,13 @@ library(tidyverse) # Utility functions - like formatting
 #library(nnet) # Neural Network (for comparison) - no longer used
 library(caret) # Confusion matrix
 # library(caTools) # For splitting samples (not used)
-library(FSelector) # For information gain
+#library(FSelector) # For information gain
 library(ggplot) #Knn Plotting 
 library(class) #Knn
 library(gmodels) #More Knn Matrix (Not really that much better than the usual one.)
 library(plyr) # For a function in plotting Knn
 library(gridExtra) # For some plotting goodness
+
 # Dataset -----------------------------------------------------------------
 # We have chosen the Occupancy dataset: http://archive.ics.uci.edu/ml/datasets/Occupancy+Detection+#
 
@@ -28,38 +29,87 @@ training <- read.table("datatraining.txt", sep = ",")
 
 # > Formatting data -------------------------------------------------------
 # Date might be an issue, as we will never test the results are based on a specific period
-formating <- function(x) {
-  x$Occupancy <- factor(x$Occupancy) # Factor Occupancy
-  x <- x %>%
-    dplyr::rowwise() %>% # Group by each row (to use functions on row level)
-    mutate(time = strsplit(date, " ")[[1]][2]) %>% # Split date, and use the time part
-    mutate(date = strsplit(date, " ")[[1]][1]) %>% # Split date, and remove time part
-    ungroup()  # Remove rowwise
-  x$date <- ymd(x$date) # Change date from char to time format
-  x$time <- hms(x$time) # change time from char to time format
-  x$weekday <- factor(weekdays(x$date))
-  x <- rowwise(x) %>% 
-    mutate(weekdayNum = as.numeric(ifelse(
-      weekday == "mandag" | weekday == "Monday",
-      1,
-      ifelse(weekday == "tirsdag" | weekday == "Tuesday",
-             2,
-             ifelse(weekday == "onsdag" | weekday == "Wednesday",
-                    3,
-                    ifelse(weekday == "torsdag" | weekday == "Tuesday",
-                           4,
-                           ifelse(weekday == "fredag" | weekday == "Friday",
-                                  5,
-                                  ifelse(weekday == "lørdag" | weekday == "Saturday",
-                                         6,
-                                         7
-                                  ))))))))
-  return(x)
-}
+test <- as_tibble(test)
+test$Occupancy <- factor(test$Occupancy) # Factor Occupancy
+test <- dplyr::rowwise(test) %>% # Group by each row (to use functions on row level)
+  dplyr::mutate( time = strsplit(date, " ")[[1]][2], # Split date, and use the time part
+          date = strsplit(date, " ")[[1]][1]) # Split date, and remove time part
+test$date <- ymd(test$date) # Change date from char to time format
+test$time <- hms(test$time) # change time from char to time format
+test$weekday <- factor(weekdays(test$date))
+test <- test %>%
+  dplyr::mutate(weekdayNum = as.numeric(ifelse(
+    weekday == "mandag" | weekday == "Monday",
+    1,
+    ifelse(weekday == "tirsdag" | weekday == "Tuesday",
+           2,
+           ifelse(weekday == "onsdag" | weekday == "Wednesday",
+                  3,
+                  ifelse(weekday == "torsdag" | weekday == "Tuesday",
+                         4,
+                         ifelse(weekday == "fredag" | weekday == "Friday",
+                                5,
+                                ifelse(weekday == "lørdag" | weekday == "Saturday",
+                                       6,
+                                       7
+                                )))))))) %>%
+  ungroup()
+test2 <- as_tibble(test2)
+test2$Occupancy <- factor(test2$Occupancy) # Factor Occupancy
+test2 <- dplyr::rowwise(test2) %>% # Group by each row (to use functions on row level)
+  dplyr::mutate( time = strsplit(date, " ")[[1]][2], # Split date, and use the time part
+                 date = strsplit(date, " ")[[1]][1]) # Split date, and remove time part
+test2$date <- ymd(test2$date) # Change date from char to time format
+test2$time <- hms(test2$time) # change time from char to time format
+test2$weekday <- factor(weekdays(test2$date))
+test2 <- test2 %>%
+  dplyr::mutate(weekdayNum = as.numeric(ifelse(
+    weekday == "mandag" | weekday == "Monday",
+    1,
+    ifelse(weekday == "tirsdag" | weekday == "Tuesday",
+           2,
+           ifelse(weekday == "onsdag" | weekday == "Wednesday",
+                  3,
+                  ifelse(weekday == "torsdag" | weekday == "Tuesday",
+                         4,
+                         ifelse(weekday == "fredag" | weekday == "Friday",
+                                5,
+                                ifelse(weekday == "lørdag" | weekday == "Saturday",
+                                       6,
+                                       7
+                                )))))))) %>%
+  ungroup()
+training <- as_tibble(training)
+training$Occupancy <- factor(training$Occupancy) # Factor Occupancy
+training <- dplyr::rowwise(training) %>% # Group by each row (to use functions on row level)
+  rowwise() %>% 
+  dplyr::mutate( time = strsplit(date, " ")[[1]][2], # Split date, and use the time part
+          date = strsplit(date, " ")[[1]][1]) # Split date, and remove time part
+training$date <- ymd(training$date) # Change date from char to time format
+training$time <- hms(training$time) # change time from char to time format
+training$weekday <- factor(weekdays(training$date))
+training <- training %>%
+  dplyr::mutate(weekdayNum = as.numeric(ifelse(
+    weekday == "mandag" | weekday == "Monday",
+    1,
+    ifelse(weekday == "tirsdag" | weekday == "Tuesday",
+           2,
+           ifelse(weekday == "onsdag" | weekday == "Wednesday",
+                  3,
+                  ifelse(weekday == "torsdag" | weekday == "Tuesday",
+                         4,
+                         ifelse(weekday == "fredag" | weekday == "Friday",
+                                5,
+                                ifelse(weekday == "lørdag" | weekday == "Saturday",
+                                       6,
+                                       7
+                                )))))))) %>%
+  ungroup()
 
-test <- formating(test)
-test2 <- formating(test2)
-training <- formating(training)
+# Formatting function stopped functioning  - so look above for individual hard code method.
+# test <- formating(test)
+# test2 <- formating(test2)
+# training <- formating(training)
 
 # Create combined testset
 test3 <- merge(x = test, y = test2, by = colnames(test), all = TRUE)
@@ -72,11 +122,11 @@ names(dataDistribution) <- c("All", "1", "0")
 barplot(dataDistribution, main="Occupancy for all data", ylab="Datapoints")
 
 # Choice of Algorithms ----------------------------------------------------
-pairs(training[-1], diag.panel = panel.boxplot)
+# pairs(training[-1], diag.panel = panel.boxplot)
 
 # Information gain --------------------------------------------------------
-ig.weights <- information.gain(Occupancy ~ ., as.data.frame(training))
-ig.weights
+# ig.weights <- information.gain(Occupancy ~ ., as.data.frame(training))
+# ig.weights
 
 
 ## Decision Tree ----------------------------------------------------------
