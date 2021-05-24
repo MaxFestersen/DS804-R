@@ -802,46 +802,6 @@ cluster_report(cm, cap = "Naïve Bayes")
 confusionMatrix(cm) # 0.9867% accuracy
 
 
-# Naïve Bayes without light and date
-
-test_sample <- test2.f
-test_sample <- test_sample[2:6]
-
-classifier_cl <- naiveBayes(Occupancy ~., data = training)
-classifier_cl
-
-# Predicting on test data
-y_pred <- predict(classifier_cl, newdata = test_sample)
-
-# Confusion Matrix
-cm <- table(test_sample$Occupancy, y_pred)
-cm
-
-# Model Evauation
-confusionMatrix(cm)
-
-
-plot(y_pred)
-plot(cm)
-
-
-
-
-# Naïve Bayes caret with 10 fold CV
-x = training[,-7]
-y = training$Occupancy
-
-x1 = test[,-7]
-y2 = test$Occupancy
-
-naive_bayes_via_caret <- train(Occupancy ~ ., 
-                               data = training, 
-                               method = "naive_bayes", 
-                               usepoisson = TRUE)
-
-naive_bayes_via_caret
-confusionMatrix(naive_bayes_via_caret)
-
 
 plot(model)
 #corrolation plots
