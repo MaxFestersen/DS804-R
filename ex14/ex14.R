@@ -30,38 +30,84 @@ training <- read.table("datatraining.txt", sep = ",")
 
 # > Formatting data -------------------------------------------------------
 # Date might be an issue, as we will never test the results are based on a specific period
-formating <- function(x) {
-  x$Occupancy <- factor(x$Occupancy) # Factor Occupancy
-  x <- x %>%
-    dplyr::rowwise() %>% # Group by each row (to use functions on row level)
-    mutate(time = strsplit(date, " ")[[1]][2]) %>% # Split date, and use the time part
-    mutate(date = strsplit(date, " ")[[1]][1]) %>% # Split date, and remove time part
-    ungroup()  # Remove rowwise
-  x$date <- ymd(x$date) # Change date from char to time format
-  x$time <- hms(x$time) # change time from char to time format
-  x$weekday <- factor(weekdays(x$date))
-  x <- rowwise(x) %>% 
-    mutate(weekdayNum = as.numeric(ifelse(
-      weekday == "mandag" | weekday == "Monday",
-      1,
-      ifelse(weekday == "tirsdag" | weekday == "Tuesday",
-             2,
-             ifelse(weekday == "onsdag" | weekday == "Wednesday",
-                    3,
-                    ifelse(weekday == "torsdag" | weekday == "Tuesday",
-                           4,
-                           ifelse(weekday == "fredag" | weekday == "Friday",
-                                  5,
-                                  ifelse(weekday == "lørdag" | weekday == "Saturday",
-                                         6,
-                                         7
-                                  ))))))))
-  return(x)
-}
+test$Occupancy <- factor(test$Occupancy) # Factor Occupancy
+test <- test %>%
+  dplyr::rowwise() %>% # Group by each row (to use functions on row level)
+  dplyr::mutate(time = strsplit(date, " ")[[1]][2]) %>% # Split date, and use the time part
+  dplyr::mutate(date = strsplit(date, " ")[[1]][1]) %>% # Split date, and remove time part
+  ungroup()  # Remove rowwise
+test$date <- ymd(test$date) # Change date from char to time format
+test$time <- hms(test$time) # change time from char to time format
+test$weekday <- factor(weekdays(test$date))
+test <- rowwise(test) %>% 
+  dplyr::mutate(weekdayNum = as.numeric(ifelse(
+    weekday == "mandag" | weekday == "Monday",
+    1,
+    ifelse(weekday == "tirsdag" | weekday == "Tuesday",
+           2,
+           ifelse(weekday == "onsdag" | weekday == "Wednesday",
+                  3,
+                  ifelse(weekday == "torsdag" | weekday == "Tuesday",
+                         4,
+                         ifelse(weekday == "fredag" | weekday == "Friday",
+                                5,
+                                ifelse(weekday == "lørdag" | weekday == "Saturday",
+                                       6,
+                                       7
+                                ))))))))
 
-test <- formating(test)
-test2 <- formating(test2)
-training <- formating(training)
+test2$Occupancy <- factor(test2$Occupancy) # Factor Occupancy
+test2 <- test2 %>%
+  dplyr::rowwise() %>% # Group by each row (to use functions on row level)
+  dplyr::mutate(time = strsplit(date, " ")[[1]][2]) %>% # Split date, and use the time part
+  dplyr::mutate(date = strsplit(date, " ")[[1]][1]) %>% # Split date, and remove time part
+  ungroup()  # Remove rowwise
+test2$date <- ymd(test2$date) # Change date from char to time format
+test2$time <- hms(test2$time) # change time from char to time format
+test2$weekday <- factor(weekdays(test2$date))
+test2 <- rowwise(test2) %>% 
+  dplyr::mutate(weekdayNum = as.numeric(ifelse(
+    weekday == "mandag" | weekday == "Monday",
+    1,
+    ifelse(weekday == "tirsdag" | weekday == "Tuesday",
+           2,
+           ifelse(weekday == "onsdag" | weekday == "Wednesday",
+                  3,
+                  ifelse(weekday == "torsdag" | weekday == "Tuesday",
+                         4,
+                         ifelse(weekday == "fredag" | weekday == "Friday",
+                                5,
+                                ifelse(weekday == "lørdag" | weekday == "Saturday",
+                                       6,
+                                       7
+                                ))))))))
+
+training$Occupancy <- factor(training$Occupancy) # Factor Occupancy
+training <- training %>%
+  dplyr::rowwise() %>% # Group by each row (to use functions on row level)
+  dplyr::mutate(time = strsplit(date, " ")[[1]][2]) %>% # Split date, and use the time part
+  dplyr::mutate(date = strsplit(date, " ")[[1]][1]) %>% # Split date, and remove time part
+  ungroup()  # Remove rowwise
+training$date <- ymd(training$date) # Change date from char to time format
+training$time <- hms(training$time) # change time from char to time format
+training$weekday <- factor(weekdays(training$date))
+training <- rowwise(training) %>% 
+  dplyr::mutate(weekdayNum = as.numeric(ifelse(
+    weekday == "mandag" | weekday == "Monday",
+    1,
+    ifelse(weekday == "tirsdag" | weekday == "Tuesday",
+           2,
+           ifelse(weekday == "onsdag" | weekday == "Wednesday",
+                  3,
+                  ifelse(weekday == "torsdag" | weekday == "Tuesday",
+                         4,
+                         ifelse(weekday == "fredag" | weekday == "Friday",
+                                5,
+                                ifelse(weekday == "lørdag" | weekday == "Saturday",
+                                       6,
+                                       7
+                                ))))))))
+
 
 # Create combined testset
 test3 <- merge(x = test, y = test2, by = colnames(test), all = TRUE)
