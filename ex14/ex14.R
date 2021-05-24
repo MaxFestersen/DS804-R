@@ -18,13 +18,13 @@ library(class) #Knn
 library(gmodels) #More Knn Matrix (Not really that much better than the usual one.)
 library(plyr) # For a function in plotting Knn
 library(gridExtra) # For some plotting goodness
+library(class)
+library(gmodels)
 # Dataset -----------------------------------------------------------------
 # We have chosen the Occupancy dataset: http://archive.ics.uci.edu/ml/datasets/Occupancy+Detection+#
 
 # > Loading data ----
-test <- read.table("datatest.txt", sep = ",")
-test2 <- read.table("datatest2.txt", sep = ",")
-training <- read.table("datatraining.txt", sep = ",")
+
 
 # > Formatting data -------------------------------------------------------
 # Date might be an issue, as we will never test the results are based on a specific period
@@ -871,21 +871,26 @@ print(model)
 # KNN ========================================================================
 
 
-library(class)
-library(gmodels)
+
 
 
 # Setup Data
 
+# Methods
 normalize <- function(x) {return ((x - min(x)) / (max(x) - min(x))) }
-test_norm <- as.data.frame(lapply(test[2:6], normalize))
-training_norm <- as.data.frame(lapply(training[2:6], normalize))
 
+# Create dataframes
+test_norm.f <- as.data.frame(lapply(test.f[2:6], normalize))
+training_norm.f <- as.data.frame(lapply(training.f[2:6], normalize))
+
+test_norm.f2 <- as.data.frame(lapply(test.f2[2:6], normalize))
+training_norm.f2 <- as.data.frame(lapply(training.f2[2:6], normalize))
+
+# Setup Labels
 train_labels <- as.factor(training[, 7, drop = TRUE])
 test_labels <- as.factor(test[, 7, drop = TRUE])
 
-as.data.frame(lapply(test[2:6], normalize))
-as.data.frame(lapply(test2[2:6], normalize))
+#as.data.frame(lapply(test[2:6], normalize))
 
 # =====
 
@@ -921,6 +926,8 @@ boundary = ddply(plot.df1, .variables = "predicted", .fun = find_hull)
 ggplot(plot.df, aes(Humidity, Light, color = predicted, shape = truth)) + 
   geom_point(size = 4, alpha = 0.3)
 
+
+###################################################################################################
 # Plot predication and truth as Heatmap (Only the Occupied part)
 
 # knn.plot.heatmap.pred = data.frame(test_norm, predicted = as.numeric(levels(knn104_pred))[knn104_pred])
@@ -938,7 +945,7 @@ ggplot(plot.df, aes(Humidity, Light, color = predicted, shape = truth)) +
 #   geom_density_2d_filled(contour_var = "count") + facet_wrap(vars(truth)) + theme(legend.position = "none")
 # 
 # grid.arrange(knn.heat.pred, knn.heat.truth, nrow=2)
-
+###################################################################################################
 
 # =====
 
