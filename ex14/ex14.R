@@ -843,49 +843,8 @@ naive_bayes_via_caret
 confusionMatrix(naive_bayes_via_caret)
 
 
-# Build the model
-set.seed(123)
-model <- caret::train(Occupancy ~., data = training, method = "nb", 
-               trControl = trainControl("cv", number = 10))
-# Make predictions
-predicted.classes <- model %>% predict(test)
-# Model n accuracy
-mean(predicted.classes == test$Occupancy)
-
-
-model_pca = train(x,y,trControl=trainControl(method='cv',number=10,preProc = "pca"))
-model_scale = train(x,y,trControl=trainControl(method='cv',number=10,preProc = "scale"))
-model_center = train(x,y,trControl=trainControl(method='cv',number=10,preProc = "center"))
-model_Boxcox = train(x,y,trControl=trainControl(method='cv',number=10,preProc = "BoxCox"))
-
-
-cm <- predict(model_pca$finalModel,x) #predict on training data
-table(predict(model_pca$finalModel,x),y) #table of training data
-
-
-pred <- predict(model_pca, newdata = y1) #predict on test data
-confusionMatrix(pred, test$Occupancy) #table of test data
-
-confusionMatrix(model) #entries are percentual average cell counts across resamples
-
 plot(model)
-
-search_grid <- expand.grid(
-  usekernel = c(TRUE, FALSE),
-  fL = 0:5,
-  adjust = seq(0, 5, by = 1)
-)
-
-# train model
-nb.m2 <- train(
-  x = x,
-  y = y,
-  method = "nb",
-  trControl = trainControl,
-  preProc = "pca"
-)
-
-
+#corrolation plots
 training %>%
   filter(Occupancy == "1") %>%
   select_if(is.numeric) %>%
