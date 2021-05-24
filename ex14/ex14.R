@@ -917,7 +917,7 @@ print(model)
 normalize <- function(x) {return ((x - min(x)) / (max(x) - min(x))) }
 
 # Create dataframes
-test_norm.f <- as.data.frame(lapply(test.f[2:6], normalize))
+test_norm.f <- as.data.frame(lapply(test.f[2:5], normalize))
 training_norm.f <- as.data.frame(lapply(training.f[2:6], normalize))
 
 test_norm.f2 <- as.data.frame(lapply(test.f2[2:6], normalize))
