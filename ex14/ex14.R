@@ -454,17 +454,6 @@ cat(paste(
 
 # >> No CO2 control loop -----------------------------------------------
 accuracy.f.arr <- c()
-for (i in 1:150) {
-  accuracy.f.arr <- c(accuracy.f.arr, accuracy.test(i, training.f2, test.f2))
-}
-#accuracy.f.arr
-which(max(accuracy.f.arr) == accuracy.f.arr) # best results in list
-
-print("Minsplit of 92-93 gives the best predictions in the set range.")
-
-
-# >> No CO2 control loop ---------------------------------------------
-accuracy.f.arr <- c()
 for (i in 1:1500) {
   accuracy.f.arr <- c(accuracy.f.arr, accuracy.test(i, training.f2, test.f2))
 }
