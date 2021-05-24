@@ -21,6 +21,7 @@ library(gridExtra) # For some plotting goodness
 library(class)
 library(gmodels)
 library(mltools)
+library(pROC)
 # Dataset -----------------------------------------------------------------
 # We have chosen the Occupancy dataset: http://archive.ics.uci.edu/ml/datasets/Occupancy+Detection+#
 
@@ -948,15 +949,15 @@ cross_fit <- train(training_norm.f, train_labels,
 
 cross_fit
 
-confusionMatrix(cross_fit)
+#confusionMatrix(cross_fit)
 
 plot(cross_fit)
 
-# result = K should be 6
+# result = K should be 3
 
 knn.f_pred <- knn(train = training_norm.f, test = test_norm.f, cl = train_labels, k =  6, use.all = TRUE)
 
-CrossTable(x = test_labels, y = knn.f_pred,prop.chisq=FALSE)
+#CrossTable(x = test_labels, y = knn.f_pred,prop.chisq=FALSE)
 
 # Error rate
 mean(test_labels != knn.f_pred)
@@ -965,7 +966,10 @@ mean(test_labels != knn.f_pred)
 confusionMatrix(knn.f_pred, test_labels) 
 
 #MCC
-mcc(preds = knn104_pred, actuals = test_labels)
+mcc(preds = knn.f_pred, actuals = test_labels)
+
+#ROC
+
 
 # Plot it with Light and Humidity because those are important.
 
@@ -980,4 +984,56 @@ ggplot(knn.plot1, aes(HumidityRatio, Temperature, color = predicted, shape = tru
   geom_point(size = 4, alpha = 0.3)
 
 
+# ====================================================================#
+#                                                                     #
+# test.f (no light + No Co2)                                          #
+#                                                                     #
+# ====================================================================#
 
+# Cross validation with Kappa
+
+trControl.f2 <- trainControl(method  = "cv",
+                          number  = 10)
+
+cross_fit.f2 <- train(training_norm.f2, train_labels,
+                   method     = "knn",
+                   tuneGrid   = expand.grid(k = 2:50),
+                   trControl  = trControl,
+                   metric     = "Kappa"
+)
+
+cross_fit.f2
+
+#confusionMatrix(cross_fit.f2)
+
+plot(cross_fit.f2)
+
+# result = K should be 3
+
+knn.f2_pred <- knn(train = training_norm.f2, test = test_norm.f2, cl = train_labels, k =  6, use.all = TRUE)
+
+CrossTable(x = test_labels, y = knn.f2_pred,prop.chisq=FALSE)
+
+# Error rate
+mean(test_labels != knn.f2_pred)
+
+# Confusion Matrix
+confusionMatrix(knn.f2_pred, test_labels) 
+
+#MCC
+mcc(preds = knn.f2_pred, actuals = test_labels)
+
+#ROC
+
+
+# Plot it with Light and Humidity because those are important.
+
+knn.plotf2 = data.frame(test_norm.f2, predicted = knn.f2_pred, truth = as.factor(test$Occupancy)) # Create a dataframe to simplify charting
+
+knn.plotf2.1 = data.frame(x = knn.plotf2$Temperature, 
+                         y = knn.plotf2$HumidityRatio, 
+                         predicted = knn.plotf2$predicted,
+                         truth = as.factor(test$Occupancy))
+
+ggplot(knn.plotf2, aes(HumidityRatio, Temperature, color = predicted, shape = truth)) + 
+  geom_point(size = 4, alpha = 0.3)
