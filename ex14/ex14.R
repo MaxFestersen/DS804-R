@@ -756,7 +756,7 @@ classifier_cl <- naiveBayes(Occupancy ~ ., data = training)
 classifier_cl.f <- naiveBayes(Occupancy ~ ., data = training.f)
 
 #classifier on training data no light and no CO2
-classifier_cl.f <- naiveBayes(Occupancy ~ ., data = training.f1)
+classifier_cl.f2 <- naiveBayes(Occupancy ~ ., data = training.f2)
 
 # Predicting on test data
 pred_test <- predict(classifier_cl, newdata = test)
@@ -771,12 +771,24 @@ pred_test3 <- predict(classifier_cl, newdata = test3)
 pred_test.f <- predict(classifier_cl.f, newdata = test.f)
 
 # Predicting on test.f1 data
-pred_test.f <- predict(classifier_cl.f1, newdata = test.f1)
+pred_test.f2 <- predict(classifier_cl.f2, newdata = test.f2)
 
 # Confusion Matrix test
 cm <- table(test$Occupancy, pred_test)
 
-#creating readable matrix
+# Confusion Matrix test2
+cm <- table(test3$Occupancy, pred_test3)
+
+# Confusion Matrix test3
+cm <- table(test3$Occupancy, pred_test3)
+
+# Confusion Matrix test.f
+cm <- table(test.f$Occupancy, pred_test.f)
+
+# Confusion Matrix test.f2
+cm <- table(test.f2$Occupancy, pred_test.f2)
+
+#creating readable matrix test1
 ordered_table <- rbind(as.numeric(names(cm)), cm)
 rownames(ordered_table) <- c("Predicted Occupancy","Predicted NO Occupancy")
 colnames(ordered_table) <- c("Actual Occupancy","Actual NO Occupancy")
