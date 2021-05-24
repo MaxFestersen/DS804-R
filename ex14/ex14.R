@@ -861,10 +861,12 @@ mcc(predvec.f2, realvec.f2)
 
 
 library(ROCR)
-pr <- ROCR::prediction(predvec, realvec)
+#pr <- ROCR::prediction(predvec, realvec)
 
 
 pred<-ROCR::prediction(predvec, labels=realvec)
+
+pred<-ROCR::prediction(predvec.f2, labels=realvec.f2)
 
 #ROC curve explained
 curve(log(x), from=0, to=100, xlab="False Positive Rate", ylab="True Positive Rate", main="ROC curve", col="green", lwd=3, axes=F)
