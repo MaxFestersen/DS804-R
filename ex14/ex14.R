@@ -12,16 +12,12 @@ library(tidyverse) # Utility functions - like formatting
 #library(nnet) # Neural Network (for comparison) - no longer used
 library(caret) # Confusion matrix
 # library(caTools) # For splitting samples (not used)
-<<<<<<< Updated upstream
 library(FSelector) # For information gain
-
-=======
-  library(ggplot) #Knn Plotting 
+library(ggplot) #Knn Plotting 
 library(class) #Knn
 library(gmodels) #More Knn Matrix (Not really that much better than the usual one.)
 library(plyr) # For a function in plotting Knn
 library(gridExtra) # For some plotting goodness
->>>>>>> Stashed changes
 # Dataset -----------------------------------------------------------------
 # We have chosen the Occupancy dataset: http://archive.ics.uci.edu/ml/datasets/Occupancy+Detection+#
 
