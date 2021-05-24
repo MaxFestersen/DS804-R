@@ -24,7 +24,9 @@ library(gmodels)
 # We have chosen the Occupancy dataset: http://archive.ics.uci.edu/ml/datasets/Occupancy+Detection+#
 
 # > Loading data ----
-
+test <- read.table("datatest.txt", sep = ",")
+test2 <- read.table("datatest2.txt", sep = ",")
+training <- read.table("datatraining.txt", sep = ",")
 
 # > Formatting data -------------------------------------------------------
 # Date might be an issue, as we will never test the results are based on a specific period
