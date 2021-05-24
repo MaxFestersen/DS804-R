@@ -906,7 +906,7 @@ p
 print(model)
 
 # KNN ========================================================================
-
+set.seed(123908213)
 
 
 
@@ -918,27 +918,22 @@ normalize <- function(x) {return ((x - min(x)) / (max(x) - min(x))) }
 
 # Create dataframes
 test_norm.f <- as.data.frame(lapply(test.f[2:5], normalize))
-training_norm.f <- as.data.frame(lapply(training.f[2:6], normalize))
+training_norm.f <- as.data.frame(lapply(training.f[2:5], normalize))
 
-test_norm.f2 <- as.data.frame(lapply(test.f2[2:6], normalize))
-training_norm.f2 <- as.data.frame(lapply(training.f2[2:6], normalize))
+test_norm.f2 <- as.data.frame(lapply(test.f2[2:4], normalize))
+training_norm.f2 <- as.data.frame(lapply(training.f2[2:4], normalize))
 
 # Setup Labels
 train_labels <- as.factor(training[, 7, drop = TRUE])
 test_labels <- as.factor(test[, 7, drop = TRUE])
 
-#as.data.frame(lapply(test[2:6], normalize))
+# ====================================================================#
+#                                                                     #
+# Knn using K = Squareroot of Observations on Test.f (no light)       #
+#                                                                     #
+# ====================================================================#
 
-# =====
-
-# Knn using K = Squareroot of Observations on Test 1.
-
-# =====
-
-knn104_pred <- knn(train = training_norm, test = test_norm, cl = train_labels, k =  sqrt( (nrow(training)) + (nrow(test)) ), use.all = TRUE)
-
-#Precision
-#100 * sum(test_labels==knn104_pred)/NROW(test_labels)
+knn104_pred <- knn(train = training_norm.f, test = test_norm.f, cl = train_labels, k =  sqrt( (nrow(training)) + (nrow(test)) ), use.all = TRUE)
 
 CrossTable(x = test_labels, y = knn104_pred,prop.chisq=FALSE)
 
@@ -950,39 +945,28 @@ confusionMatrix(knn104_pred, test_labels)
 
 # Plot it with Light and Humidity because those are important.
 
-plot.df = data.frame(test_norm, predicted = knn104_pred, truth = as.factor(test$Occupancy)) # Create a dataframe to simplify charting
+knn.plot1 = data.frame(test_norm.f, predicted = knn104_pred, truth = as.factor(test$Occupancy)) # Create a dataframe to simplify charting
 
-plot.df1 = data.frame(x = plot.df$Humidity, 
-                      y = plot.df$Light, 
-                      predicted = plot.df$predicted,
+knn.plot1.1 = data.frame(x = knn.plot1$Temperature, 
+                      y = knn.plot1$HumidityRatio, 
+                      predicted = knn.plot1$predicted,
                       truth = as.factor(test$Occupancy)) # First use Convex hull to determine boundary points of each cluster
 
 find_hull = function(df) df[chull(df$x, df$y), ]
-boundary = ddply(plot.df1, .variables = "predicted", .fun = find_hull)
+boundary = ddply(knn.plot1.1, .variables = "predicted", .fun = find_hull)
 
-ggplot(plot.df, aes(Humidity, Light, color = predicted, shape = truth)) + 
+#plot1
+
+ggplot(knn.plot1, aes(HumidityRatio, Temperature, color = predicted, shape = truth)) + 
   geom_point(size = 4, alpha = 0.3)
 
+# MCC
 
-###################################################################################################
-# Plot predication and truth as Heatmap (Only the Occupied part)
+# Setup Vectors
+#plot1.mcc.pred <- as.data.frame(lapply(test.f[2:5], normalize))
 
-# knn.plot.heatmap.pred = data.frame(test_norm, predicted = as.numeric(levels(knn104_pred))[knn104_pred])
-# knn.plot.heatmap.pred <- knn.plot.heatmap.pred[apply(knn.plot.heatmap.pred, 1, function(row) all(row !=0 )), ] #Remove Occupancy = 0
-# 
-# 
-# knn.plot.heatmap.truth = data.frame(test_norm, truth = test$Occupancy) #Remove Occupancy = 0
-# knn.plot.heatmap.truth <- knn.plot.heatmap.truth[apply(knn.plot.heatmap.truth, 1, function(row) all(row !=0 )), ]
-# 
-# 
-# knn.heat.pred <- ggplot(knn.plot.heatmap.pred, aes(Humidity, Light)) + xlim(0,1) + ylim(0,1) +
-#   geom_density_2d_filled(contour_var = "count") + facet_wrap(vars(predicted)) + theme(legend.position = "none")
-# 
-# knn.heat.truth <- ggplot(knn.plot.heatmap.truth, aes(Humidity, Light))  + xlim(0,1) + ylim(0,1) + 
-#   geom_density_2d_filled(contour_var = "count") + facet_wrap(vars(truth)) + theme(legend.position = "none")
-# 
-# grid.arrange(knn.heat.pred, knn.heat.truth, nrow=2)
-###################################################################################################
+#Result
+mcc(preds =knn104_pred, actuals = train_labels)
 
 # =====
 
