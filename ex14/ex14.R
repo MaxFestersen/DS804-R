@@ -125,8 +125,8 @@ barplot(dataDistribution, main="Occupancy for all data", ylab="Datapoints")
 pairs(training[-1], diag.panel = panel.boxplot)
 
 # Information gain --------------------------------------------------------
-ig.weights <- information.gain(Occupancy ~ ., as.data.frame(training))
-ig.weights
+#ig.weights <- information.gain(Occupancy ~ ., as.data.frame(training))
+#ig.weights
 
 
 ## Decision Tree ----------------------------------------------------------
