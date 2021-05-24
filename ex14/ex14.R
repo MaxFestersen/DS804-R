@@ -780,8 +780,26 @@ plot(cm)
 x = training[,-7]
 y = training$Occupancy
 
-x = test[,-7]
-y = test$Occupancy
+x1 = test[,-7]
+y2 = test$Occupancy
+
+naive_bayes_via_caret <- train(Occupancy ~ ., 
+                               data = training, 
+                               method = "naive_bayes", 
+                               usepoisson = TRUE)
+
+naive_bayes_via_caret
+confusionMatrix(naive_bayes_via_caret)
+
+
+# Build the model
+set.seed(123)
+model <- caret::train(Occupancy ~., data = training, method = "nb", 
+               trControl = trainControl("cv", number = 10))
+# Make predictions
+predicted.classes <- model %>% predict(test)
+# Model n accuracy
+mean(predicted.classes == test$Occupancy)
 
 
 model_pca = train(x,y,trControl=trainControl(method='cv',number=10,preProc = "pca"))
@@ -790,12 +808,12 @@ model_center = train(x,y,trControl=trainControl(method='cv',number=10,preProc = 
 model_Boxcox = train(x,y,trControl=trainControl(method='cv',number=10,preProc = "BoxCox"))
 
 
-cm <- predict(model$finalModel,x) #predict on training data
-table(predict(model$finalModel,x),y) #table of training data
+cm <- predict(model_pca$finalModel,x) #predict on training data
+table(predict(model_pca$finalModel,x),y) #table of training data
 
 
-pred <- predict(nb.m2, newdata = test) #predict on test data
-confusionMatrix(pred, test$Attrition) #table of test data
+pred <- predict(model_pca, newdata = y1) #predict on test data
+confusionMatrix(pred, test$Occupancy) #table of test data
 
 confusionMatrix(model) #entries are percentual average cell counts across resamples
 
@@ -815,14 +833,6 @@ nb.m2 <- train(
   trControl = trainControl,
   preProc = "pca"
 )
-
-# top 5 modesl
-nb.m2$results %>% 
-  top_n(5, wt = Accuracy) %>%
-  arrange(desc(Accuracy))
-
-
-
 
 
 training %>%
@@ -846,38 +856,23 @@ P<-training %>%
   facet_wrap(~ metric, scales = "free")
 plot(P)
 
-#To summaries the demo, let’s draw a plot that shows how each predictor variable
-#is independently responsible for predicting the outcome.
-g<-varImp(model)
-plot(g)
+str(training)
+pairs.panels(training[-7])
 
-#plot with bigger font
-ggplot2::ggplot(g)+ theme(text = element_text(size=20),
-                          axis.text.x = element_text(angle=90, hjust=1))
-
-ggplot2::ggplot(g)+ theme(text = element_text(size=20),
-                          axis.text.x = element_text(angle=90, hjust=1))
-
-
-ggplot2::ggplot(g)+ theme(text = element_text(size=20),
-                          axis.text.x = element_text(angle=90, hjust=1))
-
-
-ggplot2::ggplot(g)+ theme(text = element_text(size=20),
-                          axis.text.x = element_text(angle=90, hjust=1))
-
-ggplot2::ggplot(g)+ theme(text = element_text(size=20),
-                          axis.text.x = element_text(angle=90, hjust=1))
-
+model <- naive_bayes(Occupancy ~ ., data = training )
+#desnity plots
+plot(model)
+x<- factor(training)
+p <- predict(model, training, type = 'prob')
+p
+print(model)
 
 # KNN ========================================================================
 
 
-<<<<<<< Updated upstream
 library(class)
 library(gmodels)
-=======
-  >>>>>>> Stashed changes
+
 
 # Setup Data
 
