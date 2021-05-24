@@ -12,13 +12,14 @@ library(tidyverse) # Utility functions - like formatting
 #library(nnet) # Neural Network (for comparison) - no longer used
 library(caret) # Confusion matrix
 # library(caTools) # For splitting samples (not used)
-#library(FSelector) # For information gain
+library(FSelector) # For information gain
 library(ggplot) #Knn Plotting 
 library(class) #Knn
 library(gmodels) #More Knn Matrix (Not really that much better than the usual one.)
 library(plyr) # For a function in plotting Knn
 library(gridExtra) # For some plotting goodness
-
+library(class)
+library(gmodels)
 # Dataset -----------------------------------------------------------------
 # We have chosen the Occupancy dataset: http://archive.ics.uci.edu/ml/datasets/Occupancy+Detection+#
 
@@ -29,87 +30,38 @@ training <- read.table("datatraining.txt", sep = ",")
 
 # > Formatting data -------------------------------------------------------
 # Date might be an issue, as we will never test the results are based on a specific period
-test <- as_tibble(test)
-test$Occupancy <- factor(test$Occupancy) # Factor Occupancy
-test <- dplyr::rowwise(test) %>% # Group by each row (to use functions on row level)
-  dplyr::mutate( time = strsplit(date, " ")[[1]][2], # Split date, and use the time part
-          date = strsplit(date, " ")[[1]][1]) # Split date, and remove time part
-test$date <- ymd(test$date) # Change date from char to time format
-test$time <- hms(test$time) # change time from char to time format
-test$weekday <- factor(weekdays(test$date))
-test <- test %>%
-  dplyr::mutate(weekdayNum = as.numeric(ifelse(
-    weekday == "mandag" | weekday == "Monday",
-    1,
-    ifelse(weekday == "tirsdag" | weekday == "Tuesday",
-           2,
-           ifelse(weekday == "onsdag" | weekday == "Wednesday",
-                  3,
-                  ifelse(weekday == "torsdag" | weekday == "Tuesday",
-                         4,
-                         ifelse(weekday == "fredag" | weekday == "Friday",
-                                5,
-                                ifelse(weekday == "lørdag" | weekday == "Saturday",
-                                       6,
-                                       7
-                                )))))))) %>%
-  ungroup()
-test2 <- as_tibble(test2)
-test2$Occupancy <- factor(test2$Occupancy) # Factor Occupancy
-test2 <- dplyr::rowwise(test2) %>% # Group by each row (to use functions on row level)
-  dplyr::mutate( time = strsplit(date, " ")[[1]][2], # Split date, and use the time part
-                 date = strsplit(date, " ")[[1]][1]) # Split date, and remove time part
-test2$date <- ymd(test2$date) # Change date from char to time format
-test2$time <- hms(test2$time) # change time from char to time format
-test2$weekday <- factor(weekdays(test2$date))
-test2 <- test2 %>%
-  dplyr::mutate(weekdayNum = as.numeric(ifelse(
-    weekday == "mandag" | weekday == "Monday",
-    1,
-    ifelse(weekday == "tirsdag" | weekday == "Tuesday",
-           2,
-           ifelse(weekday == "onsdag" | weekday == "Wednesday",
-                  3,
-                  ifelse(weekday == "torsdag" | weekday == "Tuesday",
-                         4,
-                         ifelse(weekday == "fredag" | weekday == "Friday",
-                                5,
-                                ifelse(weekday == "lørdag" | weekday == "Saturday",
-                                       6,
-                                       7
-                                )))))))) %>%
-  ungroup()
-training <- as_tibble(training)
-training$Occupancy <- factor(training$Occupancy) # Factor Occupancy
-training <- dplyr::rowwise(training) %>% # Group by each row (to use functions on row level)
-  rowwise() %>% 
-  dplyr::mutate( time = strsplit(date, " ")[[1]][2], # Split date, and use the time part
-          date = strsplit(date, " ")[[1]][1]) # Split date, and remove time part
-training$date <- ymd(training$date) # Change date from char to time format
-training$time <- hms(training$time) # change time from char to time format
-training$weekday <- factor(weekdays(training$date))
-training <- training %>%
-  dplyr::mutate(weekdayNum = as.numeric(ifelse(
-    weekday == "mandag" | weekday == "Monday",
-    1,
-    ifelse(weekday == "tirsdag" | weekday == "Tuesday",
-           2,
-           ifelse(weekday == "onsdag" | weekday == "Wednesday",
-                  3,
-                  ifelse(weekday == "torsdag" | weekday == "Tuesday",
-                         4,
-                         ifelse(weekday == "fredag" | weekday == "Friday",
-                                5,
-                                ifelse(weekday == "lørdag" | weekday == "Saturday",
-                                       6,
-                                       7
-                                )))))))) %>%
-  ungroup()
+formating <- function(x) {
+  x$Occupancy <- factor(x$Occupancy) # Factor Occupancy
+  x <- x %>%
+    dplyr::rowwise() %>% # Group by each row (to use functions on row level)
+    mutate(time = strsplit(date, " ")[[1]][2]) %>% # Split date, and use the time part
+    mutate(date = strsplit(date, " ")[[1]][1]) %>% # Split date, and remove time part
+    ungroup()  # Remove rowwise
+  x$date <- ymd(x$date) # Change date from char to time format
+  x$time <- hms(x$time) # change time from char to time format
+  x$weekday <- factor(weekdays(x$date))
+  x <- rowwise(x) %>% 
+    mutate(weekdayNum = as.numeric(ifelse(
+      weekday == "mandag" | weekday == "Monday",
+      1,
+      ifelse(weekday == "tirsdag" | weekday == "Tuesday",
+             2,
+             ifelse(weekday == "onsdag" | weekday == "Wednesday",
+                    3,
+                    ifelse(weekday == "torsdag" | weekday == "Tuesday",
+                           4,
+                           ifelse(weekday == "fredag" | weekday == "Friday",
+                                  5,
+                                  ifelse(weekday == "lørdag" | weekday == "Saturday",
+                                         6,
+                                         7
+                                  ))))))))
+  return(x)
+}
 
-# Formatting function stopped functioning  - so look above for individual hard code method.
-# test <- formating(test)
-# test2 <- formating(test2)
-# training <- formating(training)
+test <- formating(test)
+test2 <- formating(test2)
+training <- formating(training)
 
 # Create combined testset
 test3 <- merge(x = test, y = test2, by = colnames(test), all = TRUE)
@@ -122,11 +74,11 @@ names(dataDistribution) <- c("All", "1", "0")
 barplot(dataDistribution, main="Occupancy for all data", ylab="Datapoints")
 
 # Choice of Algorithms ----------------------------------------------------
-# pairs(training[-1], diag.panel = panel.boxplot)
+pairs(training[-1], diag.panel = panel.boxplot)
 
 # Information gain --------------------------------------------------------
-# ig.weights <- information.gain(Occupancy ~ ., as.data.frame(training))
-# ig.weights
+ig.weights <- information.gain(Occupancy ~ ., as.data.frame(training))
+ig.weights
 
 
 ## Decision Tree ----------------------------------------------------------
@@ -910,21 +862,26 @@ print(model)
 # KNN ========================================================================
 
 
-library(class)
-library(gmodels)
+
 
 
 # Setup Data
 
+# Methods
 normalize <- function(x) {return ((x - min(x)) / (max(x) - min(x))) }
-test_norm <- as.data.frame(lapply(test[2:6], normalize))
-training_norm <- as.data.frame(lapply(training[2:6], normalize))
 
+# Create dataframes
+test_norm.f <- as.data.frame(lapply(test.f[2:6], normalize))
+training_norm.f <- as.data.frame(lapply(training.f[2:6], normalize))
+
+test_norm.f2 <- as.data.frame(lapply(test.f2[2:6], normalize))
+training_norm.f2 <- as.data.frame(lapply(training.f2[2:6], normalize))
+
+# Setup Labels
 train_labels <- as.factor(training[, 7, drop = TRUE])
 test_labels <- as.factor(test[, 7, drop = TRUE])
 
-as.data.frame(lapply(test[2:6], normalize))
-as.data.frame(lapply(test2[2:6], normalize))
+#as.data.frame(lapply(test[2:6], normalize))
 
 # =====
 
@@ -960,6 +917,8 @@ boundary = ddply(plot.df1, .variables = "predicted", .fun = find_hull)
 ggplot(plot.df, aes(Humidity, Light, color = predicted, shape = truth)) + 
   geom_point(size = 4, alpha = 0.3)
 
+
+###################################################################################################
 # Plot predication and truth as Heatmap (Only the Occupied part)
 
 # knn.plot.heatmap.pred = data.frame(test_norm, predicted = as.numeric(levels(knn104_pred))[knn104_pred])
@@ -977,7 +936,7 @@ ggplot(plot.df, aes(Humidity, Light, color = predicted, shape = truth)) +
 #   geom_density_2d_filled(contour_var = "count") + facet_wrap(vars(truth)) + theme(legend.position = "none")
 # 
 # grid.arrange(knn.heat.pred, knn.heat.truth, nrow=2)
-
+###################################################################################################
 
 # =====
 
