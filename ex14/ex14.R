@@ -216,13 +216,13 @@ accuracy.test <- function(minsplit, training, test){
 }
 
 # >> Looping results
-accuracy.arr <- c()
-for (i in 1:1500) {
-  accuracy.arr <- c(accuracy.arr, accuracy.test(i, training, test))
-}
-accuracy.arr
-max(accuracy.arr) # Best value
-which(max(accuracy.arr) == accuracy.arr) # best results in list
+# accuracy.arr <- c()
+# for (i in 1:1500) {
+#   accuracy.arr <- c(accuracy.arr, accuracy.test(i, training, test))
+# }
+# accuracy.arr
+# max(accuracy.arr) # Best value
+# which(max(accuracy.arr) == accuracy.arr) # best results in list
 
 cat(paste(
   "The result can be matched but not improved.",
@@ -327,12 +327,12 @@ cat(paste(
 ))
 
 # >> No light control loop -----------------------------------------------
-accuracy.f.arr <- c()
-for (i in 1:150) {
-  accuracy.f.arr <- c(accuracy.f.arr, accuracy.test(i, training.f, test.f))
-}
+# accuracy.f.arr <- c()
+# for (i in 1:150) {
+#   accuracy.f.arr <- c(accuracy.f.arr, accuracy.test(i, training.f, test.f))
+# }
 #accuracy.f.arr
-which(max(accuracy.f.arr) == accuracy.f.arr) # best results in list
+# which(max(accuracy.f.arr) == accuracy.f.arr) # best results in list
 
 print("Minsplit of 92-121 gives the best predictions in the set range.")
 
@@ -360,13 +360,13 @@ cat(paste(
 
 
 # >> No light control loop 2 -------------------------------------------
-accuracy.f.arr <- c()
-for (i in 1:1000) {
-  accuracy.f.arr <- c(accuracy.f.arr, accuracy.test(i, training.f, test.f))
-}
+# accuracy.f.arr <- c()
+# for (i in 1:1000) {
+#   accuracy.f.arr <- c(accuracy.f.arr, accuracy.test(i, training.f, test.f))
+# }
 
 #accuracy.f.arr
-which(max(accuracy.f.arr) == accuracy.f.arr)
+# which(max(accuracy.f.arr) == accuracy.f.arr)
 
 print("Minsplit between 626 and 921 give better values.")
 
@@ -476,13 +476,13 @@ cat(paste(
 ))
 
 # >> No CO2 control loop -----------------------------------------------
-accuracy.f.arr <- c()
-for (i in 1:1500) {
-  accuracy.f.arr <- c(accuracy.f.arr, accuracy.test(i, training.f2, test.f2))
-}
-
-#accuracy.f.arr
-which(max(accuracy.f.arr) == accuracy.f.arr)
+# accuracy.f.arr <- c()
+# for (i in 1:1500) {
+#   accuracy.f.arr <- c(accuracy.f.arr, accuracy.test(i, training.f2, test.f2))
+# }
+# 
+# #accuracy.f.arr
+# which(max(accuracy.f.arr) == accuracy.f.arr)
 
 print("Minsplit between 724 and 1323 give better values.")
 
