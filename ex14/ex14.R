@@ -748,7 +748,7 @@ roc_auc@y.values # 0.474
 
 
 predictions <- predict(svmfit, test2, type="class")
-mcc(predictions, test2$Occupancy) # -0.063
+mcc(predictions, test2$Occupancy) # 0.2731
 
 pred <- ROCR::prediction(as.numeric(predictions), test2$Occupancy)
 roc <- performance(pred, measure="tpr", x.measure="fpr")
