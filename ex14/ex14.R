@@ -873,9 +873,6 @@ roc_auc<-performance(pred, measure="auc")
 str(roc_auc)
 roc_auc@y.values
 
-prf <- performance(pr, "tpr", "fpr")
-plot(prf)
-
 
 plot(model)
 #corrolation plots
