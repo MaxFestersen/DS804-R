@@ -1228,11 +1228,9 @@ roc_auc<-performance(pred, measure="auc")
 roc_auc@y.values
 
 # Cluster Report
-predictions <- predict(knn_pred, test, type = 'class')
+knn.cm <- table(test$Occupancy, knn_pred)
 
-cm.knn <- table(test$Occupancy, predictions)
-
-cluster_report(cm.knn, cap = "Knn (All Params)")
+cluster_report(knn.cm, cap = "Knn (All Params)")
 
 # ====================================================================#
 #                                                                     #
@@ -1285,11 +1283,9 @@ roc_auc<-performance(pred, measure="auc")
 roc_auc@y.values
 
 # Cluster Report
-predictions <- predict(knn_pred, test, type = 'class') # predicting unseen test data
+knn.cm.f <- table(test$Occupancy, knn_pred.f)
 
-cm.knn <- table(test$Occupancy, predictions)
-
-cluster_report(cm.knn, cap = "Knn (No Light)")
+cluster_report(knn.cm.f, cap = "Knn (No light)")
 
 # ====================================================================#
 #                                                                     #
@@ -1342,11 +1338,10 @@ roc_auc<-performance(pred, measure="auc")
 roc_auc@y.values
 
 # Cluster Report
-predictions <- predict(knn_pred, test, type = 'class') # predicting unseen test data
+# Cluster Report
+knn.cm.f2 <- table(test$Occupancy, knn_pred.f2)
 
-cm.knn <- table(test$Occupancy, predictions)
-
-cluster_report(cm.knn, cap = "Knn (No Light + No Co2)")
+cluster_report(knn.cm.f2, cap = "Knn (No light + No Co2)")
 
 
 # ROC plot of all classifiers ========================================================================
