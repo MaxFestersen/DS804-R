@@ -1130,169 +1130,49 @@ training %>%
   cor() %>%
   corrplot::corrplot()
 
-# KNN ========================================================================
+# ====================================================================#
+#                                                                     #
+# KNN                                                                #
+#                                                                     #
+# ====================================================================#
 set.seed(123908213)
 
-
-
-
-# Setup Data
-
-# Methods
-normalize <- function(x) {return ((x - min(x)) / (max(x) - min(x))) }
-
 # Create dataframes
-test_norm.f <- as.data.frame(lapply(test.f[2:5], normalize))
-training_norm.f <- as.data.frame(lapply(training.f[2:5], normalize))
 
-test_norm.f2 <- as.data.frame(lapply(test.f2[2:4], normalize))
-training_norm.f2 <- as.data.frame(lapply(training.f2[2:4], normalize))
+# test.AllParams
+knn.test <- as.data.frame(test)
+knn.test <- knn.test[-1]
+knn.test <- knn.test[-6]
+knn.test <- knn.test[-7]
 
-test_norm.allparam <- as.data.frame(lapply(test[2:6], normalize))
-training_norm.allparam <- as.data.frame(lapply(training[2:6], normalize))
+knn.training <- as.data.frame(training)
+knn.training <- knn.training[-1]
+knn.training <- knn.training[-6]
+knn.training <- knn.training[-7]
+
+# test.F
+knn.test.f <- as.data.frame(test.f)
+knn.test.f <- knn.test.f[-1]
+knn.test.f <- knn.test.f[-5]
+knn.test.f <- knn.test.f[-6]
+knn.training.f <- as.data.frame(training.f)
+knn.training.f <- knn.training.f[-1]
+knn.training.f <- knn.training.f[-5]
+knn.training.f <- knn.training.f[-6]
+
+# test.F2
+knn.test.f2 <- as.data.frame(test.f2)
+knn.test.f2 <- knn.test.f2[-1]
+knn.test.f2 <- knn.test.f2[-4]
+knn.test.f2 <- knn.test.f2[-5]
+knn.training.f2 <- as.data.frame(training.f2)
+knn.training.f2 <- knn.training.f2[-1]
+knn.training.f2 <- knn.training.f2[-4]
+knn.training.f2 <- knn.training.f2[-5]
 
 # Setup Labels
 train_labels <- as.factor(training[, 7, drop = TRUE])
 test_labels <- as.factor(test[, 7, drop = TRUE])
-
-# ====================================================================#
-#                                                                     #
-# test.f (no light)                                                   #
-#                                                                     #
-# ====================================================================#
-
-# Cross validation with Kappa
-
-trControl <- trainControl(method  = "cv",
-                          number  = 10)
-
-cross_fit <- train(training_norm.f, train_labels,
-                   method     = "knn",
-                   tuneGrid   = expand.grid(k = 2:15),
-                   trControl  = trControl,
-                   metric     = "Kappa"
-)
-
-cross_fit
-
-#confusionMatrix(cross_fit)
-
-plot(cross_fit)
-
-# result = K should be 3
-
-knn.f_pred <- knn(train = training_norm.f, test = test_norm.f, cl = train_labels, k =  6, use.all = TRUE)
-
-#CrossTable(x = test_labels, y = knn.f_pred,prop.chisq=FALSE)
-
-# Error rate
-mean(test_labels != knn.f_pred)
-
-# Confusion Matrix
-confusionMatrix(knn.f_pred, test_labels) 
-
-#MCC
-mcc(preds = knn.f_pred, actuals = test_labels)
-
-#ROC
-realvec.f <- as.numeric(test.f$Occupancy)
-predvec.f <- as.numeric(knn.f_pred)
-
-pred<-ROCR::prediction(predvec.f, labels=realvec.f)
-roc<-performance(pred, measure="tpr", x.measure="fpr")
-plot(roc, main="ROC curve for Occupancy(no light, no CO2)", col="blue", lwd=3)
-segments(0, 0, 1, 1, lty=2)
-roc_auc<-performance(pred, measure="auc")
-roc_auc@y.values
-
-# Plot it with Light and Humidity because those are important.
-
-knn.plot1 = data.frame(test_norm.f, predicted = knn.f_pred, truth = as.factor(test$Occupancy)) # Create a dataframe to simplify charting
-
-knn.plot1.1 = data.frame(x = knn.plot1$Temperature, 
-                         y = knn.plot1$HumidityRatio, 
-                         predicted = knn.plot1$predicted,
-                         truth = as.factor(test$Occupancy))
-
-ggplot(knn.plot1, aes(HumidityRatio, Temperature, color = predicted, shape = truth)) + 
-  geom_point(size = 4, alpha = 0.3)
-
-# Cluser Report
-
-cm.knn.f2 <- table(test.f2$Occupancy, knn.f_pred)
-
-cluster_report(cm.knn.f2, cap = "Knn (No Light)")
-
-
-# ====================================================================#
-#                                                                     #
-# test.f (no light + No Co2)                                          #
-#                                                                     #
-# ====================================================================#
-
-# Cross validation with Kappa
-
-trControl.f2 <- trainControl(method  = "cv",
-                          number  = 10)
-
-cross_fit.f2 <- train(training_norm.f2, train_labels,
-                   method     = "knn",
-                   tuneGrid   = expand.grid(k = 2:15),
-                   trControl  = trControl,
-                   metric     = "Kappa"
-)
-
-cross_fit.f2
-
-#confusionMatrix(cross_fit.f2)
-
-plot(cross_fit.f2)
-
-# result = K should be 3
-
-knn.f2_pred <- knn(train = training_norm.f2, test = test_norm.f2, cl = train_labels, k =  6, use.all = TRUE)
-
-CrossTable(x = test_labels, y = knn.f2_pred,prop.chisq=FALSE)
-
-# Error rate
-mean(test_labels != knn.f2_pred)
-
-# Confusion Matrix
-confusionMatrix(knn.f2_pred, test_labels) 
-
-#MCC
-mcc(preds = knn.f2_pred, actuals = test_labels)
-
-#ROC
-realvec.f2 <- as.numeric(test.f2$Occupancy)
-predvec.f2 <- as.numeric(knn.f2_pred)
-
-pred<-ROCR::prediction(predvec.f2, labels=realvec.f2)
-roc<-performance(pred, measure="tpr", x.measure="fpr")
-plot(roc, main="ROC curve for Occupancy(no light, no co2)", col="blue", lwd=3)
-segments(0, 0, 1, 1, lty=2)
-roc_auc<-performance(pred, measure="auc")
-roc_auc@y.values
-
-# Plot it with Light and Humidity because those are important.
-
-knn.plotf2 = data.frame(test_norm.f2, predicted = knn.f2_pred, truth = as.factor(test$Occupancy)) # Create a dataframe to simplify charting
-
-knn.plotf2.1 = data.frame(x = knn.plotf2$Temperature, 
-                         y = knn.plotf2$HumidityRatio, 
-                         predicted = knn.plotf2$predicted,
-                         truth = as.factor(test$Occupancy))
-
-ggplot(knn.plotf2, aes(HumidityRatio, Temperature, color = predicted, shape = truth)) + 
-  geom_point(size = 4, alpha = 0.3)
-
-# Cluser Report
-
-cm.knn.f2 <- table(test.f$Occupancy, knn.f2_pred)
-
-cluster_report(cm.knn.f2, cap = "Knn (No Light, No CO2)")
-
-
 
 # ====================================================================#
 #                                                                     #
@@ -1302,59 +1182,171 @@ cluster_report(cm.knn.f2, cap = "Knn (No Light, No CO2)")
 
 # Cross validation with Kappa
 
-trControl.allparam <- trainControl(method  = "cv",
-                                   number  = 10)
+trControl <- trainControl(method  = "cv",
+                          number  = 10)
 
-cross_fit.allparam <- train(training_norm.allparam, train_labels,
-                            method     = "knn",
-                            tuneGrid   = expand.grid(k = 2:15),
-                            trControl  = trControl,
-                            metric     = "Kappa"
+cross_fit <- train(knn.training, train_labels,
+                   method     = "knn",
+                   tuneGrid   = expand.grid(k = 2:15),
+                   trControl  = trControl,
+                   metric     = "Kappa"
 )
 
-cross_fit.allparam
+cross_fit
 
-#confusionMatrix(cross_fit.allparam)
+plot(cross_fit) # Plot Cross Validation
 
-plot(cross_fit.allparam)
+knn_pred <- knn(train = knn.training, test = knn.test, cl = train_labels, k =  7, use.all = TRUE)
 
-# result = K should be 3
+# Plot it with Light and Humidity because those are important.
 
-knn.allparam_pred <- knn(train = training_norm.allparam, test = test_norm.allparam, cl = train_labels, k =  6, use.all = TRUE)
+knn.plot = data.frame(knn.test, predicted = knn_pred, truth = as.factor(test$Occupancy)) # Create a dataframe to simplify charting
 
-CrossTable(x = test_labels, y = knn.allparam_pred,prop.chisq=FALSE)
+ggplot(knn.plot, aes(HumidityRatio, Temperature, color = predicted, shape = truth)) + 
+  geom_point(size = 4, alpha = 0.3)
+
+#CrossTable(x = test_labels, y = knn_pred,prop.chisq=FALSE)
 
 # Error rate
-mean(test_labels != knn.allparam_pred)
+mean(test_labels != knn_pred)
 
 # Confusion Matrix
-confusionMatrix(knn.allparam_pred, test_labels) 
+confusionMatrix(knn_pred, test_labels) 
 
 #MCC
-mcc(preds = knn.allparam_pred, actuals = test_labels)
+mcc(preds = knn_pred, actuals = test_labels)
 
 #ROC
-realvec.allparam <- as.numeric(test.allparam$Occupancy)
-predvec.allparam <- as.numeric(knn.allparam_pred)
+realvec <- as.numeric(test$Occupancy)
+predvec <- as.numeric(knn_pred)
 
-pred<-ROCR::prediction(predvec.allparam, labels=realvec.allparam)
+pred<-ROCR::prediction(predvec, labels=realvec)
 roc<-performance(pred, measure="tpr", x.measure="fpr")
 plot(roc, main="ROC curve for Occupancy (All Params)", col="blue", lwd=3)
 segments(0, 0, 1, 1, lty=2)
 roc_auc<-performance(pred, measure="auc")
 roc_auc@y.values
 
+# Cluster Report
+predictions <- predict(knn_pred, test, type = 'class')
+
+cm.knn <- table(test$Occupancy, predictions)
+
+cluster_report(cm.knn, cap = "Knn (All Params)")
+
+# ====================================================================#
+#                                                                     #
+# test.f (No Light) 		                                              #
+#                                                                     #
+# ====================================================================#
+
+# Cross validation with Kappa
+
+cross_fit <- train(knn.training.f, train_labels,
+                   method     = "knn",
+                   tuneGrid   = expand.grid(k = 2:15),
+                   trControl  = trControl,
+                   metric     = "Kappa"
+)
+
+cross_fit
+
+plot(cross_fit) # Plot Cross Validation
+
+knn_pred.f <- knn(train = knn.training.f, test = knn.test.f, cl = train_labels, k =  7, use.all = TRUE)
+
 # Plot it with Light and Humidity because those are important.
 
-knn.plotf2 = data.frame(test_norm.allparam, predicted = knn.allparam_pred, truth = as.factor(test$Occupancy)) # Create a dataframe to simplify charting
+knn.plot.f = data.frame(knn.test.f, predicted = knn_pred.f, truth = as.factor(test$Occupancy)) # Create a dataframe to simplify charting
 
-knn.plotf2.1 = data.frame(x = knn.plotf2$Temperature, 
-                          y = knn.plotf2$HumidityRatio, 
-                          predicted = knn.plotf2$predicted,
-                          truth = as.factor(test$Occupancy))
-
-ggplot(knn.plotf2, aes(HumidityRatio, Temperature, color = predicted, shape = truth)) + 
+ggplot(knn.plot.f, aes(HumidityRatio, Temperature, color = predicted, shape = truth)) + 
   geom_point(size = 4, alpha = 0.3)
+
+#CrossTable(x = test_labels, y = knn_pred,prop.chisq=FALSE)
+
+# Error rate
+mean(test_labels != knn_pred.f)
+
+# Confusion Matrix
+confusionMatrix(knn_pred.f, test_labels) 
+
+#MCC
+mcc(preds = knn_pred.f, actuals = test_labels)
+
+#ROC
+realvec <- as.numeric(test$Occupancy)
+predvec <- as.numeric(knn_pred.f)
+
+pred<-ROCR::prediction(predvec, labels=realvec)
+roc<-performance(pred, measure="tpr", x.measure="fpr")
+plot(roc, main="ROC curve for Occupancy (No Light)", col="blue", lwd=3)
+segments(0, 0, 1, 1, lty=2)
+roc_auc<-performance(pred, measure="auc")
+roc_auc@y.values
+
+# Cluster Report
+predictions <- predict(knn_pred, test, type = 'class') # predicting unseen test data
+
+cm.knn <- table(test$Occupancy, predictions)
+
+cluster_report(cm.knn, cap = "Knn (No Light)")
+
+# ====================================================================#
+#                                                                     #
+# test.f (No Light + No CO2)                                          #
+#                                                                     #
+# ====================================================================#
+
+# Cross validation with Kappa
+
+cross_fit <- train(knn.training.f2, train_labels,
+                   method     = "knn",
+                   tuneGrid   = expand.grid(k = 2:15),
+                   trControl  = trControl,
+                   metric     = "Kappa"
+)
+
+cross_fit
+
+plot(cross_fit) # Plot Cross Validation
+
+knn_pred.f2 <- knn(train = knn.training.f2, test = knn.test.f2, cl = train_labels, k =  3, use.all = TRUE)
+
+# Plot it with Light and Humidity because those are important.
+
+knn.plot.f2 = data.frame(knn.test.f2, predicted = knn_pred.f2, truth = as.factor(test$Occupancy)) # Create a dataframe to simplify charting
+
+ggplot(knn.plot.f2, aes(HumidityRatio, Temperature, color = predicted, shape = truth)) + 
+  geom_point(size = 4, alpha = 0.3)
+
+#CrossTable(x = test_labels, y = knn_pred,prop.chisq=FALSE)
+
+# Error rate
+mean(test_labels != knn_pred.f2)
+
+# Confusion Matrix
+confusionMatrix(knn_pred.f2, test_labels) 
+
+#MCC
+mcc(preds = knn_pred.f2, actuals = test_labels)
+
+#ROC
+realvec <- as.numeric(test$Occupancy)
+predvec <- as.numeric(knn_pred.f2)
+
+pred<-ROCR::prediction(predvec, labels=realvec)
+roc<-performance(pred, measure="tpr", x.measure="fpr")
+plot(roc, main="ROC curve for Occupancy (No Light + No Co2)", col="blue", lwd=3)
+segments(0, 0, 1, 1, lty=2)
+roc_auc<-performance(pred, measure="auc")
+roc_auc@y.values
+
+# Cluster Report
+predictions <- predict(knn_pred, test, type = 'class') # predicting unseen test data
+
+cm.knn <- table(test$Occupancy, predictions)
+
+cluster_report(cm.knn, cap = "Knn (No Light + No Co2)")
 
 
 # ROC plot of all classifiers ========================================================================
