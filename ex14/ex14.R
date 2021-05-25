@@ -1034,7 +1034,7 @@ segments(0, 0, 1, 1, lty=2)
 roc_auc<-performance(pred, measure="auc")
 roc_auc@y.values
 
-# ROC Curve for f-2
+# ROC Curve for f.2
 realvec.f2 <- as.numeric(test.f2$Occupancy)
 predvec.f2 <- as.numeric(knn.f2_pred)
 
@@ -1044,5 +1044,3 @@ plot(roc, main="ROC curve for Occupancy(no light)", col="blue", lwd=3)
 segments(0, 0, 1, 1, lty=2)
 roc_auc<-performance(pred, measure="auc")
 roc_auc@y.values
-
-
