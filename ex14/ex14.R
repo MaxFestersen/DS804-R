@@ -1204,3 +1204,4 @@ ggplot(knn.plotf2, aes(HumidityRatio, Temperature, color = predicted, shape = tr
   geom_point(size = 4, alpha = 0.3)
 
 
+# ROC plot of all classifiers ========================================================================
