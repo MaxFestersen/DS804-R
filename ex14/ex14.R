@@ -22,6 +22,7 @@ library(class)
 library(gmodels)
 library(mltools)
 library(pROC)
+library(ROCR)
 # Dataset -----------------------------------------------------------------
 # We have chosen the Occupancy dataset: http://archive.ics.uci.edu/ml/datasets/Occupancy+Detection+#
 
@@ -954,7 +955,7 @@ trControl <- trainControl(method  = "cv",
 
 cross_fit <- train(training_norm.f, train_labels,
                    method     = "knn",
-                   tuneGrid   = expand.grid(k = 2:50),
+                   tuneGrid   = expand.grid(k = 2:15),
                    trControl  = trControl,
                    metric     = "Kappa"
 )
@@ -981,7 +982,15 @@ confusionMatrix(knn.f_pred, test_labels)
 mcc(preds = knn.f_pred, actuals = test_labels)
 
 #ROC
+realvec.f <- as.numeric(test.f$Occupancy)
+predvec.f <- as.numeric(knn.f_pred)
 
+pred<-ROCR::prediction(predvec.f, labels=realvec.f)
+roc<-performance(pred, measure="tpr", x.measure="fpr")
+plot(roc, main="ROC curve for Occupancy(no light, no CO2)", col="blue", lwd=3)
+segments(0, 0, 1, 1, lty=2)
+roc_auc<-performance(pred, measure="auc")
+roc_auc@y.values
 
 # Plot it with Light and Humidity because those are important.
 
@@ -1009,7 +1018,7 @@ trControl.f2 <- trainControl(method  = "cv",
 
 cross_fit.f2 <- train(training_norm.f2, train_labels,
                    method     = "knn",
-                   tuneGrid   = expand.grid(k = 2:50),
+                   tuneGrid   = expand.grid(k = 2:15),
                    trControl  = trControl,
                    metric     = "Kappa"
 )
@@ -1036,7 +1045,15 @@ confusionMatrix(knn.f2_pred, test_labels)
 mcc(preds = knn.f2_pred, actuals = test_labels)
 
 #ROC
+realvec.f2 <- as.numeric(test.f2$Occupancy)
+predvec.f2 <- as.numeric(knn.f2_pred)
 
+pred<-ROCR::prediction(predvec.f2, labels=realvec.f2)
+roc<-performance(pred, measure="tpr", x.measure="fpr")
+plot(roc, main="ROC curve for Occupancy(no light, no co2)", col="blue", lwd=3)
+segments(0, 0, 1, 1, lty=2)
+roc_auc<-performance(pred, measure="auc")
+roc_auc@y.values
 
 # Plot it with Light and Humidity because those are important.
 
@@ -1052,25 +1069,3 @@ ggplot(knn.plotf2, aes(HumidityRatio, Temperature, color = predicted, shape = tr
 
 
 
-
-# ROC Curve for f
-realvec.f <- as.numeric(test.f$Occupancy)
-predvec.f <- as.numeric(knn.f_pred)
-
-pred<-ROCR::prediction(predvec.f, labels=realvec.f)
-roc<-performance(pred, measure="tpr", x.measure="fpr")
-plot(roc, main="ROC curve for Occupancy(no light, no CO2)", col="blue", lwd=3)
-segments(0, 0, 1, 1, lty=2)
-roc_auc<-performance(pred, measure="auc")
-roc_auc@y.values
-
-# ROC Curve for f.2
-realvec.f2 <- as.numeric(test.f2$Occupancy)
-predvec.f2 <- as.numeric(knn.f2_pred)
-
-pred<-ROCR::prediction(predvec.f2, labels=realvec.f2)
-roc<-performance(pred, measure="tpr", x.measure="fpr")
-plot(roc, main="ROC curve for Occupancy(no light)", col="blue", lwd=3)
-segments(0, 0, 1, 1, lty=2)
-roc_auc<-performance(pred, measure="auc")
-roc_auc@y.values
