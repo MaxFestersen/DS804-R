@@ -953,7 +953,7 @@ roc_auc<-performance(pred, measure="auc")
 roc_auc@y.values
 
 library(pROC)
-roc1 <- plot.roc(realvec, realvec, main="ROC comparison for Occupancy",lty = 3, percent=TRUE, col= "red")
+roc1 <- plot.roc(realvec, predvec, main="ROC comparison for Occupancy",lty = 1, percent=TRUE, col= "red")
 roc2 <- lines.roc(realvec.f, predvec.f,lty = 2,lwd = 3, percent=TRUE, col="blue")
 roc3 <- lines.roc(realvec.f2, predvec.f2,lty = 3,lwd = 3, percent=TRUE, col="orange")
 
@@ -1205,3 +1205,5 @@ ggplot(knn.plotf2, aes(HumidityRatio, Temperature, color = predicted, shape = tr
 
 
 # ROC plot of all classifiers ========================================================================
+
+
