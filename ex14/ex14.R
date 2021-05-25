@@ -860,15 +860,50 @@ text(20, 4, col="blue", labels = "Perfect Classifier")
 text(40, 3, col="green", labels = "Test Classifier")
 text(70, 2, col="black", labels= "Classifier with no predictive value")
 
-#plotting roc cruve
+#plotting roc curve
 pred<-ROCR::prediction(predvec, labels=realvec)
+roc<-performance(pred, measure="tpr", x.measure="fpr")
+plot(roc, main="ROC curve for Occupancy", col="blue", lwd=3)
+segments(0, 0, 1, 1, lty=2)
+roc_auc<-performance(pred, measure="auc")
+#str(roc_auc)
+roc_auc@y.values
+
+#plotting roc curve test 2
+pred<-ROCR::prediction(predvec2, labels=realvec2)
+roc<-performance(pred, measure="tpr", x.measure="fpr")
+plot(roc, main="ROC curve for Occupancy(test 2)", col="blue", lwd=3)
+segments(0, 0, 1, 1, lty=2)
+roc_auc<-performance(pred, measure="auc")
+#str(roc_auc)
+roc_auc@y.values
+
+#plotting roc curve test 3
+pred<-ROCR::prediction(predvec3, labels=realvec3)
+roc<-performance(pred, measure="tpr", x.measure="fpr")
+plot(roc, main="ROC curve for Occupancy(test 3)", col="blue", lwd=3)
+segments(0, 0, 1, 1, lty=2)
+roc_auc<-performance(pred, measure="auc")
+#str(roc_auc)
+roc_auc@y.values
+
+#plotting roc curve (no light)
+pred<-ROCR::prediction(predvec.f, labels=realvec.f)
+roc<-performance(pred, measure="tpr", x.measure="fpr")
+plot(roc, main="ROC curve for Occupancy(no light)", col="blue", lwd=3)
+segments(0, 0, 1, 1, lty=2)
+roc_auc<-performance(pred, measure="auc")
+#str(roc_auc)
+roc_auc@y.values
+
+#plotting roc curve (no light, no CO2)
+pred<-ROCR::prediction(predvec.f2, labels=realvec.f2)
 roc<-performance(pred, measure="tpr", x.measure="fpr")
 plot(roc, main="ROC curve for Occupancy(no light, no CO2)", col="blue", lwd=3)
 segments(0, 0, 1, 1, lty=2)
 roc_auc<-performance(pred, measure="auc")
 #str(roc_auc)
 roc_auc@y.values
-
 
 plot(model)
 #corrolation plots
