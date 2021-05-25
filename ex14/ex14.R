@@ -574,13 +574,41 @@ predictions <- predict(svmfit, test, type = 'class') # predicting unseen test da
 cm <- table(test$Occupancy, predictions) # confusion matrix
 cluster_report(cm, cap = "Support-Vector-Machine test_set 1") # Quality measures of SVM
 
+mcc(predictions, test$Occupancy) # 0.9393
+
+pred <- ROCR::prediction(as.numeric(predictions), test$Occupancy)
+roc<-performance(pred, measure="tpr", x.measure="fpr")
+plot(roc, main="ROC curve for Occupancy (SVM 1)", col="blue", lwd=3)
+segments(0, 0, 1, 1, lty=2)
+roc_auc<-performance(pred, measure="auc")
+roc_auc@y.values # 0.9731
+
 predictions <- predict(svmfit, test2, type = 'class') # predicting unseen test data
 cm <- table(test2$Occupancy, predictions) # confusion matrix
 cluster_report(cm, cap = "Support-Vector-Machine test_set 2") # Quality measures of SVM
 
+mcc(predictions, test2$Occupancy) # 0.8621
+
+pred <- ROCR::prediction(as.numeric(predictions), test$Occupancy)
+roc<-performance(pred, measure="tpr", x.measure="fpr")
+plot(roc, main="ROC curve for Occupancy (SVM 1)", col="blue", lwd=3)
+segments(0, 0, 1, 1, lty=2)
+roc_auc<-performance(pred, measure="auc")
+roc_auc@y.values # 0.9731
+
+
 predictions <- predict(svmfit, test3, type = 'class') # predicting unseen test data
 cm <- table(test3$Occupancy, predictions) # confusion matrix
 cluster_report(cm, cap = "Support-Vector-Machine test_set 3") # Quality measures of SVM
+
+mcc(predictions, test3$Occupancy) # 0.8861
+
+pred <- ROCR::prediction(as.numeric(predictions), test$Occupancy)
+roc<-performance(pred, measure="tpr", x.measure="fpr")
+plot(roc, main="ROC curve for Occupancy (SVM 1)", col="blue", lwd=3)
+segments(0, 0, 1, 1, lty=2)
+roc_auc<-performance(pred, measure="auc")
+roc_auc@y.values # 0.9731
 
 
 # 97 % accuracy on test and 94.9% accuracy on test2
@@ -617,13 +645,43 @@ predictions <- predict(svmfit, test, type = 'class') # predicting unseen test da
 cm <- table(test$Occupancy, predictions) # confusion matrix
 cluster_report(cm, cap = "Support-Vector-Machine test_set 1") # Quality measures of SVM
 
+mcc(predictions, test$Occupancy) # 0.9511
+
+pred <- ROCR::prediction(as.numeric(predictions), test$Occupancy)
+roc<-performance(pred, measure="tpr", x.measure="fpr")
+plot(roc, main="ROC curve for Occupancy (SVM 2)", col="blue", lwd=3)
+segments(0, 0, 1, 1, lty=2)
+roc_auc<-performance(pred, measure="auc")
+roc_auc@y.values # 0.9805
+
+
 predictions <- predict(svmfit, test2, type = 'class') # predicting unseen test data
 cm <- table(test2$Occupancy, predictions) # confusion matrix
 cluster_report(cm, cap = "Support-Vector-Machine test_set 2") # Quality measures of SVM
 
+mcc(predictions, test2$Occupancy) # 0.8254
+
+pred <- ROCR::prediction(as.numeric(predictions), test$Occupancy)
+roc<-performance(pred, measure="tpr", x.measure="fpr")
+plot(roc, main="ROC curve for Occupancy (SVM 2)", col="blue", lwd=3)
+segments(0, 0, 1, 1, lty=2)
+roc_auc<-performance(pred, measure="auc")
+roc_auc@y.values # 0.9805
+
+
 predictions <- predict(svmfit, test3, type = 'class') # predicting unseen test data
 cm <- table(test3$Occupancy, predictions) # confusion matrix
 cluster_report(cm, cap = "Support-Vector-Machine test_set 3") # Quality measures of SVM
+
+mcc(predictions, test3$Occupancy) # 0.8642
+
+pred <- ROCR::prediction(as.numeric(predictions), test$Occupancy)
+roc<-performance(pred, measure="tpr", x.measure="fpr")
+plot(roc, main="ROC curve for Occupancy (SVM 2)", col="blue", lwd=3)
+segments(0, 0, 1, 1, lty=2)
+roc_auc<-performance(pred, measure="auc")
+roc_auc@y.values # 0.9805
+
 
 # 97 % accuracy on test and 95.6% accuracy on test2
 cat(paste("The accuracy was improved both on test-set 1 and 2, mostly when looking at test-set 2.",
@@ -660,23 +718,39 @@ nn <- neuralnet((Occupancy == "1") + (Occupancy == "0") ~ weekdayNum + Light + t
                 algorithm = 'rprop-',
                 err.fct = 'ce',
                 likelihood = TRUE,
-                threshold = 0.02) 
+                threshold = 0.02)
 plot(nn) # plotting neural network
 pred <- predict(nn, norm_test, type = "class") # making predictions with nn
 cm <- table(norm_test$Occupancy, apply(pred, 1, which.max)) # confusion matrix
 cm # 85.7% Accuracy
 cluster_report(cm, cap = "Neural Network test_set 1") # computing quality measures
 
+predictions <- factor(apply(pred, 1, which.max), labels=c(1, 0))
+mcc(predictions, norm_test$Occupancy) #0.6949
+
+pred <- ROCR::prediction(as.numeric(predictions), test$Occupancy)
+roc<-performance(pred, measure="tpr", x.measure="fpr")
+plot(roc, main="ROC curve for Occupancy (SVM 2)", col="blue", lwd=3)
+segments(0, 0, 1, 1, lty=2)
+roc_auc<-performance(pred, measure="auc")
+roc_auc@y.values
+
+
 pred <- predict(nn, norm_test2, type = "class") # making predictions with nn
 cm <- table(norm_test2$Occupancy, apply(pred, 1, which.max)) # confusion matrix
 cm # 89.9% accuracy
 cluster_report(cm, cap = "Neural Network test_set 2") # computing quality measures
+
+predictions <- factor(apply(pred, 1, which.max), labels=c(1, 0))
+mcc(predictions, norm_test2$Occupancy) # 0.7681
 
 pred <- predict(nn, norm_test3, type = "class") # making predictions with nn
 cm <- table(norm_test3$Occupancy, apply(pred, 1, which.max)) # confusion matrix
 cm # 91.4% accuracy
 cluster_report(cm, cap = "Neural Network test_set 3") # computing quality measures
 
+predictions <- factor(apply(pred, 1, which.max), labels=c(1, 0))
+mcc(predictions, norm_test3$Occupancy) # 0.7854
 
 cat(paste("Using all numeric variables for training the Neural Network, the process is long",
           "however, accuracy of the model is pretty good with 85.7% on test-set 1 and 89.9% on test-set 2.", sep = "\n"))
@@ -707,15 +781,24 @@ cm <- table(norm_test$Occupancy, apply(pred, 1, which.max)) # confusion matrix
 cm # ~96% accuracy
 cluster_report(cm, cap = "Neural Network test_set 1") # computing quality measures
 
+predictions <- factor(apply(pred, 1, which.max), labels=c(1, 0))
+mcc(predictions, norm_test$Occupancy) # 0.9246
+
 pred <- predict(nn, norm_test2, type = "class") # making predictions with nn
 cm <- table(norm_test2$Occupancy, apply(pred, 1, which.max)) # confusion matrix
 cm # 90.9% accuracy
 cluster_report(cm, cap = "Neural Network test_set 2") # computing quality measures
 
+predictions <- factor(apply(pred, 1, which.max), labels=c(1, 0))
+mcc(predictions, norm_test2$Occupancy) # 0.7742
+
 pred <- predict(nn, norm_test3, type = "class") # making predictions with nn
 cm <- table(norm_test3$Occupancy, apply(pred, 1, which.max)) # confusion matrix
 cm # 92.5% accuracy
 cluster_report(cm, cap = "Neural Network test_set 3") # computing quality measures
+
+predictions <- factor(apply(pred, 1, which.max), labels=c(1, 0))
+mcc(predictions, norm_test3$Occupancy) # 0.8338
 
 #creating readable matrix
 ordered_table <- cm[1:2, 2:1]
