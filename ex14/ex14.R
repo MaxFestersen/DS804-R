@@ -122,6 +122,15 @@ dataDistribution <- c(rows, home, out)
 names(dataDistribution) <- c("All", "1", "0")
 barplot(dataDistribution, main="Occupancy for all data", ylab="Datapoints")
 
+
+# MCC function ------------------------------------------------------------
+mccq <- function(test, predict){
+  realvec <- as.numeric(test$Occupancy)
+  predvec <- as.numeric(predict)
+  return(mcc(predvec, realvec))
+}
+
+
 # Choice of Algorithms ----------------------------------------------------
 pairs(training[-1], diag.panel = panel.boxplot)
 
@@ -246,17 +255,17 @@ print("The tree is the same as the one reached without control parameters.")
 
 # >> predictions and repport
 # >>> Test 1
-predictions.c <- predict(tree.c.724, test, type = 'class') # predicting unseen test data
+predictions.c <- predict(tree.c.136, test, type = 'class') # predicting unseen test data
 cm.c <- table(test$Occupancy, predictions.c) # confusion matrix
 cluster_report(cm.c, cap = "T1: Decision Tree with control") # Quality measures of Decision tree
 
 # >>> Test 2
-predictions.c <- predict(tree.c.724, test2, type = 'class') # predicting unseen test data
+predictions.c <- predict(tree.c.136, test2, type = 'class') # predicting unseen test data
 cm.c <- table(test2$Occupancy, predictions.c) # confusion matrix
 cluster_report(cm.c, cap = "T2: Decision Tree with control") # Quality measures of Decision tree
 
 # >>> Test 3
-predictions.c <- predict(tree.c.724, test3, type = 'class') # predicting unseen test data
+predictions.c <- predict(tree.c.136, test3, type = 'class') # predicting unseen test data
 cm.c <- table(test3$Occupancy, predictions.c) # confusion matrix
 cluster_report(cm.c, cap = "T3: Decision Tree with control") # Quality measures of Decision tree
 
