@@ -922,6 +922,18 @@ roc_auc<-performance(pred, measure="auc")
 #str(roc_auc)
 roc_auc@y.values
 
+library(pROC)
+roc1 <- plot.roc(realvec2, realvec2, main="ROC comparison for Occupancy",lty = 3, percent=TRUE, col= "red")
+roc2 <- lines.roc(realvec3, predvec3,lty = 2,lwd = 3, percent=TRUE, col="blue")
+roc3 <- lines.roc(realvec.f, predvec.f,lty = 3,lwd = 3, percent=TRUE, col="orange")
+roc3 <- lines.roc(realvec.f2, predvec.f2,lty = 4,lwd = 3, percent=TRUE, col="green")
+
+legend("bottomright", 
+       legend = c("Test2", "test3", "No Light", "No light and CO2"), 
+       col = c("red", "blue", "orange", "green"),
+       lty = c(1, 2, 3, 4),
+       lwd = c(3, 3, 3, 3, 1))
+
 plot(model)
 #corrolation plots
 training %>%
