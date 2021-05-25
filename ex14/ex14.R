@@ -850,7 +850,6 @@ mcc(predvec.f, realvec.f)
 mcc(predvec.f2, realvec.f2)
 
 #ROC curve explained
-#ROC curve explained
 curve(log(x), from=0, to=100, xlab="False Positive Rate", ylab="True Positive Rate", main="ROC curve", col="green", lwd=3, axes=F)
 Axis(side=1, at=c(0, 20, 40, 60, 80, 100), labels = c("0%", "20%", "40%", "60%", "80%", "100%"))
 Axis(side=2, at=0:5, labels = c("0%", "20%", "40%", "60%", "80%", "100%"))
@@ -861,17 +860,13 @@ text(20, 4, col="blue", labels = "Perfect Classifier")
 text(40, 3, col="green", labels = "Test Classifier")
 text(70, 2, col="black", labels= "Classifier with no predictive value")
 
-
+#plotting roc cruve
 pred<-ROCR::prediction(predvec, labels=realvec)
-
-pred<-ROCR::prediction(predvec.f2, labels=realvec.f2)
-
-
 roc<-performance(pred, measure="tpr", x.measure="fpr")
 plot(roc, main="ROC curve for Occupancy(no light, no CO2)", col="blue", lwd=3)
 segments(0, 0, 1, 1, lty=2)
 roc_auc<-performance(pred, measure="auc")
-str(roc_auc)
+#str(roc_auc)
 roc_auc@y.values
 
 
