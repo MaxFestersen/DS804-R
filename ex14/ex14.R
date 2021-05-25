@@ -159,9 +159,7 @@ predictions <- predict(tree, test, type = 'class') # predicting unseen test data
 cm <- table(test$Occupancy, predictions) # confusion matrix
 cluster_report(cm, cap = "T1: Decision Tree") # Quality measures of Decision tree
 
-realvec <- as.numeric(test$Occupancy)
-predvec <- as.numeric(predictions)
-mcc(predvec, realvec)
+mccq(test, predictions)
 
 #Roc curve and AUC score
 pred<-ROCR::prediction(predvec, labels=realvec)
@@ -176,9 +174,7 @@ predictions <- predict(tree, test2, type = 'class') # predicting unseen test dat
 cm <- table(test2$Occupancy, predictions) # confusion matrix
 cluster_report(cm, cap = "T2: Decision Tree") # Quality measures of Decision tree
 
-realvec <- as.numeric(test2$Occupancy)
-predvec <- as.numeric(predictions)
-mcc(predvec, realvec)
+mccq(test2, predictions)
 
 # >>> Test 3
 predictions <- predict(tree, test3, type = 'class') # predicting unseen test data
@@ -408,9 +404,7 @@ cm.c.f.626 <- table(test$Occupancy, predictions.c.f.626) # confusion matrix
 cluster_report(cm.c.f.626, cap = "T1: Decision Tree without light and minsplit = 626") # Quality measures of Decision tree
 
 #MCC score
-realvec <- as.numeric(test.f$Occupancy)
-predvec <- as.numeric(predictions.c.f.626)
-mcc(predvec, realvec)
+mccq(test.f, predictions.c.f.626)
 
 #plotting roc curve and AUC score
 pred<-ROCR::prediction(predvec, labels=realvec)
@@ -523,9 +517,7 @@ cm.c.f2.724 <- table(test$Occupancy, predictions.c.f2.724) # confusion matrix
 cluster_report(cm.c.f2.724, cap = "T1: Decision Tree without CO2 and minsplit = 724") # Quality measures of Decision tree
 
 #MMC Score
-realvec <- as.numeric(test.f2$Occupancy)
-predvec <- as.numeric(predictions.c.f2.724)
-mcc(predvec, realvec)
+mccq(test.f2, predictions.c.f2.724)
 
 #plotting roc curve and AUC score
 pred<-ROCR::prediction(predvec, labels=realvec)
