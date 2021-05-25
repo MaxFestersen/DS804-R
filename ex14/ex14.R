@@ -154,6 +154,14 @@ realvec <- as.numeric(test$Occupancy)
 predvec <- as.numeric(predictions)
 mcc(predvec, realvec)
 
+#Roc curve and AUC score
+pred<-ROCR::prediction(predvec, labels=realvec)
+roc<-performance(pred, measure="tpr", x.measure="fpr")
+plot(roc, main="ROC curve for Occupancy", col="blue", lwd=3)
+segments(0, 0, 1, 1, lty=2)
+roc_auc<-performance(pred, measure="auc")
+roc_auc@y.values
+
 # >>> Test 2
 predictions <- predict(tree, test2, type = 'class') # predicting unseen test data
 cm <- table(test2$Occupancy, predictions) # confusion matrix
