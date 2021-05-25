@@ -1019,3 +1019,30 @@ knn.plotf2.1 = data.frame(x = knn.plotf2$Temperature,
 
 ggplot(knn.plotf2, aes(HumidityRatio, Temperature, color = predicted, shape = truth)) + 
   geom_point(size = 4, alpha = 0.3)
+
+
+
+
+# ROC Curve for f
+realvec.f <- as.numeric(test.f$Occupancy)
+predvec.f <- as.numeric(knn.f_pred)
+
+pred<-ROCR::prediction(predvec.f, labels=realvec.f)
+roc<-performance(pred, measure="tpr", x.measure="fpr")
+plot(roc, main="ROC curve for Occupancy(no light, no CO2)", col="blue", lwd=3)
+segments(0, 0, 1, 1, lty=2)
+roc_auc<-performance(pred, measure="auc")
+roc_auc@y.values
+
+# ROC Curve for f-2
+realvec.f2 <- as.numeric(test.f2$Occupancy)
+predvec.f2 <- as.numeric(knn.f2_pred)
+
+pred<-ROCR::prediction(predvec.f2, labels=realvec.f2)
+roc<-performance(pred, measure="tpr", x.measure="fpr")
+plot(roc, main="ROC curve for Occupancy(no light, no CO2)", col="blue", lwd=3)
+segments(0, 0, 1, 1, lty=2)
+roc_auc<-performance(pred, measure="auc")
+roc_auc@y.values
+
+
