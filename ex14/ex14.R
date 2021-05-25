@@ -22,6 +22,7 @@ library(class)
 library(gmodels)
 library(mltools)
 library(pROC)
+library(ROCR)
 # Dataset -----------------------------------------------------------------
 # We have chosen the Occupancy dataset: http://archive.ics.uci.edu/ml/datasets/Occupancy+Detection+#
 
@@ -754,8 +755,14 @@ print(1-sum(diag(table1))/sum(table1))
 ## Naïve Bayes ------------------------------------------------------------
 set.seed(120)  # Setting Seed
 
+#classifier on training data
 classifier_cl <- naiveBayes(Occupancy ~ ., data = training)
-classifier_cl
+
+#classifier on training data no light
+classifier_cl.f <- naiveBayes(Occupancy ~ ., data = training.f)
+
+#classifier on training data no light and no CO2
+classifier_cl.f2 <- naiveBayes(Occupancy ~ ., data = training.f2)
 
 # Predicting on test data
 pred_test <- predict(classifier_cl, newdata = test)
@@ -766,10 +773,28 @@ pred_test2 <- predict(classifier_cl, newdata = test2)
 # Predicting on test3 data
 pred_test3 <- predict(classifier_cl, newdata = test3)
 
+# Predicting on test.f data
+pred_test.f <- predict(classifier_cl.f, newdata = test.f)
+
+# Predicting on test.f1 data
+pred_test.f2 <- predict(classifier_cl.f2, newdata = test.f2)
+
 # Confusion Matrix test
 cm <- table(test$Occupancy, pred_test)
 
-#creating readable matrix
+# Confusion Matrix test2
+cm <- table(test3$Occupancy, pred_test3)
+
+# Confusion Matrix test3
+cm <- table(test3$Occupancy, pred_test3)
+
+# Confusion Matrix test.f
+cm <- table(test.f$Occupancy, pred_test.f)
+
+# Confusion Matrix test.f2
+cm <- table(test.f2$Occupancy, pred_test.f2)
+
+#creating readable matrix test1
 ordered_table <- rbind(as.numeric(names(cm)), cm)
 rownames(ordered_table) <- c("Predicted Occupancy","Predicted NO Occupancy")
 colnames(ordered_table) <- c("Actual Occupancy","Actual NO Occupancy")
@@ -794,8 +819,6 @@ confusionMatrix(cm) # 0.9892 % accuracy
 
 # Confusion Matrix test3
 cm <- table(test3$Occupancy, pred_test3)
-
-cm <- table(test2$Occupancy, pred_test2)
 #creating readable matrix
 ordered_table <- rbind(as.numeric(names(cm)), cm)
 rownames(ordered_table) <- c("Predicted Occupancy","Predicted NO Occupancy")
@@ -806,91 +829,101 @@ cluster_report(cm, cap = "Naïve Bayes")
 # Model Evauation
 confusionMatrix(cm) # 0.9867% accuracy
 
+# Confusion Matrix test.f
+cm <- table(test.f$Occupancy, pred_test.f)
+#creating readable matrix
+ordered_table <- rbind(as.numeric(names(cm)), cm)
+rownames(ordered_table) <- c("Predicted Occupancy","Predicted NO Occupancy")
+colnames(ordered_table) <- c("Actual Occupancy","Actual NO Occupancy")
+ordered_table
 
-# Naïve Bayes without light and date
-
-test_sample <- test2.f
-test_sample <- test_sample[2:6]
-
-classifier_cl <- naiveBayes(Occupancy ~., data = training)
-classifier_cl
-
-# Predicting on test data
-y_pred <- predict(classifier_cl, newdata = test_sample)
-
-# Confusion Matrix
-cm <- table(test_sample$Occupancy, y_pred)
-cm
-
-# Model Evauation
-confusionMatrix(cm)
+#ROC
+#test 1 as vector
+realvec <- as.numeric(test$Occupancy)
+predvec <- as.numeric(predict(classifier_cl, newdata = test))
 
 
-plot(y_pred)
-plot(cm)
+#test 2 as vector
+realvec2 <- as.numeric(test2$Occupancy)
+predvec2 <- as.numeric(predict(classifier_cl, newdata = test2))
 
+#test 3 as vector
+realvec3 <- as.numeric(test3$Occupancy)
+predvec3 <- as.numeric(predict(classifier_cl, newdata = test3))
 
+#test.f as vector
+realvec.f <- as.numeric(test.f$Occupancy)
+predvec.f <- as.numeric(predict(classifier_cl.f, newdata = test.f))
 
+#test.f2 as vector
+realvec.f2 <- as.numeric(test.f2$Occupancy)
+predvec.f2 <- as.numeric(predict(classifier_cl.f2, newdata = test.f2))
 
-# Naïve Bayes caret with 10 fold CV
-x = training[,-7]
-y = training$Occupancy
+# MMC SCORES
+mcc(predvec, realvec)
+mcc(predvec2, realvec2)
+mcc(predvec3, realvec3)
+mcc(predvec.f, realvec.f)
+mcc(predvec.f2, realvec.f2)
 
-x1 = test[,-7]
-y2 = test$Occupancy
+#ROC curve explained
+curve(log(x), from=0, to=100, xlab="False Positive Rate", ylab="True Positive Rate", main="ROC curve", col="green", lwd=3, axes=F)
+Axis(side=1, at=c(0, 20, 40, 60, 80, 100), labels = c("0%", "20%", "40%", "60%", "80%", "100%"))
+Axis(side=2, at=0:5, labels = c("0%", "20%", "40%", "60%", "80%", "100%"))
+segments(0, 0, 110, 5, lty=2, lwd=3)
+segments(0, 0, 0, 4.7, lty=2, lwd=3, col="blue")
+segments(0, 4.7, 107, 4.7, lty=2, lwd=3, col="blue")
+text(20, 4, col="blue", labels = "Perfect Classifier")
+text(40, 3, col="green", labels = "Test Classifier")
+text(70, 2, col="black", labels= "Classifier with no predictive value")
 
-naive_bayes_via_caret <- train(Occupancy ~ ., 
-                               data = training, 
-                               method = "naive_bayes", 
-                               usepoisson = TRUE)
+#plotting roc curve
+pred<-ROCR::prediction(predvec, labels=realvec)
+roc<-performance(pred, measure="tpr", x.measure="fpr")
+plot(roc, main="ROC curve for Occupancy", col="blue", lwd=3)
+segments(0, 0, 1, 1, lty=2)
+roc_auc<-performance(pred, measure="auc")
+#str(roc_auc)
+roc_auc@y.values
 
-naive_bayes_via_caret
-confusionMatrix(naive_bayes_via_caret)
+#plotting roc curve test 2
+pred<-ROCR::prediction(predvec2, labels=realvec2)
+roc<-performance(pred, measure="tpr", x.measure="fpr")
+plot(roc, main="ROC curve for Occupancy(test 2)", col="blue", lwd=3)
+segments(0, 0, 1, 1, lty=2)
+roc_auc<-performance(pred, measure="auc")
+#str(roc_auc)
+roc_auc@y.values
 
+#plotting roc curve test 3
+pred<-ROCR::prediction(predvec3, labels=realvec3)
+roc<-performance(pred, measure="tpr", x.measure="fpr")
+plot(roc, main="ROC curve for Occupancy(test 3)", col="blue", lwd=3)
+segments(0, 0, 1, 1, lty=2)
+roc_auc<-performance(pred, measure="auc")
+#str(roc_auc)
+roc_auc@y.values
 
-# Build the model
-set.seed(123)
-model <- caret::train(Occupancy ~., data = training, method = "nb", 
-               trControl = trainControl("cv", number = 10))
-# Make predictions
-predicted.classes <- model %>% predict(test)
-# Model n accuracy
-mean(predicted.classes == test$Occupancy)
+#plotting roc curve (no light)
+pred<-ROCR::prediction(predvec.f, labels=realvec.f)
+roc<-performance(pred, measure="tpr", x.measure="fpr")
+plot(roc, main="ROC curve for Occupancy(no light)", col="blue", lwd=3)
+segments(0, 0, 1, 1, lty=2)
+roc_auc<-performance(pred, measure="auc")
+#str(roc_auc)
+roc_auc@y.values
 
-
-model_pca = train(x,y,trControl=trainControl(method='cv',number=10,preProc = "pca"))
-model_scale = train(x,y,trControl=trainControl(method='cv',number=10,preProc = "scale"))
-model_center = train(x,y,trControl=trainControl(method='cv',number=10,preProc = "center"))
-model_Boxcox = train(x,y,trControl=trainControl(method='cv',number=10,preProc = "BoxCox"))
-
-
-cm <- predict(model_pca$finalModel,x) #predict on training data
-table(predict(model_pca$finalModel,x),y) #table of training data
-
-
-pred <- predict(model_pca, newdata = y1) #predict on test data
-confusionMatrix(pred, test$Occupancy) #table of test data
-
-confusionMatrix(model) #entries are percentual average cell counts across resamples
+#plotting roc curve (no light, no CO2)
+pred<-ROCR::prediction(predvec.f2, labels=realvec.f2)
+roc<-performance(pred, measure="tpr", x.measure="fpr")
+plot(roc, main="ROC curve for Occupancy(no light, no CO2)", col="blue", lwd=3)
+segments(0, 0, 1, 1, lty=2)
+roc_auc<-performance(pred, measure="auc")
+#str(roc_auc)
+roc_auc@y.values
 
 plot(model)
-
-search_grid <- expand.grid(
-  usekernel = c(TRUE, FALSE),
-  fL = 0:5,
-  adjust = seq(0, 5, by = 1)
-)
-
-# train model
-nb.m2 <- train(
-  x = x,
-  y = y,
-  method = "nb",
-  trControl = trainControl,
-  preProc = "pca"
-)
-
-
+#corrolation plots
 training %>%
   filter(Occupancy == "1") %>%
   select_if(is.numeric) %>%
@@ -898,30 +931,10 @@ training %>%
   corrplot::corrplot()
 
 training %>%
-  filter(Occupancy == "1") %>%
+  filter(Occupancy == "0") %>%
   select_if(is.numeric) %>%
   cor() %>%
   corrplot::corrplot()
-
-
-P<-training %>% 
-  select(Temperature,Humidity,Light,CO2, HumidityRatio,Occupancy, time, weekday) %>% 
-  gather(metric, value) %>% 
-  ggplot(aes(value, fill = metric)) + 
-  geom_density(show.legend = FALSE) + 
-  facet_wrap(~ metric, scales = "free")
-plot(P)
-
-str(training)
-pairs.panels(training[-7])
-
-model <- naive_bayes(Occupancy ~ ., data = training )
-#desnity plots
-plot(model)
-x<- factor(training)
-p <- predict(model, training, type = 'prob')
-p
-print(model)
 
 # KNN ========================================================================
 set.seed(123908213)
@@ -958,7 +971,7 @@ trControl <- trainControl(method  = "cv",
 
 cross_fit <- train(training_norm.f, train_labels,
                    method     = "knn",
-                   tuneGrid   = expand.grid(k = 2:50),
+                   tuneGrid   = expand.grid(k = 2:15),
                    trControl  = trControl,
                    metric     = "Kappa"
 )
@@ -985,7 +998,15 @@ confusionMatrix(knn.f_pred, test_labels)
 mcc(preds = knn.f_pred, actuals = test_labels)
 
 #ROC
+realvec.f <- as.numeric(test.f$Occupancy)
+predvec.f <- as.numeric(knn.f_pred)
 
+pred<-ROCR::prediction(predvec.f, labels=realvec.f)
+roc<-performance(pred, measure="tpr", x.measure="fpr")
+plot(roc, main="ROC curve for Occupancy(no light, no CO2)", col="blue", lwd=3)
+segments(0, 0, 1, 1, lty=2)
+roc_auc<-performance(pred, measure="auc")
+roc_auc@y.values
 
 # Plot it with Light and Humidity because those are important.
 
@@ -1013,7 +1034,7 @@ trControl.f2 <- trainControl(method  = "cv",
 
 cross_fit.f2 <- train(training_norm.f2, train_labels,
                    method     = "knn",
-                   tuneGrid   = expand.grid(k = 2:50),
+                   tuneGrid   = expand.grid(k = 2:15),
                    trControl  = trControl,
                    metric     = "Kappa"
 )
@@ -1040,7 +1061,15 @@ confusionMatrix(knn.f2_pred, test_labels)
 mcc(preds = knn.f2_pred, actuals = test_labels)
 
 #ROC
+realvec.f2 <- as.numeric(test.f2$Occupancy)
+predvec.f2 <- as.numeric(knn.f2_pred)
 
+pred<-ROCR::prediction(predvec.f2, labels=realvec.f2)
+roc<-performance(pred, measure="tpr", x.measure="fpr")
+plot(roc, main="ROC curve for Occupancy(no light, no co2)", col="blue", lwd=3)
+segments(0, 0, 1, 1, lty=2)
+roc_auc<-performance(pred, measure="auc")
+roc_auc@y.values
 
 # Plot it with Light and Humidity because those are important.
 
@@ -1053,3 +1082,6 @@ knn.plotf2.1 = data.frame(x = knn.plotf2$Temperature,
 
 ggplot(knn.plotf2, aes(HumidityRatio, Temperature, color = predicted, shape = truth)) + 
   geom_point(size = 4, alpha = 0.3)
+
+
+
