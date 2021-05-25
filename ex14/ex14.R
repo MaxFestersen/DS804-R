@@ -1036,16 +1036,15 @@ roc_auc<-performance(pred, measure="auc")
 roc_auc@y.values
 
 library(pROC)
-roc1 <- plot.roc(realvec2, realvec2, main="ROC comparison for Occupancy",lty = 3, percent=TRUE, col= "red")
-roc2 <- lines.roc(realvec3, predvec3,lty = 2,lwd = 3, percent=TRUE, col="blue")
-roc3 <- lines.roc(realvec.f, predvec.f,lty = 3,lwd = 3, percent=TRUE, col="orange")
-roc3 <- lines.roc(realvec.f2, predvec.f2,lty = 4,lwd = 3, percent=TRUE, col="green")
+roc1 <- plot.roc(realvec, predvec, main="ROC comparison for Occupancy",lty = 1, percent=TRUE, col= "red")
+roc2 <- lines.roc(realvec.f, predvec.f,lty = 2,lwd = 3, percent=TRUE, col="blue")
+roc3 <- lines.roc(realvec.f2, predvec.f2,lty = 3,lwd = 3, percent=TRUE, col="orange")
 
 legend("bottomright", 
-       legend = c("Test2", "test3", "No Light", "No light and CO2"), 
+       legend = c("Test     AUC=0.98","No Light     AUC = 0.83", "No light and CO2     AUC = 0.73"),
        col = c("red", "blue", "orange", "green"),
-       lty = c(1, 2, 3, 4),
-       lwd = c(3, 3, 3, 3, 1))
+       lty = c(1, 2, 3),
+       lwd = c(3, 3, 3, 1))
 
 plot(model)
 #corrolation plots
@@ -1286,5 +1285,8 @@ knn.plotf2.1 = data.frame(x = knn.plotf2$Temperature,
 
 ggplot(knn.plotf2, aes(HumidityRatio, Temperature, color = predicted, shape = truth)) + 
   geom_point(size = 4, alpha = 0.3)
+
+
+# ROC plot of all classifiers ========================================================================
 
 
