@@ -1040,7 +1040,7 @@ predvec.f2 <- as.numeric(knn.f2_pred)
 
 pred<-ROCR::prediction(predvec.f2, labels=realvec.f2)
 roc<-performance(pred, measure="tpr", x.measure="fpr")
-plot(roc, main="ROC curve for Occupancy(no light, no CO2)", col="blue", lwd=3)
+plot(roc, main="ROC curve for Occupancy(no light)", col="blue", lwd=3)
 segments(0, 0, 1, 1, lty=2)
 roc_auc<-performance(pred, measure="auc")
 roc_auc@y.values
