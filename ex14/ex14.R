@@ -390,9 +390,20 @@ predictions.c.f.626 <- predict(tree.c.f.626, test.f, type = 'class') # predictin
 cm.c.f.626 <- table(test$Occupancy, predictions.c.f.626) # confusion matrix
 cluster_report(cm.c.f.626, cap = "T1: Decision Tree without light and minsplit = 626") # Quality measures of Decision tree
 
+#MCC score
 realvec <- as.numeric(test.f$Occupancy)
 predvec <- as.numeric(predictions.c.f.626)
 mcc(predvec, realvec)
+
+#plotting roc curve and AUC score
+pred<-ROCR::prediction(predvec, labels=realvec)
+roc<-performance(pred, measure="tpr", x.measure="fpr")
+plot(roc, main="ROC curve for Occupancy(No Light)", col="blue", lwd=3)
+segments(0, 0, 1, 1, lty=2)
+roc_auc<-performance(pred, measure="auc")
+roc_auc@y.values
+
+
 
 # >>>>> Test 2
 predictions.c.f.626.2 <- predict(tree.c.f.626, test2.f, type = 'class') # predicting unseen test data
@@ -446,7 +457,6 @@ predictions.f2 <- predict(tree.f2, test.f2, type = 'class') # predicting unseen 
 cm.f2 <- table(test$Occupancy, predictions.f2) # confusion matrix
 cluster_report(cm.f2, cap = "T1: Decision Tree without C02") # Quality measures of Decision tree
 
-
 # >>>> Test 2
 predictions.f2.2 <- predict(tree.f2, test2.f2, type = 'class') # predicting unseen test data
 cm.f2.2 <- table(test2$Occupancy, predictions.f2.2) # confusion matrix
@@ -495,14 +505,25 @@ predictions.c.f2.724 <- predict(tree.c.f2.724, test.f2, type = 'class') # predic
 cm.c.f2.724 <- table(test$Occupancy, predictions.c.f2.724) # confusion matrix
 cluster_report(cm.c.f2.724, cap = "T1: Decision Tree without CO2 and minsplit = 724") # Quality measures of Decision tree
 
+#MMC Score
 realvec <- as.numeric(test.f2$Occupancy)
 predvec <- as.numeric(predictions.c.f2.724)
 mcc(predvec, realvec)
+
+#plotting roc curve and AUC score
+pred<-ROCR::prediction(predvec, labels=realvec)
+roc<-performance(pred, measure="tpr", x.measure="fpr")
+plot(roc, main="ROC curve for Occupancy(No Light, No CO2", col="blue", lwd=3)
+segments(0, 0, 1, 1, lty=2)
+roc_auc<-performance(pred, measure="auc")
+roc_auc@y.values
+
 
 # >>>>> Test 2
 predictions.c.f2.724.2 <- predict(tree.c.f2.724, test2.f2, type = 'class') # predicting unseen test data
 cm.c.f2.724.2 <- table(test2$Occupancy, predictions.c.f2.724.2) # confusion matrix
 cluster_report(cm.c.f2.724.2, cap = "T2: Decision Tree without CO2 and minsplit = 724") # Quality measures of Decision tree
+
 
 # >>>>> Test 3
 predictions.c.f2.724.3 <- predict(tree.c.f2.724, test3.f2, type = 'class') # predicting unseen test data
