@@ -552,12 +552,12 @@ cat(paste(
 
 
 ## Support Vector Machine (SVM)----------------------------------------
-set.seed(156)
 training$time <- as.numeric(training$time)
 test$time <- as.numeric(test$time)
 test2$time <- as.numeric(test2$time)
 test3$time <- as.numeric(test3$time)
 
+set.seed(156)
 svmfit <- svm(Occupancy ~ Temperature + Humidity + Light + CO2 + HumidityRatio + time + weekdayNum, # Note: Leaving out date, as it made results worse :-(
               data = training,
               type = "C-classification",
@@ -709,20 +709,20 @@ roc <- performance(pred, measure="tpr", x.measure="fpr")
 plot(roc, main="ROC curve for Occupancy (SVM no light)", col="blue", lwd=3)
 segments(0, 0, 1, 1, lty=2)
 roc_auc<-performance(pred, measure="auc")
-roc_auc@y.values # 0.815
+roc_auc@y.values # 0.948
 
 predictions <- predict(svmfit, test2, type = 'class') # predicting unseen test data
 cm <- table(test2$Occupancy, predictions) # confusion matrix
 cluster_report(cm, cap = "Support-Vector-Machine test_set 1") # Quality measures of SVM
 
-mcc(predictions, test2$Occupancy) # -0.013
+mcc(predictions, test2$Occupancy) # 0.203
 
 pred <- ROCR::prediction(as.numeric(predictions), test2$Occupancy)
 roc <- performance(pred, measure="tpr", x.measure="fpr")
 plot(roc, main="ROC curve for Occupancy (SVM no light)", col="blue", lwd=3)
 segments(0, 0, 1, 1, lty=2)
 roc_auc<-performance(pred, measure="auc")
-roc_auc@y.values # 0.4927
+roc_auc@y.values # 0.624
 
 # SVM without Light + CO2
 svmfit <- svm(Occupancy ~ Temperature + Humidity + HumidityRatio + time + weekdayNum, # Note: Leaving out date, as it made results worse :-(
@@ -737,25 +737,25 @@ predictions <- predict(svmfit, test, type = 'class') # predicting unseen test da
 cm <- table(test$Occupancy, predictions) # confusion matrix
 cluster_report(cm, cap = "Support-Vector-Machine test_set 1") # Quality measures of SVM
 
-mcc(predictions, test$Occupancy) # -0.063
+mcc(predictions, test$Occupancy) # -0.12
 
 pred <- ROCR::prediction(as.numeric(predictions), test$Occupancy)
 roc <- performance(pred, measure="tpr", x.measure="fpr")
 plot(roc, main="ROC curve for Occupancy (SVM no light + CO2)", col="blue", lwd=3)
 segments(0, 0, 1, 1, lty=2)
 roc_auc<-performance(pred, measure="auc")
-roc_auc@y.values # 0.474
+roc_auc@y.values # 0.436
 
 
 predictions <- predict(svmfit, test2, type="class")
-mcc(predictions, test2$Occupancy) # 0.2731
+mcc(predictions, test2$Occupancy) # 0.318
 
 pred <- ROCR::prediction(as.numeric(predictions), test2$Occupancy)
 roc <- performance(pred, measure="tpr", x.measure="fpr")
 plot(roc, main="ROC curve for Occupancy (SVM no light + CO2)", col="blue", lwd=3)
 segments(0, 0, 1, 1, lty=2)
 roc_auc<-performance(pred, measure="auc")
-roc_auc@y.values # 0.6068
+roc_auc@y.values # 0.688
 
 ## Neural Network ----------------------------------------------------------
 
