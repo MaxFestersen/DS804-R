@@ -164,6 +164,9 @@ realvec <- as.numeric(test$Occupancy)
 predvec <- as.numeric(predictions)
 mcc(predvec, realvec)
 
+realvec_tree <- as.numeric(test$Occupancy)
+predvec_tree <- as.numeric(predictions)
+
 #Roc curve and AUC score
 pred<-ROCR::prediction(predvec, labels=realvec)
 roc<-performance(pred, measure="tpr", x.measure="fpr")
@@ -412,6 +415,9 @@ predictions.c.f.626 <- predict(tree.c.f.626, test.f, type = 'class') # predictin
 cm.c.f.626 <- table(test$Occupancy, predictions.c.f.626) # confusion matrix
 cluster_report(cm.c.f.626, cap = "T1: Decision Tree without light and minsplit = 626") # Quality measures of Decision tree
 
+realvec_tree_n_light <- as.numeric(test$Occupancy)
+predvec_tree_n_light <- as.numeric(predictions.c.f.626)
+
 #MCC score
 realvec <- as.numeric(test.f$Occupancy)
 predvec <- as.numeric(predictions.c.f.626)
@@ -534,11 +540,16 @@ cluster_report(cm.c.f2.724, cap = "T1: Decision Tree without CO2 and minsplit = 
 #MMC Score
 realvec <- as.numeric(test.f2$Occupancy)
 predvec <- as.numeric(predictions.c.f2.724)
+
+
 mcc(predvec, realvec)
 pred<-ROCR::prediction(predvec, labels=realvec)
 roc<-performance(pred, measure="tpr", x.measure="fpr")
 par(new=T)
 plot(roc, main="ROC curves for D.T.", col="#2E5077", lwd=3)
+
+realvec_tree_n_light_co2 <- as.numeric(test$Occupancy)
+predvec_tree_n_light_co2 <- as.numeric(predictions.c.f.92)
 
 #plotting roc curve and AUC score
 pred<-ROCR::prediction(predvec, labels=realvec)
@@ -659,6 +670,9 @@ svmfit <- svm(Occupancy ~ Temperature + Light + CO2,
 
 summary(svmfit)
 
+realvec_svm <- as.numeric(test$Occupancy)
+predvec_svm <- as.numeric(predictions)
+
 plot(svmfit, training, Light ~ CO2,
      slice=list(Temperature=3, HumidityRatio=4))
 
@@ -723,6 +737,9 @@ predictions <- predict(svmfit, test, type = 'class') # predicting unseen test da
 cm <- table(test$Occupancy, predictions) # confusion matrix
 cluster_report(cm, cap = "Support-Vector-Machine test_set 1") # Quality measures of SVM
 
+realvec_svm_light <- as.numeric(test$Occupancy)
+predvec_svm_light <- as.numeric(predictions)
+
 mcc(predictions, test$Occupancy) # 0.61
 
 pred <- ROCR::prediction(as.numeric(predictions), test$Occupancy)
@@ -737,6 +754,8 @@ cm <- table(test2$Occupancy, predictions) # confusion matrix
 cluster_report(cm, cap = "Support-Vector-Machine test_set 1") # Quality measures of SVM
 
 mcc(predictions, test2$Occupancy) # 0.203
+
+
 
 pred <- ROCR::prediction(as.numeric(predictions), test2$Occupancy)
 roc <- performance(pred, measure="tpr", x.measure="fpr")
@@ -760,6 +779,9 @@ cluster_report(cm, cap = "Support-Vector-Machine test_set 1") # Quality measures
 
 mcc(predictions, test$Occupancy) # -0.12
 
+realvec_svm_light_co2 <- as.numeric(test$Occupancy)
+predvec_svm_light_co2 <- as.numeric(predictions)
+
 pred <- ROCR::prediction(as.numeric(predictions), test$Occupancy)
 roc <- performance(pred, measure="tpr", x.measure="fpr")
 plot(roc, main="ROC curve for Occupancy (SVM no light + CO2)", col="blue", lwd=3)
@@ -770,6 +792,8 @@ roc_auc@y.values # 0.436
 
 predictions <- predict(svmfit, test2, type="class")
 mcc(predictions, test2$Occupancy) # 0.318
+
+
 
 pred <- ROCR::prediction(as.numeric(predictions), test2$Occupancy)
 roc <- performance(pred, measure="tpr", x.measure="fpr")
@@ -1043,8 +1067,8 @@ ordered_table
 
 #ROC
 #test 1 as vector
-realvec <- as.numeric(test$Occupancy)
-predvec <- as.numeric(predict(classifier_cl, newdata = test))
+realvec_Naive <- as.numeric(test$Occupancy)
+predvec_Naive <- as.numeric(predict(classifier_cl, newdata = test))
 
 
 #test 2 as vector
@@ -1056,12 +1080,12 @@ realvec3 <- as.numeric(test3$Occupancy)
 predvec3 <- as.numeric(predict(classifier_cl, newdata = test3))
 
 #test.f as vector
-realvec.f <- as.numeric(test.f$Occupancy)
-predvec.f <- as.numeric(predict(classifier_cl.f, newdata = test.f))
+realvec.f_naive <- as.numeric(test.f$Occupancy)
+predvec.f_naive <- as.numeric(predict(classifier_cl.f, newdata = test.f))
 
 #test.f2 as vector
-realvec.f2 <- as.numeric(test.f2$Occupancy)
-predvec.f2 <- as.numeric(predict(classifier_cl.f2, newdata = test.f2))
+realvec.f2_naive <- as.numeric(test.f2$Occupancy)
+predvec.f2_naive <- as.numeric(predict(classifier_cl.f2, newdata = test.f2))
 
 # MMC SCORES
 mcc(predvec, realvec)
@@ -1241,6 +1265,9 @@ mcc(preds = knn_pred, actuals = test_labels)
 realvec <- as.numeric(test$Occupancy)
 predvec <- as.numeric(knn_pred)
 
+realvec_knn <- as.numeric(test$Occupancy)
+predvec_knn <- as.numeric(knn_pred)
+
 pred<-ROCR::prediction(predvec, labels=realvec)
 roc<-performance(pred, measure="tpr", x.measure="fpr")
 plot(roc, main="ROC curve for Occupancy (All Params)", col="blue", lwd=3)
@@ -1296,6 +1323,9 @@ mcc(preds = knn_pred.f, actuals = test_labels)
 realvec <- as.numeric(test$Occupancy)
 predvec <- as.numeric(knn_pred.f)
 
+realvec_knn_light <- as.numeric(test$Occupancy)
+predvec_knn_light <- as.numeric(knn_pred.f)
+
 pred<-ROCR::prediction(predvec, labels=realvec)
 roc<-performance(pred, measure="tpr", x.measure="fpr")
 plot(roc, main="ROC curve for Occupancy (No Light)", col="blue", lwd=3)
@@ -1347,6 +1377,9 @@ confusionMatrix(knn_pred.f2, test_labels)
 #MCC
 mcc(preds = knn_pred.f2, actuals = test_labels)
 
+realvec_knn_light_co2 <- as.numeric(test$Occupancy)
+predvec_knn_light_co2 <- as.numeric(knn_pred.f2)
+
 #ROC
 realvec <- as.numeric(test$Occupancy)
 predvec <- as.numeric(knn_pred.f2)
@@ -1367,4 +1400,39 @@ cluster_report(knn.cm.f2, cap = "Knn (No light + No Co2)")
 
 # ROC plot of all classifiers ========================================================================
 
+#Roc curve for test
+roc1 <- plot.roc(realvec_tree, predvec_tree, main="ROC comparison for Occupancy",lty = 1, percent=TRUE, col= "red")
+roc2 <- lines.roc(realvec_svm, predvec_svm,lty = 2,lwd = 3, percent=TRUE, col="blue")
+roc3 <- lines.roc(realvec_Naive, predvec_Naive,lty = 3,lwd = 3, percent=TRUE, col="orange")
+roc4 <- lines.roc(realvec_knn, predvec_knn,lty = 4,lwd = 3, percent=TRUE, col="green")
 
+legend("bottomright", 
+       legend = c("Decision Tree","SVM", "Naïve Bayes","KNN"),
+       col = c("red", "blue", "orange", "green"),
+       lty = c(1, 2, 3, 4),
+       lwd = c(3, 3, 3, 1))
+
+
+#Roc curve for test without light
+roc1 <- plot.roc(realvec_tree_n_light, predvec_tree_n_light, main="ROC comparison for Occupancy(No light)",lty = 1, percent=TRUE, col= "red")
+roc2 <- lines.roc(realvec_svm_light, predvec_svm_light,lty = 2,lwd = 3, percent=TRUE, col="blue")
+roc3 <- lines.roc(realvec.f_naive, predvec.f_naive,lty = 3,lwd = 3, percent=TRUE, col="orange")
+roc4 <- lines.roc(realvec_knn_light, predvec_knn_light,lty = 4,lwd = 3, percent=TRUE, col="green")
+
+legend("bottomright", 
+       legend = c("Decision Tree","SVM", "Naïve Bayes","KNN"),
+       col = c("red", "blue", "orange", "green"),
+       lty = c(1, 2, 3, 4),
+       lwd = c(3, 3, 3, 1))
+
+#Roc curve for test without light and CO2
+roc1 <- plot.roc(realvec_tree_n_light_co2, predvec_tree_n_light_co2, main="ROC comparison for Occupancy(No light, No CO2)",lty = 1, percent=TRUE, col= "red")
+roc2 <- lines.roc(realvec_svm_light_co2, predvec_svm_light_co2,lty = 2,lwd = 3, percent=TRUE, col="blue")
+roc3 <- lines.roc(realvec.f2_naive, predvec.f2_naive,lty = 3,lwd = 3, percent=TRUE, col="orange")
+roc4 <- lines.roc(realvec_knn_light_co2, predvec_knn_light_co2,lty = 4,lwd = 3, percent=TRUE, col="green")
+
+legend("bottomright", 
+       legend = c("Decision Tree","SVM", "Naïve Bayes","KNN"),
+       col = c("red", "blue", "orange", "green"),
+       lty = c(1, 2, 3, 4),
+       lwd = c(3, 3, 3, 1))
