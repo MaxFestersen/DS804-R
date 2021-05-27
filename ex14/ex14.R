@@ -23,6 +23,7 @@ library(gmodels)
 library(mltools)
 library(pROC)
 library(ROCR)
+
 # Dataset -----------------------------------------------------------------
 # We have chosen the Occupancy dataset: http://archive.ics.uci.edu/ml/datasets/Occupancy+Detection+#
 
@@ -166,7 +167,7 @@ mcc(predvec, realvec)
 #Roc curve and AUC score
 pred<-ROCR::prediction(predvec, labels=realvec)
 roc<-performance(pred, measure="tpr", x.measure="fpr")
-plot(roc, main="ROC curve for Occupancy", col="blue", lwd=3)
+plot(roc, main="ROC curves for D.T.", col="#FFA630", lwd=3)
 segments(0, 0, 1, 1, lty=2)
 roc_auc<-performance(pred, measure="auc")
 roc_auc@y.values
@@ -179,6 +180,10 @@ cluster_report(cm, cap = "T2: Decision Tree") # Quality measures of Decision tre
 realvec <- as.numeric(test2$Occupancy)
 predvec <- as.numeric(predictions)
 mcc(predvec, realvec)
+pred<-ROCR::prediction(predvec, labels=realvec)
+roc<-performance(pred, measure="tpr", x.measure="fpr")
+par(new=T)
+plot(roc, main="ROC curves for D.T.", col="#D7E8BA", lwd=3)
 
 # >>> Test 3
 predictions <- predict(tree, test3, type = 'class') # predicting unseen test data
@@ -411,6 +416,10 @@ cluster_report(cm.c.f.626, cap = "T1: Decision Tree without light and minsplit =
 realvec <- as.numeric(test.f$Occupancy)
 predvec <- as.numeric(predictions.c.f.626)
 mcc(predvec, realvec)
+pred<-ROCR::prediction(predvec, labels=realvec)
+roc<-performance(pred, measure="tpr", x.measure="fpr")
+par(new=T)
+plot(roc, main="ROC curves for D.T.", col="#4DA1A9", lwd=3)
 
 #plotting roc curve and AUC score
 pred<-ROCR::prediction(predvec, labels=realvec)
@@ -526,6 +535,10 @@ cluster_report(cm.c.f2.724, cap = "T1: Decision Tree without CO2 and minsplit = 
 realvec <- as.numeric(test.f2$Occupancy)
 predvec <- as.numeric(predictions.c.f2.724)
 mcc(predvec, realvec)
+pred<-ROCR::prediction(predvec, labels=realvec)
+roc<-performance(pred, measure="tpr", x.measure="fpr")
+par(new=T)
+plot(roc, main="ROC curves for D.T.", col="#2E5077", lwd=3)
 
 #plotting roc curve and AUC score
 pred<-ROCR::prediction(predvec, labels=realvec)
